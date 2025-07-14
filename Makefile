@@ -1,12 +1,12 @@
 .PHONY: run this clean
 
 run:
-	./runme.sh
+	./hack/runme.sh
 
 this: this_month.csv
 
 this_month.csv:
-	./this-month.sh
+	./hack/this-month.sh
 
 clean:
 	rm this_month.csv
