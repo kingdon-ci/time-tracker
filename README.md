@@ -8,6 +8,9 @@ A simple Ruby script to export time tracking data from the EARLY API (formerly T
 - Simple date range specification using Beeminder-style syntax
 - Minimal configuration via environment variables
 - Clean CSV output suitable for further processing
+- Progress tracking for monthly work hours vs. 40-hour work week
+- Progress output showing percentage and hours over/under target
+- Smart current month handling - only counts started workdays
 
 ## Requirements
 
@@ -55,7 +58,13 @@ The script accepts date range parameters in a simplified Beeminder format:
 make run
 
 # Or directly
-./runme.sh
+./hack/runme.sh
+
+# Run now (this month's progress report)
+make this
+
+# Clean up after
+make clean
 ```
 
 ## Output
@@ -72,6 +81,9 @@ Email,08:00:00,Vacation - PTO
 Flux / Community,00:32:41,Flux Dev Meeting
 Recording,02:45:00,
 ```
+
+The next run will overwrite the file. Historical records are meant to be kept
+as copies of the CSV `output.csv`, in `history/YYYY_MM_history.csv` as needed.
 
 ## Configuration
 
@@ -95,4 +107,5 @@ MIT License
 
 ## Version
 
-0.1.0 - Basic CSV export functionality
+* 0.2.0 - Track simple progress against 8d/40w on a monthly basis
+* 0.1.0 - Basic CSV export functionality
