@@ -7,7 +7,7 @@ require 'date'
 require 'uri'
 
 class EarlyExporter
-  API_BASE_URL = 'https://web.early.app/api/v1'
+  API_BASE_URL = 'https://api.early.app/api/v4'
   
   def initialize
     @api_key = ENV['EARLY_API_KEY']
@@ -36,7 +36,7 @@ class EarlyExporter
   private
   
   def authenticate
-    uri = URI("#{API_BASE_URL}/integrations/api/session")
+    uri = URI("#{API_BASE_URL}/developer/sign-in")
     
     request = Net::HTTP::Post.new(uri)
     request['Content-Type'] = 'application/json'
@@ -50,7 +50,7 @@ class EarlyExporter
     end
     
     unless response.is_a?(Net::HTTPSuccess)
-      $stderr.puts "Authentication failed with HTTP status #{response.code}"
+      $stderr.puts "Authentication failed with HTTP status #{response.code} (#{response.message})"
       exit 1
     end
     
@@ -59,12 +59,11 @@ class EarlyExporter
   end
   
   def fetch_time_entries(access_token, start_date, end_date)
-    uri = URI("#{API_BASE_URL}/time-entries")
-    params = {
-      startedAfter: start_date.iso8601,
-      stoppedBefore: end_date.iso8601
-    }
-    uri.query = URI.encode_www_form(params)
+    # Format dates with milliseconds as shown in the API example
+    start_iso = start_date.strftime('%Y-%m-%dT00:00:00.000')
+    end_iso = end_date.strftime('%Y-%m-%dT23:59:59.999')
+    
+    uri = URI("#{API_BASE_URL}/time-entries/#{start_iso}/#{end_iso}")
     
     request = Net::HTTP::Get.new(uri)
     request['Authorization'] = "Bearer #{access_token}"
@@ -74,7 +73,7 @@ class EarlyExporter
     end
     
     unless response.is_a?(Net::HTTPSuccess)
-      $stderr.puts "Failed to fetch time entries with HTTP status #{response.code}"
+      $stderr.puts "Failed to fetch time entries with HTTP status #{response.code} (#{response.message})"
       exit 1
     end
     
@@ -123,14 +122,48 @@ class EarlyExporter
     "%02d:%02d:%02d" % [hours, minutes, seconds]
   end
   
+  def calculate_duration(duration_obj)
+    return "00:00:00" unless duration_obj.is_a?(Hash)
+    
+    started_at = duration_obj['startedAt']
+    stopped_at = duration_obj['stoppedAt']
+    
+    return "00:00:00" unless started_at && stopped_at
+    
+    start_time = Time.parse(started_at)
+    stop_time = Time.parse(stopped_at)
+    
+    duration_seconds = (stop_time - start_time).to_i
+    format_duration(duration_seconds)
+  end
+  
   def write_csv(time_entries)
+    # Debug: let's see what structure we're getting
+    if ENV['DEBUG']
+      puts "Debug: time_entries class: #{time_entries.class}"
+      puts "Debug: time_entries structure: #{time_entries.inspect}" if time_entries.is_a?(Hash)
+    end
+    
+    # Handle different possible API response structures
+    entries = case time_entries
+    when Array
+      time_entries
+    when Hash
+      time_entries['timeEntries'] || time_entries['data'] || time_entries['entries'] || []
+    else
+      []
+    end
+    
     CSV.open(@output_file, 'w') do |csv|
       csv << ['Activity', 'Duration', 'Note']
       
-      time_entries.each do |entry|
-        activity = entry.dig('activity', 'name') || ''
-        duration = format_duration(entry['duration'] || 0)
-        note = entry['note'] || ''
+      entries.each do |entry|
+        puts "Debug: processing entry: #{entry.inspect}" if ENV['DEBUG']
+        
+        activity = entry.dig('activity', 'name') || entry['activityName'] || ''
+        duration = calculate_duration(entry['duration'])
+        note_text = entry.dig('note', 'text')
+        note = note_text.nil? || note_text.empty? ? '' : note_text
         
         csv << [activity, duration, note]
       end
