@@ -172,7 +172,7 @@ class EarlyExporter
 end
 
 # Main execution
-if ARGV.length != 1
+if ARGV.length != 1 && ARGV.length != 2
   $stderr.puts "Usage: #{$0} <date_range>"
   $stderr.puts "  ^     - this month"
   $stderr.puts "  ^^    - last month"
@@ -181,4 +181,4 @@ if ARGV.length != 1
 end
 
 exporter = EarlyExporter.new
-exporter.run(ARGV[0])
+exporter.run("#{ARGV[0]} #{ARGV&.[](1)}".strip)
