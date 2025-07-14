@@ -162,7 +162,8 @@ class EarlyExporter
         
         activity = entry.dig('activity', 'name') || entry['activityName'] || ''
         duration = calculate_duration(entry['duration'])
-        note = entry.dig('note', 'text') || entry['note'] || entry['description'] || ''
+        note_text = entry.dig('note', 'text')
+        note = note_text.nil? || note_text.empty? ? '' : note_text
         
         csv << [activity, duration, note]
       end
