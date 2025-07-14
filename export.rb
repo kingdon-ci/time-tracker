@@ -5,6 +5,7 @@ require 'json'
 require 'csv'
 require 'date'
 require 'uri'
+require 'time'
 
 class EarlyExporter
   API_BASE_URL = 'https://api.early.app/api/v4'
@@ -26,6 +27,10 @@ class EarlyExporter
     access_token = authenticate
     time_entries = fetch_time_entries(access_token, start_date, end_date)
     write_csv(time_entries)
+    
+    # Calculate and display progress
+    progress_info = calculate_progress(time_entries, start_date, end_date)
+    puts progress_info
     
     puts "wrote to #{@output_file}"
   rescue => e
@@ -120,6 +125,75 @@ class EarlyExporter
     seconds = duration_seconds % 60
     
     "%02d:%02d:%02d" % [hours, minutes, seconds]
+  end
+  
+  def parse_duration_to_hours(duration_str)
+    return 0.0 if duration_str.nil? || duration_str.empty?
+    
+    parts = duration_str.split(':').map(&:to_i)
+    return 0.0 if parts.length != 3
+    
+    hours, minutes, seconds = parts
+    hours + (minutes / 60.0) + (seconds / 3600.0)
+  end
+  
+  def count_weekdays(start_date, end_date)
+    count = 0
+    current_date = start_date
+    
+    while current_date < end_date
+      # Monday = 1, Sunday = 7
+      count += 1 if current_date.wday >= 1 && current_date.wday <= 5
+      current_date = current_date.next_day
+    end
+    
+    count
+  end
+  
+  def calculate_progress(time_entries, start_date, end_date)
+    # Handle different possible API response structures
+    entries = case time_entries
+    when Array
+      time_entries
+    when Hash
+      time_entries['timeEntries'] || time_entries['data'] || time_entries['entries'] || []
+    else
+      []
+    end
+    
+    # Calculate total hours worked
+    total_hours = 0.0
+    entries.each do |entry|
+      duration = calculate_duration(entry['duration'])
+      total_hours += parse_duration_to_hours(duration)
+    end
+    
+    # For current month, only count weekdays up to and including today
+    effective_end_date = end_date
+    if Date.today >= start_date && Date.today < end_date
+      effective_end_date = Date.today.next_day
+    end
+    
+    weekdays = count_weekdays(start_date, effective_end_date)
+    expected_hours = weekdays * 8.0
+    
+    if expected_hours > 0
+      percentage = (total_hours / expected_hours) * 100
+      hours_diff = total_hours - expected_hours
+      
+      if hours_diff >= 0
+        format_progress_output(percentage, hours_diff, :over)
+      else
+        format_progress_output(percentage, hours_diff.abs, :under)
+      end
+    else
+      "Progress: No workdays in range"
+    end
+  end
+  
+  def format_progress_output(percentage, hours_diff, status)
+    status_text = status == :over ? "over target" : "under target"
+    "Progress: #{percentage.round(1)}% (#{hours_diff.round(1)} hours #{status_text})"
   end
   
   def calculate_duration(duration_obj)
