@@ -51,7 +51,7 @@ The script accepts date range parameters in a simplified Beeminder format:
 ### Using the provided scripts
 
 ```bash
-# Run with default settings (current month)
+# Run with default settings (last month)
 make run
 
 # Or directly
