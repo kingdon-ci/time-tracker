@@ -23,8 +23,11 @@ class EarlyExporter
   def run(date_arg)
     start_date, end_date = parse_date_range(date_arg)
     
+    puts "authenticating"
     access_token = authenticate
+    puts "fetching time entries"
     time_entries = fetch_time_entries(access_token, start_date, end_date)
+    puts "writing CSV"
     write_csv(time_entries)
     
     puts "wrote to #{@output_file}"
