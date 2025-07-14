@@ -122,10 +122,27 @@ class EarlyExporter
     "%02d:%02d:%02d" % [hours, minutes, seconds]
   end
   
+  def calculate_duration(duration_obj)
+    return "00:00:00" unless duration_obj.is_a?(Hash)
+    
+    started_at = duration_obj['startedAt']
+    stopped_at = duration_obj['stoppedAt']
+    
+    return "00:00:00" unless started_at && stopped_at
+    
+    start_time = Time.parse(started_at)
+    stop_time = Time.parse(stopped_at)
+    
+    duration_seconds = (stop_time - start_time).to_i
+    format_duration(duration_seconds)
+  end
+  
   def write_csv(time_entries)
     # Debug: let's see what structure we're getting
-    puts "Debug: time_entries class: #{time_entries.class}"
-    puts "Debug: time_entries structure: #{time_entries.inspect}" if time_entries.is_a?(Hash)
+    if ENV['DEBUG']
+      puts "Debug: time_entries class: #{time_entries.class}"
+      puts "Debug: time_entries structure: #{time_entries.inspect}" if time_entries.is_a?(Hash)
+    end
     
     # Handle different possible API response structures
     entries = case time_entries
@@ -141,11 +158,11 @@ class EarlyExporter
       csv << ['Activity', 'Duration', 'Note']
       
       entries.each do |entry|
-        puts "Debug: processing entry: #{entry.inspect}"
+        puts "Debug: processing entry: #{entry.inspect}" if ENV['DEBUG']
         
         activity = entry.dig('activity', 'name') || entry['activityName'] || ''
-        duration = format_duration(entry['duration'] || 0)
-        note = entry['note'] || entry['description'] || ''
+        duration = calculate_duration(entry['duration'])
+        note = entry.dig('note', 'text') || entry['note'] || entry['description'] || ''
         
         csv << [activity, duration, note]
       end
