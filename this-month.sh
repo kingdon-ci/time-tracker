@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 source .env.local
 export EARLY_API_KEY EARLY_API_SECRET
-ruby ./export.rb '^^'
+OUTPUT_FILE=this_month.csv ruby ./export.rb '^'
