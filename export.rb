@@ -23,11 +23,8 @@ class EarlyExporter
   def run(date_arg)
     start_date, end_date = parse_date_range(date_arg)
     
-    puts "authenticating"
     access_token = authenticate
-    puts "fetching time entries"
     time_entries = fetch_time_entries(access_token, start_date, end_date)
-    puts "writing CSV"
     write_csv(time_entries)
     
     puts "wrote to #{@output_file}"
@@ -126,13 +123,29 @@ class EarlyExporter
   end
   
   def write_csv(time_entries)
+    # Debug: let's see what structure we're getting
+    puts "Debug: time_entries class: #{time_entries.class}"
+    puts "Debug: time_entries structure: #{time_entries.inspect}" if time_entries.is_a?(Hash)
+    
+    # Handle different possible API response structures
+    entries = case time_entries
+    when Array
+      time_entries
+    when Hash
+      time_entries['timeEntries'] || time_entries['data'] || time_entries['entries'] || []
+    else
+      []
+    end
+    
     CSV.open(@output_file, 'w') do |csv|
       csv << ['Activity', 'Duration', 'Note']
       
-      time_entries.each do |entry|
-        activity = entry.dig('activity', 'name') || ''
+      entries.each do |entry|
+        puts "Debug: processing entry: #{entry.inspect}"
+        
+        activity = entry.dig('activity', 'name') || entry['activityName'] || ''
         duration = format_duration(entry['duration'] || 0)
-        note = entry['note'] || ''
+        note = entry['note'] || entry['description'] || ''
         
         csv << [activity, duration, note]
       end
