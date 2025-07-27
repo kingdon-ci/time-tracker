@@ -1,4 +1,8 @@
-.PHONY: run this clean
+.PHONY: run this clean all
+
+all:
+	-make clean
+	make this
 
 run:
 	./hack/runme.sh
