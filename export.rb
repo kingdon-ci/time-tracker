@@ -14,6 +14,7 @@ class EarlyExporter
     @api_key = ENV['EARLY_API_KEY']
     @api_secret = ENV['EARLY_API_SECRET']
     @output_file = ENV['OUTPUT_FILE'] || 'output.csv'
+    @include_nonbillable = ENV['INCLUDE_NONBILLABLE'] == 'true'
 
     if @api_key.nil? || @api_secret.nil?
       $stderr.puts "Error: EARLY_API_KEY and EARLY_API_SECRET environment variables are required"
@@ -26,10 +27,14 @@ class EarlyExporter
 
     access_token = authenticate
     time_entries = fetch_time_entries(access_token, start_date, end_date)
-    write_csv(time_entries)
 
-    # Calculate and display progress
-    progress_info = calculate_progress(time_entries, start_date, end_date)
+    # Filter entries before processing
+    filtered_entries = filter_entries(time_entries)
+
+    write_csv(filtered_entries)
+
+    # Calculate and display progress using filtered entries
+    progress_info = calculate_progress(filtered_entries, start_date, end_date)
     puts progress_info
 
     puts "wrote to #{@output_file}"
@@ -96,6 +101,45 @@ class EarlyExporter
     end
 
     JSON.parse(response.body)
+  end
+
+  def filter_entries(time_entries)
+    # Handle different possible API response structures
+    entries = case time_entries
+    when Array
+      time_entries
+    when Hash
+      time_entries['timeEntries'] || time_entries['data'] || time_entries['entries'] || []
+    else
+      []
+    end
+
+    # Filter out nonbillable entries unless explicitly included
+    unless @include_nonbillable
+      entries = entries.reject { |entry| entry_is_nonbillable?(entry) }
+    end
+
+    # Return in the same structure as received
+    case time_entries
+    when Array
+      entries
+    when Hash
+      time_entries.merge(
+        'timeEntries' => entries,
+        'data' => entries,
+        'entries' => entries
+      )
+    else
+      entries
+    end
+  end
+
+  def entry_is_nonbillable?(entry)
+    tags = entry.dig('note', 'tags')
+    return false if tags.nil? || !tags.is_a?(Array)
+
+    # Check if any tag has the label "nonbillable"
+    tags.any? { |tag| tag['label']&.downcase == 'nonbillable' }
   end
 
   def parse_date_range(date_arg)
@@ -206,7 +250,8 @@ class EarlyExporter
 
   def format_progress_output(percentage, hours_diff, status)
     status_text = status == :over ? "over target" : "under target"
-    "Progress: #{percentage.round(1)}% (#{hours_diff.round(1)} hours #{status_text})"
+    filter_status = @include_nonbillable ? "(including nonbillable)" : "(excluding nonbillable)"
+    "Progress: #{percentage.round(1)}% (#{hours_diff.round(1)} hours #{status_text}) #{filter_status}"
   end
 
   def calculate_duration(duration_obj)
@@ -264,6 +309,9 @@ if ARGV.length != 1 && ARGV.length != 2
   $stderr.puts "  ^     - this month"
   $stderr.puts "  ^^    - last month"
   $stderr.puts "  YYYY M - specific month (e.g., '2024 6' for June 2024)"
+  $stderr.puts ""
+  $stderr.puts "Environment variables:"
+  $stderr.puts "  INCLUDE_NONBILLABLE=true - include #nonbillable entries (default: false)"
   exit 1
 end
 
