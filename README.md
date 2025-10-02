@@ -41,14 +41,17 @@ The script accepts date range parameters in a simplified Beeminder format:
 ### Examples
 
 ```bash
+# Export today and yesterday
+./export.rb '@'      # or 'make today'
+
 # Export current month
-./export.rb '^'
+./export.rb '^'      # or 'make'
 
 # Export last month
-./export.rb '^^'
+./export.rb '^^'     # or 'make run'
 
 # Export June 2024
-./export.rb '2024 6'
+./export.rb '2024 6' # see also './hack/since_the_start.sh' to export several months
 ```
 
 ### Using the provided scripts
@@ -107,5 +110,6 @@ MIT License
 
 ## Version
 
+* 0.3.0 - Support status reports that include today and yesterday
 * 0.2.0 - Track simple progress against 8d/40w on a monthly basis
 * 0.1.0 - Basic CSV export functionality
