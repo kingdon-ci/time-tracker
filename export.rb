@@ -199,6 +199,8 @@ class EarlyExporter
     hours + (minutes / 60.0) + (seconds / 3600.0)
   end
 
+  # Counts weekdays between start_date (inclusive) and end_date (exclusive).
+  # The method treats end_date as the day *after* the last day to include, matching the logic used elsewhere.
   def count_weekdays(start_date, end_date)
     count = 0
     current_date = start_date
@@ -230,12 +232,21 @@ class EarlyExporter
       total_hours += parse_duration_to_hours(duration)
     end
 
-    # For current month, only count weekdays up to and including today
-    effective_end_date = end_date
-    if Date.today >= start_date && Date.today < end_date
-      effective_end_date = Date.today.next_day
+    # Determine effective end date for progress calculation
+    # For specific date ranges (like '@' for yesterday+today), use the full end_date
+    # Only limit to today for open-ended ranges like current/last month
+    effective_end_date = case ARGV[0]
+    when '@'
+      end_date.to_date.next_day
+    else
+      # For current month, only count weekdays up to and including today
+      effective_end_date = end_date
+      if Date.today >= start_date && Date.today < end_date
+        effective_end_date = Date.today.next_day
+      end
     end
 
+    # Count weekdays up to and including effective_end_date (end_date is exclusive in count_weekdays)
     weekdays = count_weekdays(start_date, effective_end_date)
     expected_hours = weekdays * 8.0
 
