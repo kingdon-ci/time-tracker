@@ -202,64 +202,101 @@ class EarlyExporter
   # Counts weekdays between start_date (inclusive) and end_date (exclusive).
   # The method treats end_date as the day *after* the last day to include, matching the logic used elsewhere.
   def count_weekdays(start_date, end_date)
+    puts "Debug count_weekdays: start_date=#{start_date}, end_date=#{end_date}" if ENV['DEBUG']
     count = 0
     current_date = start_date
 
     while current_date < end_date
       # Monday = 1, Sunday = 7
-      count += 1 if current_date.wday >= 1 && current_date.wday <= 5
+      is_weekday = current_date.wday >= 1 && current_date.wday <= 5
+      puts "Debug count_weekdays: #{current_date} (wday=#{current_date.wday}) is_weekday=#{is_weekday}" if ENV['DEBUG']
+
+      if is_weekday
+        count += 1
+        puts "Debug count_weekdays: incremented count to #{count}" if ENV['DEBUG']
+      end
+
       current_date = current_date.next_day
     end
 
+    puts "Debug count_weekdays: final count=#{count}" if ENV['DEBUG']
     count
   end
 
   def calculate_progress(time_entries, start_date, end_date)
+    puts "Debug calculate_progress: start_date=#{start_date}, end_date=#{end_date}" if ENV['DEBUG']
+    puts "Debug calculate_progress: ARGV[0]=#{ARGV[0]}" if ENV['DEBUG']
+
     # Handle different possible API response structures
     entries = case time_entries
     when Array
+      puts "Debug calculate_progress: time_entries is Array with #{time_entries.length} entries" if ENV['DEBUG']
       time_entries
     when Hash
-      time_entries['timeEntries'] || time_entries['data'] || time_entries['entries'] || []
+      entries_data = time_entries['timeEntries'] || time_entries['data'] || time_entries['entries'] || []
+      puts "Debug calculate_progress: time_entries is Hash, extracted #{entries_data.length} entries" if ENV['DEBUG']
+      entries_data
     else
+      puts "Debug calculate_progress: time_entries is #{time_entries.class}, using empty array" if ENV['DEBUG']
       []
     end
 
     # Calculate total hours worked
     total_hours = 0.0
-    entries.each do |entry|
+    puts "Debug calculate_progress: starting total hours calculation" if ENV['DEBUG']
+
+    entries.each_with_index do |entry, index|
       duration = calculate_duration(entry['duration'])
-      total_hours += parse_duration_to_hours(duration)
+      hours = parse_duration_to_hours(duration)
+      total_hours += hours
+      puts "Debug calculate_progress: entry #{index}: duration=#{duration}, hours=#{hours}, running_total=#{total_hours}" if ENV['DEBUG']
     end
 
+    puts "Debug calculate_progress: final total_hours=#{total_hours}" if ENV['DEBUG']
+
     # Determine effective end date for progress calculation
-    # For specific date ranges (like '@' for yesterday+today), use the full end_date
-    # Only limit to today for open-ended ranges like current/last month
+    puts "Debug calculate_progress: determining effective end date" if ENV['DEBUG']
+
     effective_end_date = case ARGV[0]
     when '@'
-      end_date.to_date.next_day
+      result = end_date.to_date.next_day
+      puts "Debug calculate_progress: '@' case - effective_end_date=#{result}" if ENV['DEBUG']
+      result
     else
       # For current month, only count weekdays up to and including today
       effective_end_date = end_date
+      puts "Debug calculate_progress: initial effective_end_date=#{effective_end_date}" if ENV['DEBUG']
+      puts "Debug calculate_progress: Date.today=#{Date.today}" if ENV['DEBUG']
+      puts "Debug calculate_progress: start_date <= today? #{Date.today >= start_date}" if ENV['DEBUG']
+      puts "Debug calculate_progress: today < end_date? #{Date.today < end_date}" if ENV['DEBUG']
+
       if Date.today >= start_date && Date.today < end_date
         effective_end_date = Date.today.next_day
+        puts "Debug calculate_progress: adjusted effective_end_date to today+1=#{effective_end_date}" if ENV['DEBUG']
       end
+      effective_end_date
     end
 
     # Count weekdays up to and including effective_end_date (end_date is exclusive in count_weekdays)
+    puts "Debug calculate_progress: calling count_weekdays(#{start_date}, #{effective_end_date})" if ENV['DEBUG']
     weekdays = count_weekdays(start_date, effective_end_date)
     expected_hours = weekdays * 8.0
+    puts "Debug calculate_progress: weekdays=#{weekdays}, expected_hours=#{expected_hours}" if ENV['DEBUG']
 
     if expected_hours > 0
       percentage = (total_hours / expected_hours) * 100
       hours_diff = total_hours - expected_hours
+      puts "Debug calculate_progress: percentage=#{percentage}, hours_diff=#{hours_diff}" if ENV['DEBUG']
 
       if hours_diff >= 0
+        puts "Debug calculate_progress: over target scenario" if ENV['DEBUG']
         format_progress_output(percentage, hours_diff, :over)
       else
+        puts "Debug calculate_progress: under target scenario" if ENV['DEBUG']
         format_progress_output(percentage, hours_diff.abs, :under)
       end
     else
+      puts "Debug calculate_progress: no workdays in range" if ENV['DEBUG']
       "Progress: No workdays in range"
     end
   end
@@ -287,10 +324,10 @@ class EarlyExporter
 
   def write_csv(time_entries)
     # Debug: let's see what structure we're getting
-    if ENV['DEBUG']
-      puts "Debug: time_entries class: #{time_entries.class}"
-      puts "Debug: time_entries structure: #{time_entries.inspect}" if time_entries.is_a?(Hash)
-    end
+    # if ENV['DEBUG']
+    #   puts "Debug: time_entries class: #{time_entries.class}"
+    #   puts "Debug: time_entries structure: #{time_entries.inspect}" if time_entries.is_a?(Hash)
+    # end
 
     # Handle different possible API response structures
     entries = case time_entries
@@ -306,7 +343,7 @@ class EarlyExporter
       csv << ['Activity', 'Duration', 'Note']
 
       entries.each do |entry|
-        puts "Debug: processing entry: #{entry.inspect}" if ENV['DEBUG']
+        # puts "Debug: processing entry: #{entry.inspect}" if ENV['DEBUG']
 
         activity = entry.dig('activity', 'name') || entry['activityName'] || ''
         duration = calculate_duration(entry['duration'])
