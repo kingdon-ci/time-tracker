@@ -4,6 +4,9 @@ all:
 	-make clean
 	make this
 
+today:
+	./hack/today.sh
+
 run:
 	./hack/runme.sh
 
