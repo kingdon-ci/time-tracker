@@ -144,6 +144,11 @@ class EarlyExporter
 
   def parse_date_range(date_arg)
     case date_arg
+    when '@'
+      # Today & Yesterday
+      now = Date.today
+      start_date = now - 1
+      end_date = now
     when '^'
       # This month
       now = Date.today
