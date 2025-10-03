@@ -142,12 +142,21 @@ class EarlyExporter
     tags.any? { |tag| tag['label']&.downcase == 'nonbillable' }
   end
 
+  # Find the previous workday (Monday-Friday) before the given date
+  def find_previous_workday(date)
+    current_date = date - 1
+    while current_date.wday == 0 || current_date.wday == 6  # Sunday = 0, Saturday = 6
+      current_date = current_date - 1
+    end
+    current_date
+  end
+
   def parse_date_range(date_arg)
     case date_arg
     when '@'
       # Today & Yesterday
       now = Date.today
-      start_date = now - 1
+      start_date = find_previous_workday(now)
       end_date = now
     when '^'
       # This month
@@ -359,6 +368,8 @@ end
 # Main execution
 if ARGV.length != 1 && ARGV.length != 2
   $stderr.puts "Usage: #{$0} <date_range>"
+  $stderr.puts "Date range options:"
+  $stderr.puts "  @     - today & yesterday"
   $stderr.puts "  ^     - this month"
   $stderr.puts "  ^^    - last month"
   $stderr.puts "  YYYY M - specific month (e.g., '2024 6' for June 2024)"
