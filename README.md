@@ -11,6 +11,7 @@ A simple Ruby script to export time tracking data from the EARLY API (formerly T
 - Progress tracking for monthly work hours vs. 40-hour work week
 - Progress output showing percentage and hours over/under target
 - Smart current month handling - only counts started workdays
+- Smart workday handling for '@' mode - shows previous workday and today (Friday on Monday)
 
 ## Requirements
 
@@ -34,6 +35,7 @@ chmod +x export.rb
 
 The script accepts date range parameters in a simplified Beeminder format:
 
+- `@` - Yesterday and today (or previous workday and today if run on Monday)
 - `^` - Current month (partial data if run mid-month)
 - `^^` - Previous month
 - `YYYY M` - Specific month (e.g., `2024 6` for June 2024)
@@ -41,7 +43,7 @@ The script accepts date range parameters in a simplified Beeminder format:
 ### Examples
 
 ```bash
-# Export today and yesterday
+# Export yesterday and today (or previous workday + today on Monday)
 ./export.rb '@'      # or 'make today'
 
 # Export current month
@@ -110,6 +112,7 @@ MIT License
 
 ## Version
 
+* 0.3.1 - Fix weekend handling (bug) in today and yesterday code
 * 0.3.0 - Support status reports that include today and yesterday
 * 0.2.0 - Track simple progress against 8d/40w on a monthly basis
 * 0.1.0 - Basic CSV export functionality
