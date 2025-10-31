@@ -10,3 +10,6 @@ OUTPUT_FILE=2025_04_history.csv ruby ./export.rb 2025 04
 OUTPUT_FILE=2025_05_history.csv ruby ./export.rb 2025 05
 OUTPUT_FILE=2025_06_history.csv ruby ./export.rb 2025 06
 OUTPUT_FILE=2025_07_history.csv ruby ./export.rb 2025 07
+OUTPUT_FILE=2025_08_history.csv ruby ./export.rb 2025 08
+OUTPUT_FILE=2025_09_history.csv ruby ./export.rb 2025 09
+OUTPUT_FILE=2025_10_history.csv ruby ./export.rb 2025 10
