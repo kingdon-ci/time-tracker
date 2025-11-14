@@ -1,4 +1,4 @@
-.PHONY: run this clean all
+.PHONY: run this clean all weekly six
 
 all:
 	-make clean
@@ -6,6 +6,12 @@ all:
 
 today:
 	./hack/today.sh
+
+weekly:
+	./hack/weekly.sh
+
+six:
+	./hack/six.sh
 
 run:
 	./hack/runme.sh

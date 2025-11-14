@@ -1,5 +1,7 @@
 /.env.*
 /output.csv
 /today.csv
+/six.csv
+/weekly.csv
 /this_month.csv
 /history/????_??_history.csv
