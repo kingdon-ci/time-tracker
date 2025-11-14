@@ -82,6 +82,9 @@ make weekly
 # Generate 6-day report (all entries, past 6 days excluding today)
 make six
 
+# Run the test suite
+make test
+
 # Clean up after
 make clean
 ```
@@ -136,8 +139,20 @@ The tool supports three filtering modes for #nonbillable entries:
 
 The `make weekly` command uses nonbillable-only mode by default, while `make six` includes all entries.
 
+## Testing
+
+The tool includes a test suite to validate core functionality:
+
+```bash
+# Run the test suite
+make test
+```
+
+For more information about the tests, see [test/README.md](test/README.md).
+
 ## Version
 
+* 0.4.1 - Add test suite for date range and filtering logic
 * 0.4.0 - Add weekly/6-day reporting and nonbillable-only filtering for conference travel
 * 0.3.1 - Fix weekend handling (bug) in today and yesterday code
 * 0.3.0 - Support status reports that include today and yesterday

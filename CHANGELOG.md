@@ -1,5 +1,31 @@
 # Changelog
 
+## v0.4.1 - Test Suite
+
+### New Features
+
+**Comprehensive Test Suite:**
+- Added automated tests for date range calculation
+- Added automated tests for filtering logic
+- Tests run without requiring API credentials
+
+**Test-friendly Enhancements:**
+- Added test mode for easier unit testing
+- Made methods accessible for testing without changing public API
+- Added constructor options for dependency injection
+
+**Documentation:**
+- Added test documentation in test/README.md
+- Added `make test` target to Makefile
+
+### Implementation Notes
+
+- Used Minitest for minimal dependencies
+- Focus on testing the most complex and critical logic
+- Test coverage for all date range formats
+- Test coverage for all filtering modes
+- Fixed edge cases discovered during test development
+
 ## v0.4.0 - Conference Travel Reporting
 
 ### New Features

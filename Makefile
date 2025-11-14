@@ -1,4 +1,4 @@
-.PHONY: run this clean all weekly six
+.PHONY: run this clean all weekly six test
 
 all:
 	-make clean
@@ -24,3 +24,6 @@ this_month.csv:
 clean:
 	rm this_month.csv
 	rm output.csv
+
+test:
+	cd test && ruby run_tests.rb
