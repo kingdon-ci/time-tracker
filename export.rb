@@ -10,16 +10,25 @@ require 'time'
 class EarlyExporter
   API_BASE_URL = 'https://api.early.app/api/v4'
 
-  def initialize
-    @api_key = ENV['EARLY_API_KEY']
-    @api_secret = ENV['EARLY_API_SECRET']
-    @output_file = ENV['OUTPUT_FILE'] || 'output.csv'
-    @include_nonbillable = ENV['INCLUDE_NONBILLABLE'] == 'true'
-    @only_nonbillable = ENV['ONLY_NONBILLABLE'] == 'true'
+  def initialize(options = {})
+    @api_key = options[:api_key] || ENV['EARLY_API_KEY']
+    @api_secret = options[:api_secret] || ENV['EARLY_API_SECRET']
+    @output_file = options[:output_file] || ENV['OUTPUT_FILE'] || 'output.csv'
+    @include_nonbillable = options[:include_nonbillable].nil? ? (ENV['INCLUDE_NONBILLABLE'] == 'true') : options[:include_nonbillable]
+    @only_nonbillable = options[:only_nonbillable].nil? ? (ENV['ONLY_NONBILLABLE'] == 'true') : options[:only_nonbillable]
+    @test_mode = options[:test_mode] || false
 
-    if @api_key.nil? || @api_secret.nil?
+    # Skip API key check in test mode
+    if !@test_mode && (@api_key.nil? || @api_secret.nil?)
       $stderr.puts "Error: EARLY_API_KEY and EARLY_API_SECRET environment variables are required"
       exit 1
+    end
+    
+    # Make private methods public in test mode for testing
+    if @test_mode
+      self.class.class_eval do
+        public :parse_date_range, :filter_entries, :entry_is_nonbillable?, :find_previous_workday
+      end
     end
   end
 
@@ -387,22 +396,24 @@ class EarlyExporter
   end
 end
 
-# Main execution
-if ARGV.length != 1 && ARGV.length != 2
-  $stderr.puts "Usage: #{$0} <date_range>"
-  $stderr.puts "Date range options:"
-  $stderr.puts "  @        - today & yesterday"
-  $stderr.puts "  w/weekly - past 7 days (including today)"
-  $stderr.puts "  6/six    - past 6 days (excluding today)"
-  $stderr.puts "  ^        - this month"
-  $stderr.puts "  ^^       - last month"
-  $stderr.puts "  YYYY M   - specific month (e.g., '2024 6' for June 2024)"
-  $stderr.puts ""
-  $stderr.puts "Environment variables:"
-  $stderr.puts "  INCLUDE_NONBILLABLE=true - include #nonbillable entries (default: false)"
-  $stderr.puts "  ONLY_NONBILLABLE=true    - include ONLY #nonbillable entries"
-  exit 1
-end
+# Main execution - only run if called directly (not when required for testing)
+if __FILE__ == $0
+  if ARGV.length != 1 && ARGV.length != 2
+    $stderr.puts "Usage: #{$0} <date_range>"
+    $stderr.puts "Date range options:"
+    $stderr.puts "  @        - today & yesterday"
+    $stderr.puts "  w/weekly - past 7 days (including today)"
+    $stderr.puts "  6/six    - past 6 days (excluding today)"
+    $stderr.puts "  ^        - this month"
+    $stderr.puts "  ^^       - last month"
+    $stderr.puts "  YYYY M   - specific month (e.g., '2024 6' for June 2024)"
+    $stderr.puts ""
+    $stderr.puts "Environment variables:"
+    $stderr.puts "  INCLUDE_NONBILLABLE=true - include #nonbillable entries (default: false)"
+    $stderr.puts "  ONLY_NONBILLABLE=true    - include ONLY #nonbillable entries"
+    exit 1
+  end
 
-exporter = EarlyExporter.new
-exporter.run("#{ARGV[0]} #{ARGV&.[](1)}".strip)
+  exporter = EarlyExporter.new
+  exporter.run("#{ARGV[0]} #{ARGV&.[](1)}".strip)
+end
