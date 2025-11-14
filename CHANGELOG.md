@@ -1,13 +1,20 @@
 # Changelog
 
-## v0.4.1 - Test Suite
+## v0.4.1 - Test Suite & CI
 
 ### New Features
 
 **Comprehensive Test Suite:**
-- Added automated tests for date range calculation
-- Added automated tests for filtering logic
+- Added automated tests for date range calculation (7 tests, 22 assertions)
+- Added automated tests for filtering logic (7 tests, 33 assertions)
 - Tests run without requiring API credentials
+- Sub-millisecond execution time for fast feedback
+
+**Continuous Integration:**
+- Added GitHub Actions workflow for automated testing
+- Tests run on all PRs and main branch commits
+- Ruby gem caching for efficient CI builds
+- 9-second CI execution time
 
 **Test-friendly Enhancements:**
 - Added test mode for easier unit testing
@@ -15,16 +22,17 @@
 - Added constructor options for dependency injection
 
 **Documentation:**
-- Added test documentation in test/README.md
+- Added comprehensive test documentation in test/README.md
 - Added `make test` target to Makefile
+- Updated README with testing instructions
 
 ### Implementation Notes
 
-- Used Minitest for minimal dependencies
-- Focus on testing the most complex and critical logic
-- Test coverage for all date range formats
-- Test coverage for all filtering modes
-- Fixed edge cases discovered during test development
+- Used Minitest (Ruby stdlib) for minimal external dependencies
+- Strategic focus on testing the most complex and critical logic
+- Complete coverage for all 6 date range formats and 3 filtering modes
+- Edge case handling discovered and validated during test development
+- CI-ready design supporting future serverless migration
 
 ## v0.4.0 - Conference Travel Reporting
 

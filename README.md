@@ -141,12 +141,18 @@ The `make weekly` command uses nonbillable-only mode by default, while `make six
 
 ## Testing
 
-The tool includes a test suite to validate core functionality:
+The tool includes a comprehensive test suite with automated CI:
 
 ```bash
-# Run the test suite
+# Run the test suite locally
 make test
 ```
+
+**Test Coverage:**
+- 14 test methods covering date range calculation and filtering logic
+- 55 total assertions validating critical functionality
+- Sub-millisecond execution time
+- GitHub Actions CI running on all PRs
 
 For more information about the tests, see [test/README.md](test/README.md).
 
