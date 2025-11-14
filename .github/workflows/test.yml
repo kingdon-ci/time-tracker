@@ -1,0 +1,33 @@
+name: Tests
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    name: Ruby Test Suite
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.4'
+          bundler-cache: true
+      
+      - name: Check Ruby version
+        run: ruby -v
+      
+      - name: Make scripts executable
+        run: |
+          chmod +x export.rb
+          chmod +x test/run_tests.rb
+          chmod +x test/test_*.rb
+          
+      - name: Run tests
+        run: cd test && ruby run_tests.rb
