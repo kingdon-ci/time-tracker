@@ -36,6 +36,8 @@ chmod +x export.rb
 The script accepts date range parameters in a simplified Beeminder format:
 
 - `@` - Yesterday and today (or previous workday and today if run on Monday)
+- `w` or `weekly` - Past 7 days including today
+- `6` or `six` - Past 6 days excluding today
 - `^` - Current month (partial data if run mid-month)
 - `^^` - Previous month
 - `YYYY M` - Specific month (e.g., `2024 6` for June 2024)
@@ -45,6 +47,12 @@ The script accepts date range parameters in a simplified Beeminder format:
 ```bash
 # Export yesterday and today (or previous workday + today on Monday)
 ./export.rb '@'      # or 'make today'
+
+# Export past 7 days (including today) - nonbillable only
+./export.rb 'w'      # or 'make weekly'
+
+# Export past 6 days (excluding today) - all entries
+./export.rb '6'      # or 'make six'
 
 # Export current month
 ./export.rb '^'      # or 'make'
@@ -67,6 +75,12 @@ make run
 
 # Run now (this month's progress report)
 make this
+
+# Generate weekly report (nonbillable only, past 7 days)
+make weekly
+
+# Generate 6-day report (all entries, past 6 days excluding today)
+make six
 
 # Clean up after
 make clean
@@ -96,6 +110,8 @@ Environment variables:
 - `EARLY_API_KEY` - Your EARLY API key (required)
 - `EARLY_API_SECRET` - Your EARLY API secret (required)
 - `OUTPUT_FILE` - Custom output filename (default: `output.csv`)
+- `INCLUDE_NONBILLABLE` - Include #nonbillable entries (default: false)
+- `ONLY_NONBILLABLE` - Include ONLY #nonbillable entries (overrides INCLUDE_NONBILLABLE)
 - `DEBUG` - Enable debug output (optional)
 
 ## Error Handling
@@ -110,8 +126,19 @@ The script will:
 
 MIT License
 
+## Filtering Options
+
+The tool supports three filtering modes for #nonbillable entries:
+
+1. **Default mode**: Excludes #nonbillable entries (standard work reporting)
+2. **Include all**: Set `INCLUDE_NONBILLABLE=true` to include both billable and nonbillable
+3. **Nonbillable only**: Set `ONLY_NONBILLABLE=true` to show only nonbillable entries (conference/travel reporting)
+
+The `make weekly` command uses nonbillable-only mode by default, while `make six` includes all entries.
+
 ## Version
 
+* 0.4.0 - Add weekly/6-day reporting and nonbillable-only filtering for conference travel
 * 0.3.1 - Fix weekend handling (bug) in today and yesterday code
 * 0.3.0 - Support status reports that include today and yesterday
 * 0.2.0 - Track simple progress against 8d/40w on a monthly basis

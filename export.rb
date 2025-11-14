@@ -15,6 +15,7 @@ class EarlyExporter
     @api_secret = ENV['EARLY_API_SECRET']
     @output_file = ENV['OUTPUT_FILE'] || 'output.csv'
     @include_nonbillable = ENV['INCLUDE_NONBILLABLE'] == 'true'
+    @only_nonbillable = ENV['ONLY_NONBILLABLE'] == 'true'
 
     if @api_key.nil? || @api_secret.nil?
       $stderr.puts "Error: EARLY_API_KEY and EARLY_API_SECRET environment variables are required"
@@ -114,10 +115,15 @@ class EarlyExporter
       []
     end
 
-    # Filter out nonbillable entries unless explicitly included
-    unless @include_nonbillable
+    # Apply filtering based on instance variables
+    if @only_nonbillable
+      # Include ONLY nonbillable entries
+      entries = entries.select { |entry| entry_is_nonbillable?(entry) }
+    elsif !@include_nonbillable
+      # Default: exclude nonbillable entries
       entries = entries.reject { |entry| entry_is_nonbillable?(entry) }
     end
+    # else: include all entries (when @include_nonbillable=true and @only_nonbillable=false)
 
     # Return in the same structure as received
     case time_entries
@@ -158,6 +164,16 @@ class EarlyExporter
       now = Date.today
       start_date = find_previous_workday(now)
       end_date = now
+    when 'w', 'weekly'
+      # Weekly: 7 days back from today (includes today)
+      now = Date.today
+      start_date = now - 6  # 6 days ago plus today = 7 total days
+      end_date = now
+    when '6', 'six'
+      # Six days: yesterday back 6 days (excludes today)
+      yesterday = Date.today - 1
+      start_date = yesterday - 5  # 5 days before yesterday = 6 total days
+      end_date = yesterday
     when '^'
       # This month
       now = Date.today
@@ -173,7 +189,7 @@ class EarlyExporter
       # Format: "2024 6" for June 2024
       parts = date_arg.split
       if parts.length != 2
-        raise "Invalid date format. Use '^' for this month, '^^' for last month, or 'YYYY M' for specific month"
+        raise "Invalid date format. Use '^' for this month, '^^' for last month, 'w'/'weekly' for 7 days, '6'/'six' for 6 days, or 'YYYY M' for specific month"
       end
 
       year = parts[0].to_i
@@ -312,7 +328,13 @@ class EarlyExporter
 
   def format_progress_output(percentage, hours_diff, status)
     status_text = status == :over ? "over target" : "under target"
-    filter_status = @include_nonbillable ? "(including nonbillable)" : "(excluding nonbillable)"
+    filter_status = if @only_nonbillable
+      "(nonbillable only)"
+    elsif @include_nonbillable
+      "(including nonbillable)"
+    else
+      "(excluding nonbillable)"
+    end
     "Progress: #{percentage.round(1)}% (#{hours_diff.round(1)} hours #{status_text}) #{filter_status}"
   end
 
@@ -369,13 +391,16 @@ end
 if ARGV.length != 1 && ARGV.length != 2
   $stderr.puts "Usage: #{$0} <date_range>"
   $stderr.puts "Date range options:"
-  $stderr.puts "  @     - today & yesterday"
-  $stderr.puts "  ^     - this month"
-  $stderr.puts "  ^^    - last month"
-  $stderr.puts "  YYYY M - specific month (e.g., '2024 6' for June 2024)"
+  $stderr.puts "  @        - today & yesterday"
+  $stderr.puts "  w/weekly - past 7 days (including today)"
+  $stderr.puts "  6/six    - past 6 days (excluding today)"
+  $stderr.puts "  ^        - this month"
+  $stderr.puts "  ^^       - last month"
+  $stderr.puts "  YYYY M   - specific month (e.g., '2024 6' for June 2024)"
   $stderr.puts ""
   $stderr.puts "Environment variables:"
   $stderr.puts "  INCLUDE_NONBILLABLE=true - include #nonbillable entries (default: false)"
+  $stderr.puts "  ONLY_NONBILLABLE=true    - include ONLY #nonbillable entries"
   exit 1
 end
 
