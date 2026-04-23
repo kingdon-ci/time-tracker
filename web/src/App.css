@@ -205,38 +205,74 @@ footer p { margin: 0; }
   }
 }
 
-.header-main {
+.header-stats {
   display: flex;
-  justify-content: space-between;
   align-items: center;
 }
 
-nav {
-  display: flex;
-  gap: 1rem;
-}
-
-nav button {
+.balance-badge {
   background: #333;
-  color: #888;
-  border: none;
-  padding: 0.5rem 1rem;
+  padding: 0.4rem 1rem;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  border: 1px solid #444;
+}
+
+.balance-badge strong {
+  color: #4caf50;
+  margin-left: 0.5rem;
+}
+
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #333;
+  margin-bottom: 0.5rem;
+}
+
+.panel-header h3 {
+  border-bottom: none;
+  margin-bottom: 0;
+}
+
+.month-mixture {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.mixture-label {
+  font-size: 0.6rem;
+  color: #666;
+  text-transform: uppercase;
+}
+
+.mini-bar {
+  width: 100px;
+  height: 8px;
+  background: #111;
   border-radius: 4px;
-  cursor: pointer;
-  font-family: inherit;
-  font-weight: bold;
-  transition: all 0.2s;
+  overflow: hidden;
+  display: flex;
 }
 
-nav button:hover {
-  background: #444;
-  color: #fff;
+.bar.billable {
+  background: #ff9800;
 }
 
-nav button.active {
-  background: #4caf50;
-  color: #fff;
-  box-shadow: 0 0 10px rgba(76, 175, 80, 0.4);
+.bar.nonbillable {
+  background: #00bcd4;
+}
+
+.footer-info, .footer-range {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.footer-info p {
+  color: #666;
 }
 
 .mixture-bars {
