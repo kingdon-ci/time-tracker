@@ -72,18 +72,17 @@ function App() {
 
   const { progress, entries } = currentData;
   
-  // Calculate BILLABLE only for current month to match historical data
+  // Calculate BILLABLE only for current month
   const currentBillableHours = entries
     .filter(e => !e.nonbillable)
     .reduce((sum, e) => sum + e.duration_hours, 0);
   
   const currentBillableDiff = currentBillableHours - progress.expected_hours;
 
-  // Historical context: Go back to Jan 1st of current year OR 6 months ago, whichever is shorter.
+  // Historical context
   const currentYear = new Date(progress.start_date).getFullYear();
   const historyMonths = historyData.months;
   
-  // Filter for months in the current year, then take at most the last 5 to combine with current month
   const relevantHistoricalMonths = historyMonths
     .filter(m => m.year === currentYear)
     .slice(-5);
@@ -106,33 +105,52 @@ function App() {
           <h1>Time Carburetor</h1>
           <div className="header-stats">
             <span className="balance-badge">
-              Rolling Comp: <strong>{compTimeBalance >= 0 ? '+' : ''}{compTimeBalance.toFixed(1)}h</strong>
+              Monthly: <strong>{currentBillableDiff >= 0 ? '+' : ''}{currentBillableDiff.toFixed(1)}h</strong>
             </span>
           </div>
         </div>
-        <p className="subtitle">Rolling Billable Balance (Last {lookbackCount} Mo) & Work Context</p>
+        <p className="subtitle">Real-time Performance & Historical Comp Balance</p>
       </header>
 
       <main className="dashboard main-view">
         <div className="left-col">
-          {/* Gauge 1: Billable Balance */}
-          <section className="panel gauge-panel">
+          {/* Gauge 1: Monthly Balance (Primary) */}
+          <section className="panel gauge-panel highlight">
             <Gauge 
-              value={compTimeBalance} 
-              min={-80} 
-              max={80} 
-              label="Rolling Billable Balance" 
+              value={currentBillableDiff} 
+              min={-40} 
+              max={40} 
+              label="Monthly Billable Balance" 
               unit="hrs" 
             />
             <div className="stats">
               <div className="stat-item">
-                <label>Billable This Mo</label>
-                <span className={currentBillableDiff >= 0 ? 'over' : 'under'}>
-                  {currentBillableDiff >= 0 ? '+' : ''}{currentBillableDiff.toFixed(1)}h
-                </span>
+                <label>Billable</label>
+                <span>{currentBillableHours.toFixed(1)}h</span>
               </div>
               <div className="stat-item">
-                <label>{`Prev ${lookbackCount - 1} Mo`}</label>
+                <label>Expected</label>
+                <span>{progress.expected_hours.toFixed(1)}h</span>
+              </div>
+              <div className="stat-item">
+                <label>Performance</label>
+                <span>{((currentBillableHours / progress.expected_hours) * 100).toFixed(1)}%</span>
+              </div>
+            </div>
+          </section>
+
+          {/* Gauge 2: Rolling Comp Balance */}
+          <section className="panel gauge-panel small">
+            <Gauge 
+              value={compTimeBalance} 
+              min={-80} 
+              max={80} 
+              label={`Rolling Comp (Last ${lookbackCount})`} 
+              unit="hrs" 
+            />
+            <div className="stats mini">
+              <div className="stat-item">
+                <label>YTD History</label>
                 <span className={historicalDiff >= 0 ? 'over' : 'under'}>
                   {historicalDiff >= 0 ? '+' : ''}{historicalDiff.toFixed(1)}h
                 </span>
@@ -140,16 +158,13 @@ function App() {
             </div>
           </section>
 
-          {/* Gauge 2: Fuel Mixture (Past 6 Days) */}
+          {/* Gauge 3: Fuel Mixture (Past 6 Days) */}
           <section className="panel fuel-panel">
             <FuelGauge 
               billable={sixBillable} 
               nonbillable={sixNonBillable} 
               label="Make Six Mixture" 
             />
-            <div className="fuel-stats">
-              <p>Work Intensity (6d): <strong>{(sixBillable + sixNonBillable).toFixed(1)}h</strong></p>
-            </div>
           </section>
         </div>
 
@@ -163,9 +178,9 @@ function App() {
 
           <section className="panel entries-panel">
             <div className="panel-header">
-              <h3>Recent Activity</h3>
+              <h3>Activity Stream</h3>
               <div className="month-mixture">
-                <span className="mixture-label">Month Mixture:</span>
+                <span className="mixture-label">B/NB Split:</span>
                 <div className="mini-bar">
                   <div className="bar billable" style={{ width: `${(currentBillableHours/(currentBillableHours+monthNonBillable))*100}%` }}></div>
                   <div className="bar nonbillable" style={{ width: `${(monthNonBillable/(currentBillableHours+monthNonBillable))*100}%` }}></div>
@@ -183,7 +198,7 @@ function App() {
                   </tr>
                 </thead>
                 <tbody>
-                  {entries.slice(-15).reverse().map((entry, i) => (
+                  {entries.slice(-12).reverse().map((entry, i) => (
                     <tr key={i} className={entry.nonbillable ? 'nb-row' : 'b-row'}>
                       <td><span className={`tag ${entry.nonbillable ? 'tag-nb' : 'tag-b'}`}>{entry.nonbillable ? 'NB' : 'B'}</span></td>
                       <td>{entry.activity}</td>
@@ -201,10 +216,7 @@ function App() {
       <footer>
         <div className="footer-info">
           <p>Last updated: {new Date(currentData.generated_at).toLocaleString()}</p>
-          <p>Historical data assumes "Billable Only" (matching `history/` CSVs)</p>
-        </div>
-        <div className="footer-range">
-          <p>Current range: {progress.start_date} to {progress.end_date}</p>
+          <p>Expectation based on 8h/weekday up to current date.</p>
         </div>
       </footer>
     </div>
