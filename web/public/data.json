@@ -1,0 +1,1185 @@
+{
+  "progress": {
+    "total_hours": 167.19944444444442,
+    "expected_hours": 128.0,
+    "percentage": 130.6245659722222,
+    "hours_diff": 39.199444444444424,
+    "status": "over",
+    "weekdays": 16,
+    "start_date": "2026-04-01",
+    "end_date": "2026-04-30",
+    "effective_end_date": "2026-04-23"
+  },
+  "entries": [
+    {
+      "activity": "Email",
+      "duration": "01:35:00",
+      "duration_hours": 1.5833333333333335,
+      "note": "Make further progress on SMDC-1052 (Implement Data-In-Transit Protection Policies) -- NOTE: Work from Tuesday 31 but it will count on Wednesday the 1st -- NOTE: Moved ✅",
+      "nonbillable": false
+    },
+    {
+      "activity": "Email",
+      "duration": "00:35:53",
+      "duration_hours": 0.5980555555555556,
+      "note": "Log into NASA - fix BickTest alert that keeps firing and is blowing up my notification channel (Ryan!!!)",
+      "nonbillable": false
+    },
+    {
+      "activity": "Incident Response",
+      "duration": "00:09:23",
+      "duration_hours": 0.15638888888888888,
+      "note": "Actually clear the alerts (sandbox)",
+      "nonbillable": false
+    },
+    {
+      "activity": "Email",
+      "duration": "02:31:28",
+      "duration_hours": 2.5244444444444443,
+      "note": "Assess ALB encryption (transit-posture) - resume work on the lets-encrypt cli",
+      "nonbillable": false
+    },
+    {
+      "activity": "Food / Learning",
+      "duration": "00:25:48",
+      "duration_hours": 0.43,
+      "note": "Lunch <{{|t|12505450|}}>",
+      "nonbillable": true
+    },
+    {
+      "activity": "Email",
+      "duration": "00:44:49",
+      "duration_hours": 0.7469444444444444,
+      "note": "The meeting is cancelled, some emergency has been called instead - let's finish up SMDC-1052 now in sandbox",
+      "nonbillable": false
+    },
+    {
+      "activity": "Food / Learning",
+      "duration": "00:34:45",
+      "duration_hours": 0.5791666666666666,
+      "note": "Start watching the launch for inspiration! We're almost done with this ticket, with respect to SMDC-1052 and sandbox (ticket closed!)",
+      "nonbillable": false
+    },
+    {
+      "activity": "Email",
+      "duration": "00:02:36",
+      "duration_hours": 0.043333333333333335,
+      "note": "",
+      "nonbillable": false
+    },
+    {
+      "activity": "Flux Bug Scrub",
+      "duration": "00:42:36",
+      "duration_hours": 0.71,
+      "note": "Meet with Helix <{{|t|12505450|}}>",
+      "nonbillable": true
+    },
+    {
+      "activity": "Email",
+      "duration": "01:10:28",
+      "duration_hours": 1.1744444444444446,
+      "note": "Return to Enabling Monitor controls in VPCs (sandbox)",
+      "nonbillable": false
+    },
+    {
+      "activity": "Food / Learning",
+      "duration": "00:59:01",
+      "duration_hours": 0.9836111111111111,
+      "note": "Moving the procedure into Production - merge request !7 is Draft/WIP, signing off for today",
+      "nonbillable": false
+    },
+    {
+      "activity": "Email",
+      "duration": "00:31:19",
+      "duration_hours": 0.5219444444444445,
+      "note": "Log into NASA & check for messages",
+      "nonbillable": false
+    },
+    {
+      "activity": "Food / Learning",
+      "duration": "00:42:30",
+      "duration_hours": 0.7083333333333333,
+      "note": "Revisit SESSION_LOG_2026-04-01 from lets-encrypt (transit-posture) - enable monitor vpc-ec in Production",
+      "nonbillable": false
+    },
+    {
+      "activity": "Email",
+      "duration": "00:53:04",
+      "duration_hours": 0.8844444444444444,
+      "note": "Jira ticket skill - get ready for Sprint Planning today!",
+      "nonbillable": false
+    },
+    {
+      "activity": "Flux / Community",
+      "duration": "00:18:25",
+      "duration_hours": 0.3069444444444444,
+      "note": "Flux Dev Meeting <{{|t|12505450|}}>",
+      "nonbillable": true
+    },
+    {
+      "activity": "Gather (meet)",
+      "duration": "00:28:48",
+      "duration_hours": 0.48,
+      "note": "Twice Weekly SCIP Sprint Tag Up",
+      "nonbillable": false
+    },
+    {
+      "activity": "Food / Learning",
+      "duration": "01:00:44",
+      "duration_hours": 1.0122222222222221,
+      "note": "Lunch <{{|t|12505450|}}>",
+      "nonbillable": true
+    },
+    {
+      "activity": "Gather (meet)",
+      "duration": "00:58:38",
+      "duration_hours": 0.9772222222222222,
+      "note": "Sprint Planning",
+      "nonbillable": false
+    },
+    {
+      "activity": "Email",
+      "duration": "00:31:29",
+      "duration_hours": 0.5247222222222223,
+      "note": "Review the report and the timetable proposed in transit-posture RUNBOOK.md - then, `build-crypto-inventory`",
+      "nonbillable": false
+    },
+    {
+      "activity": "Food / Learning",
+      "duration": "00:39:36",
+      "duration_hours": 0.66,
+      "note": "Agency (Science Cloud) Training",
+      "nonbillable": false
+    },
+    {
+      "activity": "Flux / Community",
+      "duration": "00:37:11",
+      "duration_hours": 0.6197222222222223,
+      "note": "Flux & Helix <{{|t|12505450|}}>",
+      "nonbillable": true
+    },
+    {
+      "activity": "Email",
+      "duration": "00:35:25",
+      "duration_hours": 0.5902777777777778,
+      "note": "Resolve issue with Science Cloud user agreement form page",
+      "nonbillable": false
+    },
+    {
+      "activity": "Food / Learning",
+      "duration": "00:52:13",
+      "duration_hours": 0.8702777777777778,
+      "note": "Enable monitor mode encryption controls across all production accounts (not customers) final answer no takebacks",
+      "nonbillable": false
+    },
+    {
+      "activity": "Email",
+      "duration": "01:07:56",
+      "duration_hours": 1.1322222222222222,
+      "note": "Run the workflow in sandbox until it is really working (not just vapor-driven development!) The outputs of Script A should feed into Script B, and it should be a workflow that is resilient against AI hallucination.",
+      "nonbillable": false
+    },
+    {
+      "activity": "Food / Learning",
+      "duration": "01:00:00",
+      "duration_hours": 1.0,
+      "note": "Breakfast <{{|t|12505450|}}>",
+      "nonbillable": true
+    },
+    {
+      "activity": "Food / Learning",
+      "duration": "00:18:00",
+      "duration_hours": 0.3,
+      "note": "Testing Helix app (cloud helix) <{{|t|12505450|}}> open source VSCode Flux extension",
+      "nonbillable": true
+    },
+    {
+      "activity": "Email",
+      "duration": "00:28:47",
+      "duration_hours": 0.4797222222222222,
+      "note": "Try the new VSCode GitOps Tools extension",
+      "nonbillable": false
+    },
+    {
+      "activity": "Food / Learning",
+      "duration": "01:48:02",
+      "duration_hours": 1.8005555555555557,
+      "note": "Work on Monitor mode in the Production accounts - enable everywhere, report back to Ramon for OSS conforming status - some NLBs and instances will need to be updated in order to enable encryption enforcing at a VPC level.",
+      "nonbillable": false
+    },
+    {
+      "activity": "Email",
+      "duration": "01:34:51",
+      "duration_hours": 1.5808333333333333,
+      "note": "Begin SMDC-1119 Determine what cryptography has been implemented",
+      "nonbillable": false
+    },
+    {
+      "activity": "Food / Learning",
+      "duration": "00:17:13",
+      "duration_hours": 0.28694444444444445,
+      "note": "Talk about OSS encryption controls blockers with Ramon & Agent registry for MCP + agent skills",
+      "nonbillable": false
+    },
+    {
+      "activity": "Food / Learning",
+      "duration": "00:45:40",
+      "duration_hours": 0.7611111111111111,
+      "note": "Lunch <{{|t|12505450|}}>",
+      "nonbillable": true
+    },
+    {
+      "activity": "Email",
+      "duration": "00:34:40",
+      "duration_hours": 0.5777777777777777,
+      "note": "Review Dorian PR - Mattermost sandbox",
+      "nonbillable": false
+    },
+    {
+      "activity": "Food / Learning",
+      "duration": "00:32:23",
+      "duration_hours": 0.5397222222222222,
+      "note": "discover-iac-crypto command in lets-encrypt cli - let's map kubernetes clusters in the kubeconfig file to thei presence of their bootstrap roots in the gitops, devops, and/or star-infra repos.",
+      "nonbillable": false
+    },
+    {
+      "activity": "Email",
+      "duration": "01:11:54",
+      "duration_hours": 1.1983333333333333,
+      "note": "Let's test - lets-encrypt command line improvements are ready, but are they ready?",
+      "nonbillable": false
+    },
+    {
+      "activity": "Food / Learning",
+      "duration": "01:28:05",
+      "duration_hours": 1.4680555555555557,
+      "note": "Divert to help Dorian with external secrets",
+      "nonbillable": false
+    },
+    {
+      "activity": "Email",
+      "duration": "00:08:30",
+      "duration_hours": 0.14166666666666666,
+      "note": "TODO: (got distracted on 3/31) Review gitlab runner failures in sandbox - gitlab-runner-token-rotate -- NOTE: Work from Tuesday 31 but it will count on Wednesday the 1st",
+      "nonbillable": false
+    },
+    {
+      "activity": "Email",
+      "duration": "02:58:46",
+      "duration_hours": 2.979444444444445,
+      "note": "Mecris <{{|t|12505450|}}>",
+      "nonbillable": true
+    },
+    {
+      "activity": "Email",
+      "duration": "00:45:00",
+      "duration_hours": 0.75,
+      "note": "Work on Gitlab+Mattermost auth",
+      "nonbillable": false
+    },
+    {
+      "activity": "Email",
+      "duration": "00:15:14",
+      "duration_hours": 0.2538888888888889,
+      "note": "Log onto NASA, restart computer for updates",
+      "nonbillable": false
+    },
+    {
+      "activity": "Food / Learning",
+      "duration": "01:31:23",
+      "duration_hours": 1.5230555555555556,
+      "note": "Orient with Jira - get back to work on \"crypto inventory\" SMDC-1119",
+      "nonbillable": false
+    },
+    {
+      "activity": "Email",
+      "duration": "01:26:23",
+      "duration_hours": 1.4397222222222223,
+      "note": "Moving on to SMDC-1119 report in prod now. (Repeat the cryptographic inventory, verify the enrichment details are correct, review the narrative doc, and hopefully we close the ticket out.)",
+      "nonbillable": false
+    },
+    {
+      "activity": "Food / Learning",
+      "duration": "00:21:26",
+      "duration_hours": 0.3572222222222222,
+      "note": "Repeat the process and record into a runbook what is being done. Harden up the reporting workflow to produce a narrative document (fully generated) and review the documents before they are locked up and finalized, copied for submission.",
+      "nonbillable": false
+    },
+    {
+      "activity": "Food / Learning",
+      "duration": "00:35:23",
+      "duration_hours": 0.5897222222222223,
+      "note": "Lunch <{{|t|12505450|}}>",
+      "nonbillable": true
+    },
+    {
+      "activity": "Gather (meet)",
+      "duration": "00:32:20",
+      "duration_hours": 0.5388888888888889,
+      "note": "Sprint Review",
+      "nonbillable": false
+    },
+    {
+      "activity": "Email",
+      "duration": "00:57:24",
+      "duration_hours": 0.9566666666666667,
+      "note": "",
+      "nonbillable": false
+    },
+    {
+      "activity": "Gather (meet)",
+      "duration": "00:45:34",
+      "duration_hours": 0.7594444444444445,
+      "note": "SCIP Retrospective",
+      "nonbillable": false
+    },
+    {
+      "activity": "Email",
+      "duration": "00:59:08",
+      "duration_hours": 0.9855555555555555,
+      "note": "Work on UCP errors - addons, objects, compositions in \"not synced\"",
+      "nonbillable": false
+    },
+    {
+      "activity": "Email",
+      "duration": "00:50:15",
+      "duration_hours": 0.8375,
+      "note": "Log into NASA & review Jira board",
+      "nonbillable": false
+    },
+    {
+      "activity": "Food / Learning",
+      "duration": "01:07:04",
+      "duration_hours": 1.1177777777777778,
+      "note": "Ideating on SMDC-1204 - what are the risks, what are the requirements, (what are potential consequences of inaction) - what else can we ensure doesn't get left behind going into next sprint? (Are they doing some Git Submodules thing and they didn't ask the team's only Git expert for help? Oh no...)",
+      "nonbillable": false
+    },
+    {
+      "activity": "Email",
+      "duration": "00:32:40",
+      "duration_hours": 0.5444444444444444,
+      "note": "",
+      "nonbillable": false
+    },
+    {
+      "activity": "Gather (meet)",
+      "duration": "01:00:52",
+      "duration_hours": 1.0144444444444445,
+      "note": "Twice Weekly SCIP Sprint Tag Up",
+      "nonbillable": false
+    },
+    {
+      "activity": "Food / Learning",
+      "duration": "00:29:17",
+      "duration_hours": 0.4880555555555556,
+      "note": "<{{|t|12505450|}}> Lunch",
+      "nonbillable": true
+    },
+    {
+      "activity": "Gather (meet)",
+      "duration": "00:55:00",
+      "duration_hours": 0.9166666666666666,
+      "note": "SCIP AI Knowledge Share",
+      "nonbillable": false
+    },
+    {
+      "activity": "Gather (meet)",
+      "duration": "00:06:43",
+      "duration_hours": 0.11194444444444446,
+      "note": "",
+      "nonbillable": false
+    },
+    {
+      "activity": "Email",
+      "duration": "02:07:20",
+      "duration_hours": 2.1222222222222222,
+      "note": "Talk with Tara about voice transcription & see if we can get it going using a security-plan approved infra (rather than slow local CPU transcription) - do a spike, see if we can get it to work at all, what does it cost, etc.",
+      "nonbillable": false
+    },
+    {
+      "activity": "Gather (meet)",
+      "duration": "00:11:47",
+      "duration_hours": 0.1963888888888889,
+      "note": "STAR Discussion",
+      "nonbillable": false
+    },
+    {
+      "activity": "Email",
+      "duration": "02:11:59",
+      "duration_hours": 2.199722222222222,
+      "note": "Try to get AWS bedrock working for voice transcription - it is not looking very good!",
+      "nonbillable": false
+    },
+    {
+      "activity": "Food / Learning",
+      "duration": "00:30:23",
+      "duration_hours": 0.5063888888888889,
+      "note": "Breakfast & FluxCon <{{|t|12505450|}}>",
+      "nonbillable": true
+    },
+    {
+      "activity": "Flux / Community",
+      "duration": "00:59:59",
+      "duration_hours": 0.9997222222222222,
+      "note": "Flux Dev Meeting <{{|t|12505450|}}>",
+      "nonbillable": true
+    },
+    {
+      "activity": "Email",
+      "duration": "00:35:24",
+      "duration_hours": 0.5900000000000001,
+      "note": "Talk with Flux devs about STAR challenges & their new terraform approach",
+      "nonbillable": false
+    },
+    {
+      "activity": "Food / Learning",
+      "duration": "00:19:52",
+      "duration_hours": 0.3311111111111111,
+      "note": "Log on to NASA",
+      "nonbillable": false
+    },
+    {
+      "activity": "Email",
+      "duration": "00:15:40",
+      "duration_hours": 0.2611111111111111,
+      "note": "Fixing <{{|t|14963373|}}> Mecris <{{|t|12505450|}}>",
+      "nonbillable": true
+    },
+    {
+      "activity": "Food / Learning",
+      "duration": "00:43:09",
+      "duration_hours": 0.7191666666666666,
+      "note": "Getting talktype up and running again",
+      "nonbillable": false
+    },
+    {
+      "activity": "Email",
+      "duration": "01:38:03",
+      "duration_hours": 1.6341666666666665,
+      "note": "Work on Jira tickets - pick one from the top, figure out how much further we have to go, get some progress in before lunch! (I picked all the tickets, we're building the audit mechanisms for data-at-rest for EFS/EBS, S3, and load balancer logging controls in the lets-encrypt cli via Spec-Driven Dev.)",
+      "nonbillable": false
+    },
+    {
+      "activity": "Food / Learning",
+      "duration": "01:07:29",
+      "duration_hours": 1.1247222222222222,
+      "note": "Lunch <{{|t|12505450|}}>",
+      "nonbillable": true
+    },
+    {
+      "activity": "Email",
+      "duration": "04:08:13",
+      "duration_hours": 4.1369444444444445,
+      "note": "Return to work - assess-data-at-rest-batch, let's start doing \"real SDD\" because it looks like we have been doing fake SDD. It is absolutely not as good.",
+      "nonbillable": false
+    },
+    {
+      "activity": "Food / Learning",
+      "duration": "00:04:02",
+      "duration_hours": 0.06722222222222222,
+      "note": "Wrap up the implementation of plan-s3-encryption-remediation in lets-encrypt",
+      "nonbillable": false
+    },
+    {
+      "activity": "Email",
+      "duration": "00:28:32",
+      "duration_hours": 0.47555555555555556,
+      "note": "Finish the data-at-rest assessment (s3) in production ✅ Done",
+      "nonbillable": false
+    },
+    {
+      "activity": "Email",
+      "duration": "02:50:29",
+      "duration_hours": 2.841388888888889,
+      "note": "Figure out how to be responsive to findings re: S3 DAR violations (talk to Tara - where are they? SecurityHub)",
+      "nonbillable": false
+    },
+    {
+      "activity": "Gather (meet)",
+      "duration": "00:30:56",
+      "duration_hours": 0.5155555555555555,
+      "note": "Twice Weekly SCIP Sprint Tag Up",
+      "nonbillable": false
+    },
+    {
+      "activity": "Email",
+      "duration": "00:26:26",
+      "duration_hours": 0.4405555555555556,
+      "note": "Resume \"assess-eks-secrets-encryption\" work, talk to Aaron about deletionPolicy: Orphan",
+      "nonbillable": false
+    },
+    {
+      "activity": "Food / Learning",
+      "duration": "00:30:32",
+      "duration_hours": 0.5088888888888888,
+      "note": "Lunch <{{|t|12505450|}}>",
+      "nonbillable": true
+    },
+    {
+      "activity": "Flux Bug Scrub",
+      "duration": "00:29:31",
+      "duration_hours": 0.49194444444444446,
+      "note": "Flux Bug Scrub <{{|t|12505450|}}>",
+      "nonbillable": true
+    },
+    {
+      "activity": "Email",
+      "duration": "00:32:40",
+      "duration_hours": 0.5444444444444444,
+      "note": "Back to work!",
+      "nonbillable": false
+    },
+    {
+      "activity": "Gather (meet)",
+      "duration": "00:42:09",
+      "duration_hours": 0.7024999999999999,
+      "note": "STAR Infrastructure Review and Go/No-Go",
+      "nonbillable": false
+    },
+    {
+      "activity": "Email",
+      "duration": "01:20:54",
+      "duration_hours": 1.3483333333333332,
+      "note": "",
+      "nonbillable": false
+    },
+    {
+      "activity": "Email",
+      "duration": "02:31:12",
+      "duration_hours": 2.52,
+      "note": "Log into NASA & check messages",
+      "nonbillable": false
+    },
+    {
+      "activity": "Email",
+      "duration": "01:10:44",
+      "duration_hours": 1.1788888888888889,
+      "note": "Go pick up doggies <{{|t|12505450|}}>",
+      "nonbillable": true
+    },
+    {
+      "activity": "Email",
+      "duration": "01:12:38",
+      "duration_hours": 1.2105555555555556,
+      "note": "Back to work - brief Dorian on what I'm up to this week (after earlier chat with ChatGSFC/Gemini about how are we gonna fit all this in!)",
+      "nonbillable": false
+    },
+    {
+      "activity": "Food / Learning",
+      "duration": "01:07:05",
+      "duration_hours": 1.1180555555555556,
+      "note": "Lunch <{{|t|12505450|}}>",
+      "nonbillable": true
+    },
+    {
+      "activity": "Email",
+      "duration": "00:54:45",
+      "duration_hours": 0.9125,
+      "note": "Come back to work - and try to address the Keycloak themes issue with the team",
+      "nonbillable": false
+    },
+    {
+      "activity": "Food / Learning",
+      "duration": "00:01:13",
+      "duration_hours": 0.020277777777777777,
+      "note": "Return to the work of the day (I'm dead - I have to tag out, I will try to catch up later.)",
+      "nonbillable": false
+    },
+    {
+      "activity": "Incident Response",
+      "duration": "01:56:26",
+      "duration_hours": 1.9405555555555556,
+      "note": "Helping Dorian with hangups in sandbox",
+      "nonbillable": false
+    },
+    {
+      "activity": "Email",
+      "duration": "00:29:41",
+      "duration_hours": 0.49472222222222223,
+      "note": "Hector - any chance you might know someone for this ICAM role based out of Houston?",
+      "nonbillable": false
+    },
+    {
+      "activity": "Food / Learning",
+      "duration": "01:04:14",
+      "duration_hours": 1.0705555555555555,
+      "note": "Personal stuff <{{|t|12505450|}}>",
+      "nonbillable": true
+    },
+    {
+      "activity": "Email",
+      "duration": "00:56:27",
+      "duration_hours": 0.9408333333333333,
+      "note": "Log onto NASA",
+      "nonbillable": false
+    },
+    {
+      "activity": "Gather (meet)",
+      "duration": "00:38:53",
+      "duration_hours": 0.6480555555555555,
+      "note": "",
+      "nonbillable": false
+    },
+    {
+      "activity": "Food / Learning",
+      "duration": "01:00:26",
+      "duration_hours": 1.0072222222222222,
+      "note": "Lunch <{{|t|12505450|}}>",
+      "nonbillable": true
+    },
+    {
+      "activity": "Email",
+      "duration": "01:03:54",
+      "duration_hours": 1.065,
+      "note": "",
+      "nonbillable": false
+    },
+    {
+      "activity": "Food / Learning",
+      "duration": "03:18:12",
+      "duration_hours": 3.3033333333333332,
+      "note": "Work on flux-event-relay 0.2.6 release",
+      "nonbillable": false
+    },
+    {
+      "activity": "Email",
+      "duration": "00:54:20",
+      "duration_hours": 0.9055555555555556,
+      "note": "Dinner <{{|t|12505450|}}>",
+      "nonbillable": true
+    },
+    {
+      "activity": "Incident Response",
+      "duration": "01:14:25",
+      "duration_hours": 1.2402777777777778,
+      "note": "So why did the build job fail last night?",
+      "nonbillable": false
+    },
+    {
+      "activity": "Food / Learning",
+      "duration": "03:55:14",
+      "duration_hours": 3.9205555555555556,
+      "note": "Snoozing <{{|t|12505450|}}>",
+      "nonbillable": true
+    },
+    {
+      "activity": "Email",
+      "duration": "00:50:00",
+      "duration_hours": 0.8333333333333334,
+      "note": "Log into NASA, work on flux-event-relay release 0.2.6 again",
+      "nonbillable": false
+    },
+    {
+      "activity": "Gather (meet)",
+      "duration": "01:03:46",
+      "duration_hours": 1.0627777777777778,
+      "note": "Meet with Shane Lander",
+      "nonbillable": false
+    },
+    {
+      "activity": "Food / Learning",
+      "duration": "01:26:59",
+      "duration_hours": 1.4497222222222221,
+      "note": "Breakfast <{{|t|12505450|}}>",
+      "nonbillable": true
+    },
+    {
+      "activity": "Email",
+      "duration": "01:00:53",
+      "duration_hours": 1.0147222222222223,
+      "note": "Back to flux-event-relay release work!",
+      "nonbillable": false
+    },
+    {
+      "activity": "Gather (meet)",
+      "duration": "00:54:24",
+      "duration_hours": 0.9066666666666667,
+      "note": "STAR Tagup",
+      "nonbillable": false
+    },
+    {
+      "activity": "Email",
+      "duration": "00:29:59",
+      "duration_hours": 0.49972222222222223,
+      "note": "Back to flux-event-relay release work",
+      "nonbillable": false
+    },
+    {
+      "activity": "Food / Learning",
+      "duration": "01:00:00",
+      "duration_hours": 1.0,
+      "note": "Testing Akamai Functions <{{|t|12505450|}}>",
+      "nonbillable": true
+    },
+    {
+      "activity": "Email",
+      "duration": "02:00:38",
+      "duration_hours": 2.0105555555555554,
+      "note": "Back to flux-event-relay release work",
+      "nonbillable": false
+    },
+    {
+      "activity": "Food / Learning",
+      "duration": "02:29:01",
+      "duration_hours": 2.483611111111111,
+      "note": "Dinner <{{|t|12505450|}}>",
+      "nonbillable": true
+    },
+    {
+      "activity": "Email",
+      "duration": "01:18:50",
+      "duration_hours": 1.3138888888888889,
+      "note": "Work on flux-event-relay release 0.3.0 and validating 0.2.6",
+      "nonbillable": false
+    },
+    {
+      "activity": "Email",
+      "duration": "00:23:13",
+      "duration_hours": 0.3869444444444445,
+      "note": "Log onto NASA",
+      "nonbillable": false
+    },
+    {
+      "activity": "Food / Learning",
+      "duration": "01:36:48",
+      "duration_hours": 1.6133333333333335,
+      "note": "Work on OCI formatted release for 0.2.6",
+      "nonbillable": false
+    },
+    {
+      "activity": "Flux / Community",
+      "duration": "00:28:47",
+      "duration_hours": 0.4797222222222222,
+      "note": "Flux Dev Meeting <{{|t|12505450|}}>",
+      "nonbillable": true
+    },
+    {
+      "activity": "Gather (meet)",
+      "duration": "00:31:56",
+      "duration_hours": 0.5322222222222223,
+      "note": "Twice Weekly SCIP Sprint Tag Up",
+      "nonbillable": false
+    },
+    {
+      "activity": "Flux / Community",
+      "duration": "01:00:06",
+      "duration_hours": 1.0016666666666667,
+      "note": "Cozystack meeting (and work on my star-infra dev stuff) billable time",
+      "nonbillable": false
+    },
+    {
+      "activity": "Gather (meet)",
+      "duration": "01:01:50",
+      "duration_hours": 1.0305555555555554,
+      "note": "Sprint Planning",
+      "nonbillable": false
+    },
+    {
+      "activity": "Gather (meet)",
+      "duration": "00:41:06",
+      "duration_hours": 0.685,
+      "note": "Cryptography Discussion",
+      "nonbillable": false
+    },
+    {
+      "activity": "Incident Response",
+      "duration": "00:04:37",
+      "duration_hours": 0.07694444444444444,
+      "note": "What happened to grafana prod access permissions? (nobody has access anymore) - Dorian fixed it!",
+      "nonbillable": false
+    },
+    {
+      "activity": "Food / Learning",
+      "duration": "00:11:17",
+      "duration_hours": 0.18805555555555553,
+      "note": "Need food",
+      "nonbillable": false
+    },
+    {
+      "activity": "Email",
+      "duration": "01:44:32",
+      "duration_hours": 1.7422222222222223,
+      "note": "We did not in fact go to eat at that time - working out ECR repository policies with crossplane now",
+      "nonbillable": false
+    },
+    {
+      "activity": "Food / Learning",
+      "duration": "01:06:31",
+      "duration_hours": 1.1086111111111112,
+      "note": "<{{|t|12505450|}}> dinner!",
+      "nonbillable": true
+    },
+    {
+      "activity": "Email",
+      "duration": "00:31:52",
+      "duration_hours": 0.5311111111111112,
+      "note": "Remediate issues in star-infra - duplicate resources managed twice by accident, make use of Flux notifications and test flux-event-relay in star-infra-dev",
+      "nonbillable": false
+    },
+    {
+      "activity": "Email",
+      "duration": "00:25:50",
+      "duration_hours": 0.4305555555555556,
+      "note": "mecris-bot <{{|t|12505450|}}>",
+      "nonbillable": true
+    },
+    {
+      "activity": "Email",
+      "duration": "00:15:02",
+      "duration_hours": 0.25055555555555553,
+      "note": "",
+      "nonbillable": false
+    },
+    {
+      "activity": "Email",
+      "duration": "00:58:27",
+      "duration_hours": 0.9741666666666666,
+      "note": "Log into NASA",
+      "nonbillable": false
+    },
+    {
+      "activity": "Food / Learning",
+      "duration": "00:52:43",
+      "duration_hours": 0.8786111111111111,
+      "note": "Working with star-infra and flux-event-relay - notifications are down until we get an external-secret SecretStore set up in the flux-system namespace. (OK, secrets are deployed, and the trouble condition in sandbox/dev is abated!)",
+      "nonbillable": false
+    },
+    {
+      "activity": "Incident Response",
+      "duration": "02:31:55",
+      "duration_hours": 2.5319444444444446,
+      "note": "Let's take inventory of star-infra prod and see if it has the same issues. Let's also get the 0.2.6 release of flux-event-relay deployed there, and our other enhancements as well. (Do the whole deployment in production!)",
+      "nonbillable": false
+    },
+    {
+      "activity": "Email",
+      "duration": "01:04:16",
+      "duration_hours": 1.0711111111111111,
+      "note": "\"Don't merge staging to prod!\" - don't leave staging or prod like this, fix it so that staging can safely merge to prod without breaking either (or both!) Resolve conflicts as much as we can, then settle for \"staging and prod won't be able to merge back together today\"",
+      "nonbillable": false
+    },
+    {
+      "activity": "Food / Learning",
+      "duration": "01:26:35",
+      "duration_hours": 1.4430555555555555,
+      "note": "Boris needs a walk <{{|t|12505450|}}> Mecris AI notifications are working but they are a mess <{{|t|14963373|}}> - let's try to fix them with Gemini Pro!",
+      "nonbillable": true
+    },
+    {
+      "activity": "Email",
+      "duration": "00:42:45",
+      "duration_hours": 0.7124999999999999,
+      "note": "Back to work",
+      "nonbillable": false
+    },
+    {
+      "activity": "Food / Learning",
+      "duration": "00:19:42",
+      "duration_hours": 0.3283333333333333,
+      "note": "Chat with Gemini Flash (ChatGSFC) about AWS IAM vs Kubernetes RBAC",
+      "nonbillable": false
+    },
+    {
+      "activity": "Email",
+      "duration": "01:07:27",
+      "duration_hours": 1.1241666666666668,
+      "note": "Talk with Copilot about how templates are used, and how to reconcile/eventually merge these disparate branches, or whether it's even possible, in star-infra git repo!",
+      "nonbillable": false
+    },
+    {
+      "activity": "Food / Learning",
+      "duration": "00:24:02",
+      "duration_hours": 0.40055555555555555,
+      "note": "Let's clean up the workspace so we can come back tomorrow and finish all of the leftover jira tickets, without being distracted by any other loose ends / editors still hanging out with too many tabs open!",
+      "nonbillable": false
+    },
+    {
+      "activity": "Food / Learning",
+      "duration": "03:45:00",
+      "duration_hours": 3.75,
+      "note": "Mecris <{{|t|14963373|}}> <{{|t|12505450|}}>",
+      "nonbillable": true
+    },
+    {
+      "activity": "Food / Learning",
+      "duration": "01:15:00",
+      "duration_hours": 1.25,
+      "note": "Lunch with doggies! <{{|t|12505450|}}>",
+      "nonbillable": true
+    },
+    {
+      "activity": "Email",
+      "duration": "04:15:00",
+      "duration_hours": 4.25,
+      "note": "More mecris <{{|t|12505450|}}>",
+      "nonbillable": true
+    },
+    {
+      "activity": "Food / Learning",
+      "duration": "02:15:00",
+      "duration_hours": 2.25,
+      "note": "Dinner! <{{|t|12505450|}}>",
+      "nonbillable": true
+    },
+    {
+      "activity": "Email",
+      "duration": "04:00:00",
+      "duration_hours": 4.0,
+      "note": "Mecris! <{{|t|12505450|}}>",
+      "nonbillable": true
+    },
+    {
+      "activity": "Email",
+      "duration": "01:00:00",
+      "duration_hours": 1.0,
+      "note": "Meet with Reverse GitOps (ConfigButler) Simon Koujdis for Cozy Summit conference talk prep <{{|t|14972762|}}> <{{|t|12505450|}}>",
+      "nonbillable": true
+    },
+    {
+      "activity": "Email",
+      "duration": "00:14:51",
+      "duration_hours": 0.2475,
+      "note": "Sign into NASA",
+      "nonbillable": false
+    },
+    {
+      "activity": "Email",
+      "duration": "00:29:08",
+      "duration_hours": 0.4855555555555556,
+      "note": "Talk with Amber about reverse gitops & what I fixed re: duplicated resources",
+      "nonbillable": false
+    },
+    {
+      "activity": "Food / Learning",
+      "duration": "02:00:48",
+      "duration_hours": 2.013333333333333,
+      "note": "Run the lets-encrypt bot to close the ATO tickets (POA&M tickets)",
+      "nonbillable": false
+    },
+    {
+      "activity": "Gather (meet)",
+      "duration": "01:16:50",
+      "duration_hours": 1.2805555555555554,
+      "note": "Sprint Review",
+      "nonbillable": false
+    },
+    {
+      "activity": "Email",
+      "duration": "00:12:29",
+      "duration_hours": 0.20805555555555558,
+      "note": "Break between meetings",
+      "nonbillable": false
+    },
+    {
+      "activity": "Gather (meet)",
+      "duration": "00:50:18",
+      "duration_hours": 0.8383333333333334,
+      "note": "Sprint Retrospective",
+      "nonbillable": false
+    },
+    {
+      "activity": "Email",
+      "duration": "00:20:39",
+      "duration_hours": 0.3441666666666666,
+      "note": "Done with meetings. Let's see if we can knock out any more Sprint 34 tasks now, and create that ticket for Shane. (Ope, we're in Sprint 35 now.)",
+      "nonbillable": false
+    },
+    {
+      "activity": "Food / Learning",
+      "duration": "00:40:25",
+      "duration_hours": 0.673611111111111,
+      "note": "Wrap up after sprint retro work",
+      "nonbillable": false
+    },
+    {
+      "activity": "Email",
+      "duration": "01:04:10",
+      "duration_hours": 1.0694444444444444,
+      "note": "Ideating with ChatGPT - how can we use the Flux ArtifactGenerator to build our keycloak CI solution without too many (new, added) moving parts? https://chatgpt.com/share/69e6a360-e9bc-83ea-b282-e2435864ca08",
+      "nonbillable": false
+    },
+    {
+      "activity": "Email",
+      "duration": "00:20:10",
+      "duration_hours": 0.3361111111111111,
+      "note": "Log onto NASA",
+      "nonbillable": false
+    },
+    {
+      "activity": "Food / Learning",
+      "duration": "00:28:51",
+      "duration_hours": 0.48083333333333333,
+      "note": "Get started on GitLab tasks from Sprint 34 - plan with ChatGSFC",
+      "nonbillable": false
+    },
+    {
+      "activity": "Email",
+      "duration": "02:01:02",
+      "duration_hours": 2.0172222222222222,
+      "note": "Get started on SMDC-1007, SMDC-1009 - move onto SMDC-920, ready to knock out a few tasks before 11:30 meeting today.",
+      "nonbillable": false
+    },
+    {
+      "activity": "Gather (meet)",
+      "duration": "00:34:47",
+      "duration_hours": 0.5797222222222222,
+      "note": "Twice Weekly SCIP Sprint Tag Up",
+      "nonbillable": false
+    },
+    {
+      "activity": "Food / Learning",
+      "duration": "00:24:25",
+      "duration_hours": 0.40694444444444444,
+      "note": "Make lunch? Nah. Not yet. Let's look at Crossplane functions for a while first.",
+      "nonbillable": false
+    },
+    {
+      "activity": "Food / Learning",
+      "duration": "00:27:49",
+      "duration_hours": 0.46361111111111114,
+      "note": "Lunch <{{|t|12505450|}}>",
+      "nonbillable": true
+    },
+    {
+      "activity": "Gather (meet)",
+      "duration": "01:01:56",
+      "duration_hours": 1.0322222222222222,
+      "note": "Meet with CozySummit presenter <{{|t|12505450|}}>",
+      "nonbillable": true
+    },
+    {
+      "activity": "Email",
+      "duration": "00:19:16",
+      "duration_hours": 0.32111111111111107,
+      "note": "Recover from meeting (outside, get water)",
+      "nonbillable": false
+    },
+    {
+      "activity": "Food / Learning",
+      "duration": "00:42:15",
+      "duration_hours": 0.7041666666666666,
+      "note": "Work up to `secrets \"gitlab-credentials\" not found` - we have permission to get the secret, and only that one secret, once it exists",
+      "nonbillable": false
+    },
+    {
+      "activity": "Gather (meet)",
+      "duration": "01:09:11",
+      "duration_hours": 1.1530555555555555,
+      "note": "Tagging Tag up (EKS tagging)",
+      "nonbillable": false
+    },
+    {
+      "activity": "Gather (meet)",
+      "duration": "00:51:01",
+      "duration_hours": 0.8502777777777778,
+      "note": "STAR Discussion",
+      "nonbillable": false
+    },
+    {
+      "activity": "Email",
+      "duration": "00:28:37",
+      "duration_hours": 0.47694444444444445,
+      "note": "",
+      "nonbillable": false
+    },
+    {
+      "activity": "Food / Learning",
+      "duration": "01:00:00",
+      "duration_hours": 1.0,
+      "note": "Mecris <{{|t|12505450|}}>",
+      "nonbillable": true
+    },
+    {
+      "activity": "Incident Response",
+      "duration": "00:30:00",
+      "duration_hours": 0.5,
+      "note": "Prod UCP is alerting - fix it",
+      "nonbillable": false
+    },
+    {
+      "activity": "Flux / Community",
+      "duration": "01:20:36",
+      "duration_hours": 1.3433333333333333,
+      "note": "Flux Dev Meeting <{{|t|12505450|}}>",
+      "nonbillable": true
+    },
+    {
+      "activity": "Email",
+      "duration": "00:40:53",
+      "duration_hours": 0.6813888888888888,
+      "note": "Log into NASA",
+      "nonbillable": false
+    },
+    {
+      "activity": "Food / Learning",
+      "duration": "01:00:52",
+      "duration_hours": 1.0144444444444445,
+      "note": "Author & implement SMDC-1315 (install metrics-server in the star-infra dev & line it up for prod deployment)",
+      "nonbillable": false
+    },
+    {
+      "activity": "Food / Learning",
+      "duration": "00:20:08",
+      "duration_hours": 0.33555555555555555,
+      "note": "Attempt to update the ScienceCloud Tools and Services Inventory",
+      "nonbillable": false
+    },
+    {
+      "activity": "Email",
+      "duration": "00:28:14",
+      "duration_hours": 0.47055555555555556,
+      "note": "Make a new issue about flux 2.8.6 upgrade and how it solves our noise condition in production UCP with the new feature flag `MigrateAPIVersion`",
+      "nonbillable": false
+    },
+    {
+      "activity": "Food / Learning",
+      "duration": "03:02:25",
+      "duration_hours": 3.040277777777778,
+      "note": "Get gitlab-admin-rotate-secret and entra-admin-rotate-secrets jobs cinched up, in sandbox and in prod, closing GitLab tickets SMDC-1009 and SMDC-920",
+      "nonbillable": false
+    },
+    {
+      "activity": "Food / Learning",
+      "duration": "00:06:47",
+      "duration_hours": 0.11305555555555556,
+      "note": "Done with that. Workflows all validated. Reorient and refocus - what can we do before the day is over?",
+      "nonbillable": false
+    },
+    {
+      "activity": "Gather (meet)",
+      "duration": "00:29:57",
+      "duration_hours": 0.49916666666666665,
+      "note": "Try EDC architecture meeting",
+      "nonbillable": false
+    },
+    {
+      "activity": "Gather (meet)",
+      "duration": "00:30:00",
+      "duration_hours": 0.5,
+      "note": "Work with Dorian on Flux 2.8.6 thing (MigrateAPIVersion feature gates)",
+      "nonbillable": false
+    },
+    {
+      "activity": "Incident Response",
+      "duration": "00:42:55",
+      "duration_hours": 0.7152777777777777,
+      "note": "Resolve alerting issues in prod ucp & solve mattermost issues around GitLab login",
+      "nonbillable": false
+    },
+    {
+      "activity": "Email",
+      "duration": "00:32:04",
+      "duration_hours": 0.5344444444444444,
+      "note": "Wrap up day & see if we can close another ticket before fin",
+      "nonbillable": false
+    },
+    {
+      "activity": "Incident Response",
+      "duration": "00:30:00",
+      "duration_hours": 0.5,
+      "note": "Resolve repeating alerts in Production UCP",
+      "nonbillable": false
+    }
+  ],
+  "generated_at": "2026-04-22T23:09:20-04:00"
+}
