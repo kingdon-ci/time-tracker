@@ -27,7 +27,7 @@ class EarlyExporter
     # Make private methods public in test mode for testing
     if @test_mode
       self.class.class_eval do
-        public :parse_date_range, :filter_entries, :entry_is_nonbillable?, :find_previous_workday
+        public :parse_date_range, :filter_entries, :entry_is_nonbillable?, :find_previous_workday, :parse_duration_to_hours, :count_weekdays
       end
     end
   end
@@ -41,11 +41,14 @@ class EarlyExporter
     # Filter entries before processing
     filtered_entries = filter_entries(time_entries)
 
-    write_csv(filtered_entries)
-
-    # Calculate and display progress using filtered entries
-    progress_info = calculate_progress(filtered_entries, start_date, end_date)
-    puts progress_info
+    if @output_file.end_with?('.json')
+      write_json(filtered_entries, start_date, end_date)
+    else
+      write_csv(filtered_entries)
+      # Calculate and display progress using filtered entries
+      progress = calculate_progress(filtered_entries, start_date, end_date)
+      puts format_progress_output(progress)
+    end
 
     puts "wrote to #{@output_file}"
   rescue => e
@@ -258,85 +261,62 @@ class EarlyExporter
   end
 
   def calculate_progress(time_entries, start_date, end_date)
-    puts "Debug calculate_progress: start_date=#{start_date}, end_date=#{end_date}" if ENV['DEBUG']
-    puts "Debug calculate_progress: ARGV[0]=#{ARGV[0]}" if ENV['DEBUG']
-
     # Handle different possible API response structures
     entries = case time_entries
     when Array
-      puts "Debug calculate_progress: time_entries is Array with #{time_entries.length} entries" if ENV['DEBUG']
       time_entries
     when Hash
-      entries_data = time_entries['timeEntries'] || time_entries['data'] || time_entries['entries'] || []
-      puts "Debug calculate_progress: time_entries is Hash, extracted #{entries_data.length} entries" if ENV['DEBUG']
-      entries_data
+      time_entries['timeEntries'] || time_entries['data'] || time_entries['entries'] || []
     else
-      puts "Debug calculate_progress: time_entries is #{time_entries.class}, using empty array" if ENV['DEBUG']
       []
     end
 
     # Calculate total hours worked
     total_hours = 0.0
-    puts "Debug calculate_progress: starting total hours calculation" if ENV['DEBUG']
-
-    entries.each_with_index do |entry, index|
+    entries.each do |entry|
       duration = calculate_duration(entry['duration'])
       hours = parse_duration_to_hours(duration)
       total_hours += hours
-      puts "Debug calculate_progress: entry #{index}: duration=#{duration}, hours=#{hours}, running_total=#{total_hours}" if ENV['DEBUG']
     end
 
-    puts "Debug calculate_progress: final total_hours=#{total_hours}" if ENV['DEBUG']
-
     # Determine effective end date for progress calculation
-    puts "Debug calculate_progress: determining effective end date" if ENV['DEBUG']
-
     effective_end_date = case ARGV[0]
     when '@'
-      result = end_date.to_date.next_day
-      puts "Debug calculate_progress: '@' case - effective_end_date=#{result}" if ENV['DEBUG']
-      result
+      end_date.to_date.next_day
     else
       # For current month, only count weekdays up to and including today
-      effective_end_date = end_date
-      puts "Debug calculate_progress: initial effective_end_date=#{effective_end_date}" if ENV['DEBUG']
-      puts "Debug calculate_progress: Date.today=#{Date.today}" if ENV['DEBUG']
-      puts "Debug calculate_progress: start_date <= today? #{Date.today >= start_date}" if ENV['DEBUG']
-      puts "Debug calculate_progress: today < end_date? #{Date.today < end_date}" if ENV['DEBUG']
-
+      eff_end = end_date
       if Date.today >= start_date && Date.today < end_date
-        effective_end_date = Date.today.next_day
-        puts "Debug calculate_progress: adjusted effective_end_date to today+1=#{effective_end_date}" if ENV['DEBUG']
+        eff_end = Date.today.next_day
       end
-      effective_end_date
+      eff_end
     end
 
     # Count weekdays up to and including effective_end_date (end_date is exclusive in count_weekdays)
-    puts "Debug calculate_progress: calling count_weekdays(#{start_date}, #{effective_end_date})" if ENV['DEBUG']
     weekdays = count_weekdays(start_date, effective_end_date)
     expected_hours = weekdays * 8.0
-    puts "Debug calculate_progress: weekdays=#{weekdays}, expected_hours=#{expected_hours}" if ENV['DEBUG']
 
-    if expected_hours > 0
-      percentage = (total_hours / expected_hours) * 100
-      hours_diff = total_hours - expected_hours
-      puts "Debug calculate_progress: percentage=#{percentage}, hours_diff=#{hours_diff}" if ENV['DEBUG']
+    percentage = expected_hours > 0 ? (total_hours / expected_hours) * 100 : 0
+    hours_diff = total_hours - expected_hours
 
-      if hours_diff >= 0
-        puts "Debug calculate_progress: over target scenario" if ENV['DEBUG']
-        format_progress_output(percentage, hours_diff, :over)
-      else
-        puts "Debug calculate_progress: under target scenario" if ENV['DEBUG']
-        format_progress_output(percentage, hours_diff.abs, :under)
-      end
-    else
-      puts "Debug calculate_progress: no workdays in range" if ENV['DEBUG']
-      "Progress: No workdays in range"
-    end
+    {
+      total_hours: total_hours,
+      expected_hours: expected_hours,
+      percentage: percentage,
+      hours_diff: hours_diff,
+      status: hours_diff >= 0 ? :over : :under,
+      weekdays: weekdays,
+      start_date: start_date,
+      end_date: end_date,
+      effective_end_date: effective_end_date
+    }
   end
 
-  def format_progress_output(percentage, hours_diff, status)
-    status_text = status == :over ? "over target" : "under target"
+  def format_progress_output(progress)
+    return "Progress: No workdays in range" if progress.is_a?(String)
+    percentage = progress[:percentage]
+    hours_diff = progress[:hours_diff].abs
+    status_text = progress[:status] == :over ? "over target" : "under target"
     filter_status = if @only_nonbillable
       "(nonbillable only)"
     elsif @include_nonbillable
@@ -360,6 +340,38 @@ class EarlyExporter
 
     duration_seconds = (stop_time - start_time).to_i
     format_duration(duration_seconds)
+  end
+
+  def write_json(time_entries, start_date, end_date)
+    progress = calculate_progress(time_entries, start_date, end_date)
+    
+    entries = case time_entries
+    when Array
+      time_entries
+    when Hash
+      time_entries['timeEntries'] || time_entries['data'] || time_entries['entries'] || []
+    else
+      []
+    end
+
+    processed_entries = entries.map do |entry|
+      duration_str = calculate_duration(entry['duration'])
+      {
+        activity: entry.dig('activity', 'name') || entry['activityName'] || '',
+        duration: duration_str,
+        duration_hours: parse_duration_to_hours(duration_str),
+        note: entry.dig('note', 'text') || '',
+        nonbillable: entry_is_nonbillable?(entry)
+      }
+    end
+
+    data = {
+      progress: progress,
+      entries: processed_entries,
+      generated_at: Time.now.iso8601
+    }
+
+    File.write(@output_file, JSON.pretty_generate(data))
   end
 
   def write_csv(time_entries)
