@@ -1,0 +1,35 @@
+spin_manifest_version = 2
+
+[application]
+name = "time-tracker-service"
+version = "0.1.0"
+authors = ["Kingdon B <kingdon@urmanac.com>"]
+description = ""
+
+[variables]
+early_api_key = { required = true }
+early_api_secret = { required = true }
+
+[[trigger.http]]
+route = "/api/..."
+component = "api"
+
+[component.api]
+source = "api/app.wasm"
+allowed_outbound_hosts = ["https://api.early.app:443"]
+files = [{ source = "../../web/public/history_summary.json", destination = "/history_summary.json" }]
+[component.api.build]
+command = "componentize-py -w spin:up/http-trigger@4.0.0 componentize app -o app.wasm"
+workdir = "api"
+watch = ["*.py", "requirements.txt"]
+[component.api.variables]
+early_api_key = "{{ early_api_key }}"
+early_api_secret = "{{ early_api_secret }}"
+
+[[trigger.http]]
+route = "/..."
+component = "frontend"
+
+[component.frontend]
+source = { url = "https://github.com/spinframework/spin-fileserver/releases/download/v0.3.0/spin_static_fs.wasm", digest = "sha256:ef88708817e107bf49985c7cefe4dd1f199bf26f6727819183d5c996baa3d148" }
+files = [{ source = "../../web/dist", destination = "/" }]
