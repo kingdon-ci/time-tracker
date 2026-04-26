@@ -13,8 +13,62 @@ class HttpHandler(Handler):
             return await self.get_six_day_data()
         elif path.startswith("/api/history"):
             return await self.get_history_summary()
+        elif path.startswith("/api/month"):
+            return await self.get_historical_month_data(request)
         else:
             return Response(404, {"content-type": "text/plain"}, bytes("Not Found", "utf-8"))
+
+    def get_entry_date(self, duration_obj):
+        if not isinstance(duration_obj, dict):
+            return ""
+        started_at = duration_obj.get('startedAt')
+        if not started_at:
+            return ""
+        try:
+            # ISO string: 2024-11-01T...
+            return started_at.split('T')[0]
+        except Exception:
+            return ""
+
+    async def get_historical_month_data(self, request: Request):
+        # Extract year and month from query: /api/month?year=2024&month=11
+        from urllib import parse
+        query = parse.parse_qs(parse.urlparse(request.uri).query)
+        year_str = query.get('year', [None])[0]
+        month_str = query.get('month', [None])[0]
+        
+        if not year_str or not month_str:
+            return Response(400, {"content-type": "text/plain"}, bytes("Missing year or month", "utf-8"))
+        
+        year, month = int(year_str), int(month_str)
+        token = await self.authenticate()
+        if not token:
+            return Response(500, {"content-type": "application/json"}, bytes(json.dumps({"error": "Auth failed"}), "utf-8"))
+            
+        start_date = date(year, month, 1)
+        _, last_day = calendar.monthrange(year, month)
+        end_date = date(year, month, last_day)
+        
+        entries = await self.fetch_entries(token, start_date, end_date)
+        processed_entries = []
+        for e in entries:
+            duration_secs = self.calculate_duration_seconds(e.get("duration"))
+            nonbillable = self.is_nonbillable(e)
+            
+            processed_entries.append({
+                "activity": e.get("activity", {}).get("name", ""),
+                "duration_hours": duration_secs / 3600.0,
+                "note": e.get("note", {}).get("text", ""),
+                "nonbillable": nonbillable,
+                "date": self.get_entry_date(e.get("duration"))
+            })
+            
+        result = {
+            "entries": processed_entries,
+            "year": year,
+            "month": month
+        }
+        return Response(200, {"content-type": "application/json"}, bytes(json.dumps(result), "utf-8"))
 
     async def get_api_credentials(self):
         key = await variables.get("early_api_key")
