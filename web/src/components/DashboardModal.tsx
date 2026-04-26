@@ -36,6 +36,24 @@ interface DashboardModalProps {
 }
 
 const DashboardModal: React.FC<DashboardModalProps> = ({ isOpen, onClose, title, type, data }) => {
+  const [monthDetails, setMonthDetails] = React.useState<any>(null);
+  const [loadingDetails, setLoadingDetails] = React.useState(false);
+
+  React.useEffect(() => {
+    if (isOpen && type === 'history' && data.selectedMonth) {
+      setLoadingDetails(true);
+      fetch(`/api/month?year=${data.selectedMonth.year}&month=${data.selectedMonth.month}`)
+        .then(res => res.json())
+        .then(json => {
+          setMonthDetails(json);
+          setLoadingDetails(false);
+        })
+        .catch(() => setLoadingDetails(false));
+    } else {
+      setMonthDetails(null);
+    }
+  }, [isOpen, type, data.selectedMonth]);
+
   if (!isOpen) return null;
 
   const renderPacingRoom = () => {
@@ -182,6 +200,21 @@ const DashboardModal: React.FC<DashboardModalProps> = ({ isOpen, onClose, title,
           </div>
         </div>
 
+        <div className="detail-card" style={{ marginBottom: '1.5rem', borderLeft: '4px solid #f39c12' }}>
+          <h3 style={{ color: '#f39c12' }}>Information: Tracking Fidelity & Math Adjustments</h3>
+          <p style={{ margin: '0 0 1rem 0', fontSize: '0.9rem' }}>
+            <strong>1. Mixture Tracking:</strong> The collection of non-billable data (triggered by writing 
+            the <code>#nonbillable</code> hashtag, which is converted into <code>&lt;{"{{"}|t|...|{"}}"} &gt;</code> foreign key tags) officially 
+            began in <strong>August 2025</strong>. Records prior to this point reflect 100% billable performance.
+          </p>
+          <p style={{ margin: 0, fontSize: '0.9rem' }}>
+            <strong>2. The Math Fix (April 2026):</strong> Historical math used an exclusive date boundary that effectively 
+            discounted your monthly target by 8 hours. We've preserved this "Jubilee Math" for all months prior to 
+            April 2026 to protect historical balances. Starting <strong>April 2026</strong>, the system uses strict, 
+            inclusive weekday calculations.
+          </p>
+        </div>
+
         <div className="detail-card full-width">
           <h3>Historical Ledger (All-Time)</h3>
           <div className="log-table-container">
@@ -274,6 +307,20 @@ const DashboardModal: React.FC<DashboardModalProps> = ({ isOpen, onClose, title,
     const month = data.selectedMonth;
     if (!month) return <div className="system-msg">No month selected.</div>;
 
+    // Process daily breakdown from monthDetails
+    const dailyData: any = {};
+    if (monthDetails && monthDetails.entries) {
+      monthDetails.entries.forEach((e: any) => {
+        const d = e.date || 'Unknown';
+        if (!dailyData[d]) dailyData[d] = { billable: 0, nonbillable: 0, entries: [] };
+        if (e.nonbillable) dailyData[d].nonbillable += e.duration_hours;
+        else dailyData[d].billable += e.duration_hours;
+        dailyData[d].entries.push(e);
+      });
+    }
+
+    const sortedDates = Object.keys(dailyData).sort();
+
     return (
       <div className="history-room">
         <div className="history-card">
@@ -294,11 +341,60 @@ const DashboardModal: React.FC<DashboardModalProps> = ({ isOpen, onClose, title,
             <span className="lbl">Expected ({month.weekdays} days)</span>
           </div>
         </div>
-        <div className="detail-card">
-           <h3 style={{marginBottom: 0}}>4-Month Moving Average</h3>
-           <div className="big-stat" style={{marginTop: '1rem'}}>
-             <span className="value" style={{fontSize: '2.5rem', color: '#aaa'}}>{month.moving_avg_4m ? `${month.moving_avg_4m >= 0 ? '+' : ''}${month.moving_avg_4m.toFixed(2)}h` : 'N/A'}</span>
-           </div>
+
+        <div className="detail-card full-width" style={{ marginTop: '1.5rem' }}>
+          <h3>Daily Activity Breakdown</h3>
+          {loadingDetails ? (
+            <div className="system-msg">Fetching historical logs from API...</div>
+          ) : (
+            <div className="log-table-container" style={{ maxHeight: '400px', overflowY: 'auto' }}>
+              <table className="log-table">
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Billable</th>
+                    <th>Non-Billable</th>
+                    <th>Ratio</th>
+                    <th>Key Activity</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {sortedDates.reverse().map(date => {
+                    const d = dailyData[date];
+                    const total = d.billable + d.nonbillable;
+                    const mainActivity = d.entries.reduce((prev: any, current: any) => 
+                      (prev.duration_hours > current.duration_hours) ? prev : current
+                    ).activity;
+
+                    return (
+                      <tr key={date}>
+                        <td>{date}</td>
+                        <td style={{ color: '#3498db', fontWeight: 'bold' }}>{d.billable.toFixed(1)}h</td>
+                        <td style={{ color: '#9b59b6' }}>{d.nonbillable.toFixed(1)}h</td>
+                        <td>
+                          <div className="bar-container" style={{ width: '80px', height: '6px' }}>
+                            <div className="bar" style={{ 
+                              width: `${(d.billable / (total || 1)) * 100}%`,
+                              background: '#3498db'
+                            }}></div>
+                            <div className="bar" style={{ 
+                              width: `${(d.nonbillable / (total || 1)) * 100}%`,
+                              background: '#9b59b6',
+                              float: 'right'
+                            }}></div>
+                          </div>
+                        </td>
+                        <td style={{ fontSize: '0.8rem', opacity: 0.8 }}>{mainActivity}</td>
+                      </tr>
+                    );
+                  })}
+                  {sortedDates.length === 0 && (
+                    <tr><td colSpan={5} className="system-msg" style={{ textAlign: 'center' }}>No detailed logs found for this period.</td></tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
       </div>
     );
