@@ -92,7 +92,8 @@ function App() {
   const currentBillableDiff = currentBillableHours - progress.expected_hours;
 
   // Historical context
-  const currentYear = new Date(progress.start_date).getFullYear();
+  const [startYear, startMonth] = progress.start_date.split('-').map(Number);
+  const currentYear = startYear;
   const historyMonths = historyData?.months || [];
   
   const relevantHistoricalMonths = historyMonths
@@ -184,7 +185,23 @@ function App() {
           <section className="panel trend-panel">
             <h3>Cumulative Surplus/Deficit (All-Time)</h3>
             <div className="chart-container" style={{cursor: 'pointer'}}>
-              <TrendChart months={historyData.months} onPointClick={(m: any) => setActiveModal({ type: 'history', data: m })} />
+              <TrendChart 
+                months={[
+                  ...historyData.months,
+                  {
+                    year: startYear,
+                    month: startMonth,
+                    hours_diff: currentBillableDiff,
+                    // Minimal properties needed for the chart
+                    total_hours: currentBillableHours,
+                    expected_hours: progress.expected_hours,
+                    percentage: (currentBillableHours / progress.expected_hours) * 100,
+                    weekdays: progress.weekdays,
+                    moving_avg_4m: null
+                  }
+                ]} 
+                onPointClick={(m: any) => setActiveModal({ type: 'history', data: m })} 
+              />
             </div>
           </section>
 
@@ -268,11 +285,38 @@ function TrendChart({ months, onPointClick }: { months: HistoricalMonth[], onPoi
 
   const pathD = points.map((p, i) => (i === 0 ? `M ${p.x} ${p.y}` : `L ${p.x} ${p.y}`)).join(' ');
 
+  const nbStartPoint = points.find(p => p.monthData.year === 2025 && p.monthData.month === 8);
+  const mathFixPoint = points.find(p => p.monthData.year === 2026 && p.monthData.month === 4);
+
   return (
     <svg width="100%" height={height} viewBox={`0 0 ${width} ${height}`}>
       <line x1={padding} y1={height/2} x2={width-padding} y2={height/2} stroke="#444" strokeDasharray="4 2" />
       <line x1={padding} y1={padding} x2={width-padding} y2={padding} stroke="#222" />
       <line x1={padding} y1={height-padding} x2={width-padding} y2={height-padding} stroke="#222" />
+      
+      {nbStartPoint && (
+        <>
+          <line x1={nbStartPoint.x} y1={padding} x2={nbStartPoint.x} y2={height-padding} stroke="#666" strokeDasharray="2 2" />
+          <text x={nbStartPoint.x - 5} y={padding - 5} fill="#666" fontSize="9" fontWeight="bold" textAnchor="end">NB TRACKING</text>
+        </>
+      )}
+
+      {mathFixPoint && (
+        <>
+          <line x1={mathFixPoint.x} y1={padding} x2={mathFixPoint.x} y2={height-padding} stroke="#f39c12" strokeDasharray="2 2" />
+          <text 
+            x={mathFixPoint.x > width - 100 ? mathFixPoint.x - 5 : mathFixPoint.x + 5} 
+            y={padding - 5} 
+            fill="#f39c12" 
+            fontSize="9" 
+            fontWeight="bold"
+            textAnchor={mathFixPoint.x > width - 100 ? "end" : "start"}
+          >
+            STRICT MATH
+          </text>
+        </>
+      )}
+
       <path d={pathD} fill="none" stroke="#4caf50" strokeWidth="2" />
       {points.map((p, i) => (
         <circle 
