@@ -57,10 +57,29 @@ function App() {
     const fetchData = async (url: string, fallback: string) => {
       try {
         const response = await fetch(url);
-        if (!response.ok) return fetch(fallback).then(res => res.json());
-        return response.json();
+        if (!response.ok) {
+          console.warn(`Fetch to ${url} failed with status ${response.status}, falling back to ${fallback}`);
+          const fallbackRes = await fetch(fallback);
+          return await fallbackRes.json();
+        }
+        
+        const contentType = response.headers.get('content-type');
+        if (contentType && contentType.includes('text/html')) {
+          console.warn(`Fetch to ${url} returned HTML instead of JSON, falling back to ${fallback}`);
+          const fallbackRes = await fetch(fallback);
+          return await fallbackRes.json();
+        }
+        
+        return await response.json();
       } catch (e) {
-        return fetch(fallback).then(res => res.json());
+        console.error(`Error fetching ${url}, falling back to ${fallback}:`, e);
+        try {
+          const fallbackRes = await fetch(fallback);
+          return await fallbackRes.json();
+        } catch (fallbackError) {
+          console.error(`Fallback to ${fallback} also failed:`, fallbackError);
+          throw fallbackError;
+        }
       }
     };
 
