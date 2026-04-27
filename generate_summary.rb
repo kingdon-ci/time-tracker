@@ -59,10 +59,16 @@ class SummaryGenerator
     end
 
     # Use the logic from EarlyExporter to be consistent
-    # For historical files, we assume they are completed months unless it's the current month
-    eff_end = end_date.next_day
+    # Preserve the "buggy" 8-hour discount for months before April 2026
+    # so we don't destroy historical comp time balances.
+    if year < 2026 || (year == 2026 && month < 4)
+      eff_end = end_date
+    else
+      eff_end = end_date.next_day
+    end
+
     if Date.today.year == year && Date.today.month == month
-      eff_end = Date.today.next_day if Date.today < end_date
+      eff_end = Date.today.next_day if Date.today <= end_date
     end
 
     weekdays = @exporter.count_weekdays(start_date, eff_end)

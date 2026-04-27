@@ -55,6 +55,16 @@ h1 {
   border-radius: 8px;
   padding: 1.2rem;
   box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+  transition: border-color 0.2s, transform 0.2s;
+}
+
+.gauge-panel, .fuel-panel {
+  cursor: pointer;
+}
+
+.gauge-panel:hover, .fuel-panel:hover {
+  border-color: #3498db;
+  transform: translateY(-2px);
 }
 
 .panel h3 {

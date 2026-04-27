@@ -1,212 +1,16 @@
 {
   "progress": {
-    "total_hours": 53.50472222222222,
-    "expected_hours": 24.0,
-    "percentage": 222.93634259259258,
-    "hours_diff": 29.50472222222222,
+    "total_hours": 46.03444444444443,
+    "expected_hours": 32.0,
+    "percentage": 143.85763888888886,
+    "hours_diff": 14.034444444444432,
     "status": "over",
-    "weekdays": 3,
-    "start_date": "2026-04-16",
-    "end_date": "2026-04-21",
-    "effective_end_date": "2026-04-21"
+    "weekdays": 4,
+    "start_date": "2026-04-19",
+    "end_date": "2026-04-24",
+    "effective_end_date": "2026-04-24"
   },
   "entries": [
-    {
-      "activity": "Email",
-      "duration": "00:23:13",
-      "duration_hours": 0.3869444444444445,
-      "note": "Log onto NASA",
-      "nonbillable": false
-    },
-    {
-      "activity": "Food / Learning",
-      "duration": "01:36:48",
-      "duration_hours": 1.6133333333333335,
-      "note": "Work on OCI formatted release for 0.2.6",
-      "nonbillable": false
-    },
-    {
-      "activity": "Flux / Community",
-      "duration": "00:28:47",
-      "duration_hours": 0.4797222222222222,
-      "note": "Flux Dev Meeting <{{|t|12505450|}}>",
-      "nonbillable": true
-    },
-    {
-      "activity": "Gather (meet)",
-      "duration": "00:31:56",
-      "duration_hours": 0.5322222222222223,
-      "note": "Twice Weekly SCIP Sprint Tag Up",
-      "nonbillable": false
-    },
-    {
-      "activity": "Flux / Community",
-      "duration": "01:00:06",
-      "duration_hours": 1.0016666666666667,
-      "note": "Cozystack meeting (and work on my star-infra dev stuff) billable time",
-      "nonbillable": false
-    },
-    {
-      "activity": "Gather (meet)",
-      "duration": "01:01:50",
-      "duration_hours": 1.0305555555555554,
-      "note": "Sprint Planning",
-      "nonbillable": false
-    },
-    {
-      "activity": "Gather (meet)",
-      "duration": "00:41:06",
-      "duration_hours": 0.685,
-      "note": "Cryptography Discussion",
-      "nonbillable": false
-    },
-    {
-      "activity": "Incident Response",
-      "duration": "00:04:37",
-      "duration_hours": 0.07694444444444444,
-      "note": "What happened to grafana prod access permissions? (nobody has access anymore) - Dorian fixed it!",
-      "nonbillable": false
-    },
-    {
-      "activity": "Food / Learning",
-      "duration": "00:11:17",
-      "duration_hours": 0.18805555555555553,
-      "note": "Need food",
-      "nonbillable": false
-    },
-    {
-      "activity": "Email",
-      "duration": "01:44:32",
-      "duration_hours": 1.7422222222222223,
-      "note": "We did not in fact go to eat at that time - working out ECR repository policies with crossplane now",
-      "nonbillable": false
-    },
-    {
-      "activity": "Food / Learning",
-      "duration": "01:06:31",
-      "duration_hours": 1.1086111111111112,
-      "note": "<{{|t|12505450|}}> dinner!",
-      "nonbillable": true
-    },
-    {
-      "activity": "Email",
-      "duration": "00:31:52",
-      "duration_hours": 0.5311111111111112,
-      "note": "Remediate issues in star-infra - duplicate resources managed twice by accident, make use of Flux notifications and test flux-event-relay in star-infra-dev",
-      "nonbillable": false
-    },
-    {
-      "activity": "Email",
-      "duration": "00:25:50",
-      "duration_hours": 0.4305555555555556,
-      "note": "mecris-bot <{{|t|12505450|}}>",
-      "nonbillable": true
-    },
-    {
-      "activity": "Email",
-      "duration": "00:15:02",
-      "duration_hours": 0.25055555555555553,
-      "note": "",
-      "nonbillable": false
-    },
-    {
-      "activity": "Email",
-      "duration": "00:58:27",
-      "duration_hours": 0.9741666666666666,
-      "note": "Log into NASA",
-      "nonbillable": false
-    },
-    {
-      "activity": "Food / Learning",
-      "duration": "00:52:43",
-      "duration_hours": 0.8786111111111111,
-      "note": "Working with star-infra and flux-event-relay - notifications are down until we get an external-secret SecretStore set up in the flux-system namespace. (OK, secrets are deployed, and the trouble condition in sandbox/dev is abated!)",
-      "nonbillable": false
-    },
-    {
-      "activity": "Incident Response",
-      "duration": "02:31:55",
-      "duration_hours": 2.5319444444444446,
-      "note": "Let's take inventory of star-infra prod and see if it has the same issues. Let's also get the 0.2.6 release of flux-event-relay deployed there, and our other enhancements as well. (Do the whole deployment in production!)",
-      "nonbillable": false
-    },
-    {
-      "activity": "Email",
-      "duration": "01:04:16",
-      "duration_hours": 1.0711111111111111,
-      "note": "\"Don't merge staging to prod!\" - don't leave staging or prod like this, fix it so that staging can safely merge to prod without breaking either (or both!) Resolve conflicts as much as we can, then settle for \"staging and prod won't be able to merge back together today\"",
-      "nonbillable": false
-    },
-    {
-      "activity": "Food / Learning",
-      "duration": "01:26:35",
-      "duration_hours": 1.4430555555555555,
-      "note": "Boris needs a walk <{{|t|12505450|}}> Mecris AI notifications are working but they are a mess <{{|t|14963373|}}> - let's try to fix them with Gemini Pro!",
-      "nonbillable": true
-    },
-    {
-      "activity": "Email",
-      "duration": "00:42:45",
-      "duration_hours": 0.7124999999999999,
-      "note": "Back to work",
-      "nonbillable": false
-    },
-    {
-      "activity": "Food / Learning",
-      "duration": "00:19:42",
-      "duration_hours": 0.3283333333333333,
-      "note": "Chat with Gemini Flash (ChatGSFC) about AWS IAM vs Kubernetes RBAC",
-      "nonbillable": false
-    },
-    {
-      "activity": "Email",
-      "duration": "01:07:27",
-      "duration_hours": 1.1241666666666668,
-      "note": "Talk with Copilot about how templates are used, and how to reconcile/eventually merge these disparate branches, or whether it's even possible, in star-infra git repo!",
-      "nonbillable": false
-    },
-    {
-      "activity": "Food / Learning",
-      "duration": "00:24:02",
-      "duration_hours": 0.40055555555555555,
-      "note": "Let's clean up the workspace so we can come back tomorrow and finish all of the leftover jira tickets, without being distracted by any other loose ends / editors still hanging out with too many tabs open!",
-      "nonbillable": false
-    },
-    {
-      "activity": "Food / Learning",
-      "duration": "03:45:00",
-      "duration_hours": 3.75,
-      "note": "Mecris <{{|t|14963373|}}> <{{|t|12505450|}}>",
-      "nonbillable": true
-    },
-    {
-      "activity": "Food / Learning",
-      "duration": "01:15:00",
-      "duration_hours": 1.25,
-      "note": "Lunch with doggies! <{{|t|12505450|}}>",
-      "nonbillable": true
-    },
-    {
-      "activity": "Email",
-      "duration": "04:15:00",
-      "duration_hours": 4.25,
-      "note": "More mecris <{{|t|12505450|}}>",
-      "nonbillable": true
-    },
-    {
-      "activity": "Food / Learning",
-      "duration": "02:15:00",
-      "duration_hours": 2.25,
-      "note": "Dinner! <{{|t|12505450|}}>",
-      "nonbillable": true
-    },
-    {
-      "activity": "Email",
-      "duration": "04:00:00",
-      "duration_hours": 4.0,
-      "note": "Mecris! <{{|t|12505450|}}>",
-      "nonbillable": true
-    },
     {
       "activity": "Email",
       "duration": "01:00:00",
@@ -374,7 +178,210 @@
       "duration_hours": 0.5,
       "note": "Prod UCP is alerting - fix it",
       "nonbillable": false
+    },
+    {
+      "activity": "Flux / Community",
+      "duration": "01:20:36",
+      "duration_hours": 1.3433333333333333,
+      "note": "Flux Dev Meeting <{{|t|12505450|}}>",
+      "nonbillable": true
+    },
+    {
+      "activity": "Email",
+      "duration": "00:40:53",
+      "duration_hours": 0.6813888888888888,
+      "note": "Log into NASA",
+      "nonbillable": false
+    },
+    {
+      "activity": "Food / Learning",
+      "duration": "01:00:52",
+      "duration_hours": 1.0144444444444445,
+      "note": "Author & implement SMDC-1315 (install metrics-server in the star-infra dev & line it up for prod deployment)",
+      "nonbillable": false
+    },
+    {
+      "activity": "Food / Learning",
+      "duration": "00:20:08",
+      "duration_hours": 0.33555555555555555,
+      "note": "Attempt to update the ScienceCloud Tools and Services Inventory",
+      "nonbillable": false
+    },
+    {
+      "activity": "Email",
+      "duration": "00:28:14",
+      "duration_hours": 0.47055555555555556,
+      "note": "Make a new issue about flux 2.8.6 upgrade and how it solves our noise condition in production UCP with the new feature flag `MigrateAPIVersion`",
+      "nonbillable": false
+    },
+    {
+      "activity": "Food / Learning",
+      "duration": "03:02:25",
+      "duration_hours": 3.040277777777778,
+      "note": "Get gitlab-admin-rotate-secret and entra-admin-rotate-secrets jobs cinched up, in sandbox and in prod, closing GitLab tickets SMDC-1009 and SMDC-920",
+      "nonbillable": false
+    },
+    {
+      "activity": "Food / Learning",
+      "duration": "00:06:47",
+      "duration_hours": 0.11305555555555556,
+      "note": "Done with that. Workflows all validated. Reorient and refocus - what can we do before the day is over?",
+      "nonbillable": false
+    },
+    {
+      "activity": "Gather (meet)",
+      "duration": "00:29:57",
+      "duration_hours": 0.49916666666666665,
+      "note": "Try EDC architecture meeting",
+      "nonbillable": false
+    },
+    {
+      "activity": "Gather (meet)",
+      "duration": "00:30:00",
+      "duration_hours": 0.5,
+      "note": "Work with Dorian on Flux 2.8.6 thing (MigrateAPIVersion feature gates)",
+      "nonbillable": false
+    },
+    {
+      "activity": "Incident Response",
+      "duration": "00:42:55",
+      "duration_hours": 0.7152777777777777,
+      "note": "Resolve alerting issues in prod ucp & solve mattermost issues around GitLab login",
+      "nonbillable": false
+    },
+    {
+      "activity": "Email",
+      "duration": "00:32:04",
+      "duration_hours": 0.5344444444444444,
+      "note": "Wrap up day & see if we can close another ticket before fin",
+      "nonbillable": false
+    },
+    {
+      "activity": "Incident Response",
+      "duration": "00:30:00",
+      "duration_hours": 0.5,
+      "note": "Resolve repeating alerts in Production UCP",
+      "nonbillable": false
+    },
+    {
+      "activity": "Email",
+      "duration": "00:25:00",
+      "duration_hours": 0.4166666666666667,
+      "note": "time-tracker <{{|t|12505450|}}>",
+      "nonbillable": true
+    },
+    {
+      "activity": "Email",
+      "duration": "00:28:45",
+      "duration_hours": 0.4791666666666667,
+      "note": "Log in to NASA",
+      "nonbillable": false
+    },
+    {
+      "activity": "Food / Learning",
+      "duration": "01:26:21",
+      "duration_hours": 1.4391666666666667,
+      "note": "Check in with Jira - talk to ChatGSFC, develop the new \"advise-scaling\" skill (try to understand how our Keycloak scales well enough to demo to others)",
+      "nonbillable": false
+    },
+    {
+      "activity": "Gather (meet)",
+      "duration": "01:16:42",
+      "duration_hours": 1.2783333333333333,
+      "note": "Twice Weekly SCIP Sprint Tagup",
+      "nonbillable": false
+    },
+    {
+      "activity": "Food / Learning",
+      "duration": "00:22:56",
+      "duration_hours": 0.3822222222222222,
+      "note": "Make lunch <{{|t|12505450|}}>",
+      "nonbillable": true
+    },
+    {
+      "activity": "Flux Bug Scrub",
+      "duration": "00:50:23",
+      "duration_hours": 0.8397222222222223,
+      "note": "Flux Bug Scrub <{{|t|12505450|}}>",
+      "nonbillable": true
+    },
+    {
+      "activity": "Email",
+      "duration": "00:23:58",
+      "duration_hours": 0.3994444444444445,
+      "note": "Back to work - resolve noisy alert in ucp-prod (argo-wf-apps, infra, eks-auto-config all depend on Kubernetes provider & \"objects\" to be ready)",
+      "nonbillable": false
+    },
+    {
+      "activity": "Food / Learning",
+      "duration": "02:06:18",
+      "duration_hours": 2.105,
+      "note": "Debugging notifications in UCP kubernetes - why are they so noisy? (Can we clean them all up?) Why is Crossplane Kubernetes provider still at 0.15.0 in production? (Can we bring it up to at least 0.18.0 that have in Sandbox?) Let's make sure the alerts are not going to bother us on Friday, or on the weekend. That is, not unless something is genuinely wrong (and if there's something wrong, can we fix it? Like, for real - quick style.)",
+      "nonbillable": false
+    },
+    {
+      "activity": "Email",
+      "duration": "01:58:25",
+      "duration_hours": 1.9736111111111112,
+      "note": "Get serious about reviewing open Jira tasks that are new - SMDC-1313 and SMDC-1094 - ok get totally sidetracked but fix a production issue that is impacting observability and burning up CPU and audit logs for no reason. We should be able to see this drop in the bucket on the Cost Explorer charts by Monday, (hope) ref SMDC-1327",
+      "nonbillable": false
+    },
+    {
+      "activity": "Food / Learning",
+      "duration": "00:30:43",
+      "duration_hours": 0.5119444444444444,
+      "note": "Clean up my desk and wrap up the day.",
+      "nonbillable": false
+    },
+    {
+      "activity": "Food / Learning",
+      "duration": "02:00:00",
+      "duration_hours": 2.0,
+      "note": "Mecris <{{|t|12505450|}}> <{{|t|14963373|}}>",
+      "nonbillable": true
+    },
+    {
+      "activity": "Email",
+      "duration": "00:23:29",
+      "duration_hours": 0.3913888888888889,
+      "note": "Log into NASA",
+      "nonbillable": false
+    },
+    {
+      "activity": "Food / Learning",
+      "duration": "00:53:59",
+      "duration_hours": 0.8997222222222222,
+      "note": "Work on lets-encrypt CLI - enable vpc flow logs, somewhere, everywhere ... (SMDC-1313) yes we will turn on Flow Logs as soon as this afternoon!",
+      "nonbillable": false
+    },
+    {
+      "activity": "Email",
+      "duration": "01:19:13",
+      "duration_hours": 1.3202777777777777,
+      "note": "First, crossplane problems & AI solutions. I can't help myself, I see something broken, it gets in my way; I want to fix it before it can hurt anybody else.",
+      "nonbillable": false
+    },
+    {
+      "activity": "Food / Learning",
+      "duration": "01:49:29",
+      "duration_hours": 1.8247222222222221,
+      "note": "Lunch time <{{|t|12505450|}}>",
+      "nonbillable": true
+    },
+    {
+      "activity": "Email",
+      "duration": "00:31:25",
+      "duration_hours": 0.5236111111111111,
+      "note": "Try to address addon loops in production ucp (smdc-shared-services-efs-claim-confluence-...) same problem in rp-cluster. Fixed.",
+      "nonbillable": false
+    },
+    {
+      "activity": "Food / Learning",
+      "duration": "01:01:09",
+      "duration_hours": 1.0191666666666666,
+      "note": "Back to the flow logs thing",
+      "nonbillable": false
     }
   ],
-  "generated_at": "2026-04-22T23:09:21-04:00"
+  "generated_at": "2026-04-25T16:35:50-04:00"
 }

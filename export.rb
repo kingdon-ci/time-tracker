@@ -284,9 +284,16 @@ class EarlyExporter
     when '@'
       end_date.to_date.next_day
     else
+      # Preserve the "buggy" 8-hour discount for months before April 2026
+      # so we don't destroy historical comp time balances.
+      if start_date.year < 2026 || (start_date.year == 2026 && start_date.month < 4)
+        eff_end = end_date
+      else
+        eff_end = end_date.next_day
+      end
+
       # For current month, only count weekdays up to and including today
-      eff_end = end_date
-      if Date.today >= start_date && Date.today < end_date
+      if Date.today >= start_date && Date.today <= end_date
         eff_end = Date.today.next_day
       end
       eff_end
