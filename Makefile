@@ -1,4 +1,4 @@
-.PHONY: run this clean all weekly six test web export-json spin-up spin-build spin-watch
+.PHONY: run this clean all weekly six test export-json spin-up spin-build spin-watch
 
 all:
 	-make clean
@@ -30,19 +30,16 @@ export-six:
 summary-json:
 	ruby generate_summary.rb
 
-web: export-json export-six summary-json
-	npm run dev
-
 spin-build:
 	cd web && npm run build
 	cd spin-app/time-tracker-service && spin build
 
-spin-up: spin-build
+spin-up: export-json export-six summary-json spin-build
 	set -a && . ./.env.local && set +a && \
 	cd spin-app/time-tracker-service && \
 	spin up --variable early_api_key=$$EARLY_API_KEY --variable early_api_secret=$$EARLY_API_SECRET
 
-spin-watch:
+spin-watch: export-json export-six summary-json
 	cd web && npm run build
 	set -a && . ./.env.local && set +a && \
 	cd spin-app/time-tracker-service && \
