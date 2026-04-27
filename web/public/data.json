@@ -1,14 +1,14 @@
 {
   "progress": {
-    "total_hours": 192.33722222222215,
-    "expected_hours": 144.0,
-    "percentage": 133.56751543209873,
-    "hours_diff": 48.33722222222215,
+    "total_hours": 200.09166666666664,
+    "expected_hours": 152.0,
+    "percentage": 131.63925438596488,
+    "hours_diff": 48.09166666666664,
     "status": "over",
-    "weekdays": 18,
+    "weekdays": 19,
     "start_date": "2026-04-01",
     "end_date": "2026-04-30",
-    "effective_end_date": "2026-04-26"
+    "effective_end_date": "2026-04-28"
   },
   "entries": [
     {
@@ -1354,7 +1354,77 @@
       "duration_hours": 0.6533333333333333,
       "note": "Well, it looks like we are almost finished with SMDC-1094",
       "nonbillable": false
+    },
+    {
+      "activity": "Food / Learning",
+      "duration": "00:06:43",
+      "duration_hours": 0.11194444444444446,
+      "note": "The scan is running — 12 accounts × 17 regions = 204 API calls. I'll check progress in a moment. Still running — the output may be buffered. I'll wait for the notification when it finishes.",
+      "nonbillable": false
+    },
+    {
+      "activity": "Email",
+      "duration": "00:15:00",
+      "duration_hours": 0.25,
+      "note": "Generate report",
+      "nonbillable": false
+    },
+    {
+      "activity": "Email",
+      "duration": "02:07:38",
+      "duration_hours": 2.127222222222222,
+      "note": "Spin app and mecris development <{{|t|12505450|}}>",
+      "nonbillable": true
+    },
+    {
+      "activity": "Email",
+      "duration": "00:30:05",
+      "duration_hours": 0.5013888888888889,
+      "note": "Log into NASA, check on Jira tasks, prepare for tomorrow",
+      "nonbillable": false
+    },
+    {
+      "activity": "Food / Learning",
+      "duration": "00:21:49",
+      "duration_hours": 0.3636111111111111,
+      "note": "Coffee and wake up, read Kubernetes 1.36 release notes (blog)",
+      "nonbillable": false
+    },
+    {
+      "activity": "Email",
+      "duration": "01:23:27",
+      "duration_hours": 1.3908333333333334,
+      "note": "Log onto NASA, work on tickets",
+      "nonbillable": false
+    },
+    {
+      "activity": "Gather (meet)",
+      "duration": "01:15:06",
+      "duration_hours": 1.2516666666666667,
+      "note": "SMD Update Q&A",
+      "nonbillable": false
+    },
+    {
+      "activity": "Food / Learning",
+      "duration": "00:42:21",
+      "duration_hours": 0.7058333333333333,
+      "note": "",
+      "nonbillable": false
+    },
+    {
+      "activity": "Gather (meet)",
+      "duration": "00:27:29",
+      "duration_hours": 0.45805555555555555,
+      "note": "Dog walk <{{|t|12505450|}}>",
+      "nonbillable": true
+    },
+    {
+      "activity": "Food / Learning",
+      "duration": "00:35:38",
+      "duration_hours": 0.5938888888888889,
+      "note": "Lunch <{{|t|12505450|}}>",
+      "nonbillable": true
     }
   ],
-  "generated_at": "2026-04-25T16:35:49-04:00"
+  "generated_at": "2026-04-27T14:31:03-04:00"
 }

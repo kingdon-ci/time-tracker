@@ -1,86 +1,16 @@
 {
   "progress": {
-    "total_hours": 46.03444444444443,
+    "total_hours": 48.198055555555555,
     "expected_hours": 32.0,
-    "percentage": 143.85763888888886,
-    "hours_diff": 14.034444444444432,
+    "percentage": 150.61892361111111,
+    "hours_diff": 16.198055555555555,
     "status": "over",
     "weekdays": 4,
-    "start_date": "2026-04-19",
-    "end_date": "2026-04-24",
-    "effective_end_date": "2026-04-24"
+    "start_date": "2026-04-21",
+    "end_date": "2026-04-26",
+    "effective_end_date": "2026-04-27"
   },
   "entries": [
-    {
-      "activity": "Email",
-      "duration": "01:00:00",
-      "duration_hours": 1.0,
-      "note": "Meet with Reverse GitOps (ConfigButler) Simon Koujdis for Cozy Summit conference talk prep <{{|t|14972762|}}> <{{|t|12505450|}}>",
-      "nonbillable": true
-    },
-    {
-      "activity": "Email",
-      "duration": "00:14:51",
-      "duration_hours": 0.2475,
-      "note": "Sign into NASA",
-      "nonbillable": false
-    },
-    {
-      "activity": "Email",
-      "duration": "00:29:08",
-      "duration_hours": 0.4855555555555556,
-      "note": "Talk with Amber about reverse gitops & what I fixed re: duplicated resources",
-      "nonbillable": false
-    },
-    {
-      "activity": "Food / Learning",
-      "duration": "02:00:48",
-      "duration_hours": 2.013333333333333,
-      "note": "Run the lets-encrypt bot to close the ATO tickets (POA&M tickets)",
-      "nonbillable": false
-    },
-    {
-      "activity": "Gather (meet)",
-      "duration": "01:16:50",
-      "duration_hours": 1.2805555555555554,
-      "note": "Sprint Review",
-      "nonbillable": false
-    },
-    {
-      "activity": "Email",
-      "duration": "00:12:29",
-      "duration_hours": 0.20805555555555558,
-      "note": "Break between meetings",
-      "nonbillable": false
-    },
-    {
-      "activity": "Gather (meet)",
-      "duration": "00:50:18",
-      "duration_hours": 0.8383333333333334,
-      "note": "Sprint Retrospective",
-      "nonbillable": false
-    },
-    {
-      "activity": "Email",
-      "duration": "00:20:39",
-      "duration_hours": 0.3441666666666666,
-      "note": "Done with meetings. Let's see if we can knock out any more Sprint 34 tasks now, and create that ticket for Shane. (Ope, we're in Sprint 35 now.)",
-      "nonbillable": false
-    },
-    {
-      "activity": "Food / Learning",
-      "duration": "00:40:25",
-      "duration_hours": 0.673611111111111,
-      "note": "Wrap up after sprint retro work",
-      "nonbillable": false
-    },
-    {
-      "activity": "Email",
-      "duration": "01:04:10",
-      "duration_hours": 1.0694444444444444,
-      "note": "Ideating with ChatGPT - how can we use the Flux ArtifactGenerator to build our keycloak CI solution without too many (new, added) moving parts? https://chatgpt.com/share/69e6a360-e9bc-83ea-b282-e2435864ca08",
-      "nonbillable": false
-    },
     {
       "activity": "Email",
       "duration": "00:20:10",
@@ -381,7 +311,91 @@
       "duration_hours": 1.0191666666666666,
       "note": "Back to the flow logs thing",
       "nonbillable": false
+    },
+    {
+      "activity": "Email",
+      "duration": "03:29:35",
+      "duration_hours": 3.493055555555556,
+      "note": "Get LLM stuff cooking on the home side (mecris-bot broke a bunch of stuff, we can fix it, this is good practice for work - you all are gonna want someone who can fix this kind of stuff, aren't you?)",
+      "nonbillable": false
+    },
+    {
+      "activity": "Food / Learning",
+      "duration": "00:29:59",
+      "duration_hours": 0.49972222222222223,
+      "note": "Log onto NASA laptop and see if we can get the StackSet for Flow Logs deployed in sandbox, at least!",
+      "nonbillable": false
+    },
+    {
+      "activity": "Gather (meet)",
+      "duration": "00:24:57",
+      "duration_hours": 0.41583333333333333,
+      "note": "Go for a walk while the terraform plan runs in production (CBA)",
+      "nonbillable": false
+    },
+    {
+      "activity": "Email",
+      "duration": "00:30:32",
+      "duration_hours": 0.5088888888888888,
+      "note": "Run SMDC-1313 deploy in Sandbox (it failed) let's diagnose the StackSet and see if we can understand why. Sandbox things!",
+      "nonbillable": false
+    },
+    {
+      "activity": "Food / Learning",
+      "duration": "00:28:48",
+      "duration_hours": 0.48,
+      "note": "It didnt work on the first try. Let's see if it works on the next try... yeah it didn't work on the third or fourth try either, we need Bick's help for this one.",
+      "nonbillable": false
+    },
+    {
+      "activity": "Email",
+      "duration": "00:35:16",
+      "duration_hours": 0.5877777777777778,
+      "note": "Let's work on SMDC-1094 instead - Design Remediation Tracking and Reporting System - while we idle that task in the background (Speckit is on it) we're going to look at the smdc-ucp cluster to see if we can understand why there are still events firing in a loop, they should have settled down. This was that Addons issue we worked on yesterday.",
+      "nonbillable": false
+    },
+    {
+      "activity": "Food / Learning",
+      "duration": "00:41:42",
+      "duration_hours": 0.6950000000000001,
+      "note": "Addon and Speckit - pause the Addons, let's move on for now. (Reminder to self: Create an alert for paused crossplane resources. Reminder to self: Create alerts for all Crossplane MRs! Failed & Paused statuses. Compositions & XRs too.)",
+      "nonbillable": false
+    },
+    {
+      "activity": "Email",
+      "duration": "00:39:12",
+      "duration_hours": 0.6533333333333333,
+      "note": "Well, it looks like we are almost finished with SMDC-1094",
+      "nonbillable": false
+    },
+    {
+      "activity": "Food / Learning",
+      "duration": "00:06:43",
+      "duration_hours": 0.11194444444444446,
+      "note": "The scan is running — 12 accounts × 17 regions = 204 API calls. I'll check progress in a moment. Still running — the output may be buffered. I'll wait for the notification when it finishes.",
+      "nonbillable": false
+    },
+    {
+      "activity": "Email",
+      "duration": "00:15:00",
+      "duration_hours": 0.25,
+      "note": "Generate report",
+      "nonbillable": false
+    },
+    {
+      "activity": "Email",
+      "duration": "02:07:38",
+      "duration_hours": 2.127222222222222,
+      "note": "Spin app and mecris development <{{|t|12505450|}}>",
+      "nonbillable": true
+    },
+    {
+      "activity": "Email",
+      "duration": "00:30:05",
+      "duration_hours": 0.5013888888888889,
+      "note": "Log into NASA, check on Jira tasks, prepare for tomorrow",
+      "nonbillable": false
     }
   ],
-  "generated_at": "2026-04-25T16:35:50-04:00"
+  "generated_at": "2026-04-27T14:31:04-04:00"
 }
