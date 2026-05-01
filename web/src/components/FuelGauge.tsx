@@ -16,7 +16,7 @@ const FuelGauge: React.FC<FuelGaugeProps> = ({ billable, nonbillable, label }) =
   return (
     <div style={{ textAlign: 'center', padding: '20px', fontFamily: 'monospace' }}>
       <h3 style={{ margin: '0 0 10px 0', color: '#ccc' }}>{label}</h3>
-      <svg width="240" height="140" viewBox="0 0 240 140">
+      <svg width="100%" height="100%" viewBox="0 0 240 140" style={{ maxWidth: '240px' }}>
         {/* Air/Nonbillable Zone (Left) */}
         <path
           d="M 40 120 A 80 80 0 0 1 120 40"
