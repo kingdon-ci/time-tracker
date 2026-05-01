@@ -28,7 +28,7 @@ export-six:
 	set -a && . ./.env.local && set +a && INCLUDE_NONBILLABLE=true OUTPUT_FILE=web/public/six.json ruby export.rb 6
 
 summary-json:
-	ruby generate_summary.rb
+	set -a && . ./.env.local && set +a && ruby generate_summary.rb
 
 spin-build:
 	cd web && npm run build
