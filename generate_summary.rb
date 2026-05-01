@@ -10,6 +10,8 @@ class SummaryGenerator
   end
 
   def generate(output_file = 'web/public/history_summary.json')
+    backfill_missing_months if ENV['EARLY_API_KEY'] && ENV['EARLY_API_SECRET']
+    
     files = Dir.glob(File.join(@history_dir, '*_history.csv')).sort
     
     monthly_data = files.map do |file|
@@ -43,6 +45,37 @@ class SummaryGenerator
   end
 
   private
+
+  def backfill_missing_months
+    files = Dir.glob(File.join(@history_dir, '*_history.csv')).sort
+    return if files.empty?
+
+    # Find the range of months we have
+    first_file = File.basename(files.first)
+    return unless first_file =~ /^(\d{4})_(\d{2})_history\.csv$/
+    
+    start_date = Date.new($1.to_i, $2.to_i, 1)
+    # End date is the first of THIS month (so we check up to LAST month)
+    end_date = Date.new(Date.today.year, Date.today.month, 1)
+
+    current = start_date
+    while current < end_date
+      file_path = File.join(@history_dir, "#{current.strftime('%Y_%m')}_history.csv")
+      unless File.exist?(file_path)
+        puts "Backfilling missing history for #{current.strftime('%B %Y')}..."
+        begin
+          exporter = EarlyExporter.new(
+            output_file: file_path,
+            include_nonbillable: false
+          )
+          exporter.run("#{current.year} #{current.month}")
+        rescue => e
+          puts "Failed to backfill #{current.strftime('%Y_%m')}: #{e.message}"
+        end
+      end
+      current = current.next_month
+    end
+  end
 
   def process_file(file, year, month)
     start_date = Date.new(year, month, 1)
