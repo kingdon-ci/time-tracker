@@ -1,275 +1,16 @@
 {
   "progress": {
-    "total_hours": 48.198055555555555,
+    "total_hours": 48.012222222222235,
     "expected_hours": 32.0,
-    "percentage": 150.61892361111111,
-    "hours_diff": 16.198055555555555,
+    "percentage": 150.03819444444449,
+    "hours_diff": 16.012222222222235,
     "status": "over",
     "weekdays": 4,
-    "start_date": "2026-04-21",
-    "end_date": "2026-04-26",
-    "effective_end_date": "2026-04-27"
+    "start_date": "2026-04-24",
+    "end_date": "2026-04-29",
+    "effective_end_date": "2026-04-30"
   },
   "entries": [
-    {
-      "activity": "Email",
-      "duration": "00:20:10",
-      "duration_hours": 0.3361111111111111,
-      "note": "Log onto NASA",
-      "nonbillable": false
-    },
-    {
-      "activity": "Food / Learning",
-      "duration": "00:28:51",
-      "duration_hours": 0.48083333333333333,
-      "note": "Get started on GitLab tasks from Sprint 34 - plan with ChatGSFC",
-      "nonbillable": false
-    },
-    {
-      "activity": "Email",
-      "duration": "02:01:02",
-      "duration_hours": 2.0172222222222222,
-      "note": "Get started on SMDC-1007, SMDC-1009 - move onto SMDC-920, ready to knock out a few tasks before 11:30 meeting today.",
-      "nonbillable": false
-    },
-    {
-      "activity": "Gather (meet)",
-      "duration": "00:34:47",
-      "duration_hours": 0.5797222222222222,
-      "note": "Twice Weekly SCIP Sprint Tag Up",
-      "nonbillable": false
-    },
-    {
-      "activity": "Food / Learning",
-      "duration": "00:24:25",
-      "duration_hours": 0.40694444444444444,
-      "note": "Make lunch? Nah. Not yet. Let's look at Crossplane functions for a while first.",
-      "nonbillable": false
-    },
-    {
-      "activity": "Food / Learning",
-      "duration": "00:27:49",
-      "duration_hours": 0.46361111111111114,
-      "note": "Lunch <{{|t|12505450|}}>",
-      "nonbillable": true
-    },
-    {
-      "activity": "Gather (meet)",
-      "duration": "01:01:56",
-      "duration_hours": 1.0322222222222222,
-      "note": "Meet with CozySummit presenter <{{|t|12505450|}}>",
-      "nonbillable": true
-    },
-    {
-      "activity": "Email",
-      "duration": "00:19:16",
-      "duration_hours": 0.32111111111111107,
-      "note": "Recover from meeting (outside, get water)",
-      "nonbillable": false
-    },
-    {
-      "activity": "Food / Learning",
-      "duration": "00:42:15",
-      "duration_hours": 0.7041666666666666,
-      "note": "Work up to `secrets \"gitlab-credentials\" not found` - we have permission to get the secret, and only that one secret, once it exists",
-      "nonbillable": false
-    },
-    {
-      "activity": "Gather (meet)",
-      "duration": "01:09:11",
-      "duration_hours": 1.1530555555555555,
-      "note": "Tagging Tag up (EKS tagging)",
-      "nonbillable": false
-    },
-    {
-      "activity": "Gather (meet)",
-      "duration": "00:51:01",
-      "duration_hours": 0.8502777777777778,
-      "note": "STAR Discussion",
-      "nonbillable": false
-    },
-    {
-      "activity": "Email",
-      "duration": "00:28:37",
-      "duration_hours": 0.47694444444444445,
-      "note": "",
-      "nonbillable": false
-    },
-    {
-      "activity": "Food / Learning",
-      "duration": "01:00:00",
-      "duration_hours": 1.0,
-      "note": "Mecris <{{|t|12505450|}}>",
-      "nonbillable": true
-    },
-    {
-      "activity": "Incident Response",
-      "duration": "00:30:00",
-      "duration_hours": 0.5,
-      "note": "Prod UCP is alerting - fix it",
-      "nonbillable": false
-    },
-    {
-      "activity": "Flux / Community",
-      "duration": "01:20:36",
-      "duration_hours": 1.3433333333333333,
-      "note": "Flux Dev Meeting <{{|t|12505450|}}>",
-      "nonbillable": true
-    },
-    {
-      "activity": "Email",
-      "duration": "00:40:53",
-      "duration_hours": 0.6813888888888888,
-      "note": "Log into NASA",
-      "nonbillable": false
-    },
-    {
-      "activity": "Food / Learning",
-      "duration": "01:00:52",
-      "duration_hours": 1.0144444444444445,
-      "note": "Author & implement SMDC-1315 (install metrics-server in the star-infra dev & line it up for prod deployment)",
-      "nonbillable": false
-    },
-    {
-      "activity": "Food / Learning",
-      "duration": "00:20:08",
-      "duration_hours": 0.33555555555555555,
-      "note": "Attempt to update the ScienceCloud Tools and Services Inventory",
-      "nonbillable": false
-    },
-    {
-      "activity": "Email",
-      "duration": "00:28:14",
-      "duration_hours": 0.47055555555555556,
-      "note": "Make a new issue about flux 2.8.6 upgrade and how it solves our noise condition in production UCP with the new feature flag `MigrateAPIVersion`",
-      "nonbillable": false
-    },
-    {
-      "activity": "Food / Learning",
-      "duration": "03:02:25",
-      "duration_hours": 3.040277777777778,
-      "note": "Get gitlab-admin-rotate-secret and entra-admin-rotate-secrets jobs cinched up, in sandbox and in prod, closing GitLab tickets SMDC-1009 and SMDC-920",
-      "nonbillable": false
-    },
-    {
-      "activity": "Food / Learning",
-      "duration": "00:06:47",
-      "duration_hours": 0.11305555555555556,
-      "note": "Done with that. Workflows all validated. Reorient and refocus - what can we do before the day is over?",
-      "nonbillable": false
-    },
-    {
-      "activity": "Gather (meet)",
-      "duration": "00:29:57",
-      "duration_hours": 0.49916666666666665,
-      "note": "Try EDC architecture meeting",
-      "nonbillable": false
-    },
-    {
-      "activity": "Gather (meet)",
-      "duration": "00:30:00",
-      "duration_hours": 0.5,
-      "note": "Work with Dorian on Flux 2.8.6 thing (MigrateAPIVersion feature gates)",
-      "nonbillable": false
-    },
-    {
-      "activity": "Incident Response",
-      "duration": "00:42:55",
-      "duration_hours": 0.7152777777777777,
-      "note": "Resolve alerting issues in prod ucp & solve mattermost issues around GitLab login",
-      "nonbillable": false
-    },
-    {
-      "activity": "Email",
-      "duration": "00:32:04",
-      "duration_hours": 0.5344444444444444,
-      "note": "Wrap up day & see if we can close another ticket before fin",
-      "nonbillable": false
-    },
-    {
-      "activity": "Incident Response",
-      "duration": "00:30:00",
-      "duration_hours": 0.5,
-      "note": "Resolve repeating alerts in Production UCP",
-      "nonbillable": false
-    },
-    {
-      "activity": "Email",
-      "duration": "00:25:00",
-      "duration_hours": 0.4166666666666667,
-      "note": "time-tracker <{{|t|12505450|}}>",
-      "nonbillable": true
-    },
-    {
-      "activity": "Email",
-      "duration": "00:28:45",
-      "duration_hours": 0.4791666666666667,
-      "note": "Log in to NASA",
-      "nonbillable": false
-    },
-    {
-      "activity": "Food / Learning",
-      "duration": "01:26:21",
-      "duration_hours": 1.4391666666666667,
-      "note": "Check in with Jira - talk to ChatGSFC, develop the new \"advise-scaling\" skill (try to understand how our Keycloak scales well enough to demo to others)",
-      "nonbillable": false
-    },
-    {
-      "activity": "Gather (meet)",
-      "duration": "01:16:42",
-      "duration_hours": 1.2783333333333333,
-      "note": "Twice Weekly SCIP Sprint Tagup",
-      "nonbillable": false
-    },
-    {
-      "activity": "Food / Learning",
-      "duration": "00:22:56",
-      "duration_hours": 0.3822222222222222,
-      "note": "Make lunch <{{|t|12505450|}}>",
-      "nonbillable": true
-    },
-    {
-      "activity": "Flux Bug Scrub",
-      "duration": "00:50:23",
-      "duration_hours": 0.8397222222222223,
-      "note": "Flux Bug Scrub <{{|t|12505450|}}>",
-      "nonbillable": true
-    },
-    {
-      "activity": "Email",
-      "duration": "00:23:58",
-      "duration_hours": 0.3994444444444445,
-      "note": "Back to work - resolve noisy alert in ucp-prod (argo-wf-apps, infra, eks-auto-config all depend on Kubernetes provider & \"objects\" to be ready)",
-      "nonbillable": false
-    },
-    {
-      "activity": "Food / Learning",
-      "duration": "02:06:18",
-      "duration_hours": 2.105,
-      "note": "Debugging notifications in UCP kubernetes - why are they so noisy? (Can we clean them all up?) Why is Crossplane Kubernetes provider still at 0.15.0 in production? (Can we bring it up to at least 0.18.0 that have in Sandbox?) Let's make sure the alerts are not going to bother us on Friday, or on the weekend. That is, not unless something is genuinely wrong (and if there's something wrong, can we fix it? Like, for real - quick style.)",
-      "nonbillable": false
-    },
-    {
-      "activity": "Email",
-      "duration": "01:58:25",
-      "duration_hours": 1.9736111111111112,
-      "note": "Get serious about reviewing open Jira tasks that are new - SMDC-1313 and SMDC-1094 - ok get totally sidetracked but fix a production issue that is impacting observability and burning up CPU and audit logs for no reason. We should be able to see this drop in the bucket on the Cost Explorer charts by Monday, (hope) ref SMDC-1327",
-      "nonbillable": false
-    },
-    {
-      "activity": "Food / Learning",
-      "duration": "00:30:43",
-      "duration_hours": 0.5119444444444444,
-      "note": "Clean up my desk and wrap up the day.",
-      "nonbillable": false
-    },
-    {
-      "activity": "Food / Learning",
-      "duration": "02:00:00",
-      "duration_hours": 2.0,
-      "note": "Mecris <{{|t|12505450|}}> <{{|t|14963373|}}>",
-      "nonbillable": true
-    },
     {
       "activity": "Email",
       "duration": "00:23:29",
@@ -395,7 +136,175 @@
       "duration_hours": 0.5013888888888889,
       "note": "Log into NASA, check on Jira tasks, prepare for tomorrow",
       "nonbillable": false
+    },
+    {
+      "activity": "Food / Learning",
+      "duration": "00:21:49",
+      "duration_hours": 0.3636111111111111,
+      "note": "Coffee and wake up, read Kubernetes 1.36 release notes (blog)",
+      "nonbillable": false
+    },
+    {
+      "activity": "Email",
+      "duration": "01:23:27",
+      "duration_hours": 1.3908333333333334,
+      "note": "Log onto NASA, work on tickets",
+      "nonbillable": false
+    },
+    {
+      "activity": "Gather (meet)",
+      "duration": "01:15:06",
+      "duration_hours": 1.2516666666666667,
+      "note": "SMD Update Q&A",
+      "nonbillable": false
+    },
+    {
+      "activity": "Food / Learning",
+      "duration": "00:42:21",
+      "duration_hours": 0.7058333333333333,
+      "note": "",
+      "nonbillable": false
+    },
+    {
+      "activity": "Gather (meet)",
+      "duration": "00:27:29",
+      "duration_hours": 0.45805555555555555,
+      "note": "Dog walk <{{|t|12505450|}}>",
+      "nonbillable": true
+    },
+    {
+      "activity": "Food / Learning",
+      "duration": "00:35:38",
+      "duration_hours": 0.5938888888888889,
+      "note": "Lunch <{{|t|12505450|}}>",
+      "nonbillable": true
+    },
+    {
+      "activity": "Email",
+      "duration": "01:15:01",
+      "duration_hours": 1.2502777777777778,
+      "note": "Return to conversation about AWS Config task - can we finish the documentation and repeat this process in production today? - Yes!",
+      "nonbillable": false
+    },
+    {
+      "activity": "Food / Learning",
+      "duration": "03:00:26",
+      "duration_hours": 3.007222222222222,
+      "note": "Run this workflow in production now. Document everything. Close out 007 feature with a merge request into discover-iac-crypto and link it back to SMDC-1094.",
+      "nonbillable": false
+    },
+    {
+      "activity": "Email",
+      "duration": "00:13:37",
+      "duration_hours": 0.22694444444444445,
+      "note": "Wrap up the day",
+      "nonbillable": false
+    },
+    {
+      "activity": "Email",
+      "duration": "01:22:30",
+      "duration_hours": 1.375,
+      "note": "Mecris <{{|t|12505450|}}> <{{|t|14963373|}}>",
+      "nonbillable": true
+    },
+    {
+      "activity": "Email",
+      "duration": "02:25:15",
+      "duration_hours": 2.4208333333333334,
+      "note": "Log into NASA - figure out what work we're going to do today. Looks like we're working on SMDC-1296 to bring more observability to the STAR cluster",
+      "nonbillable": false
+    },
+    {
+      "activity": "Gather (meet)",
+      "duration": "00:18:44",
+      "duration_hours": 0.31222222222222223,
+      "note": "Twice Weekly SCIP Sprint Tag Up",
+      "nonbillable": false
+    },
+    {
+      "activity": "Food / Learning",
+      "duration": "00:41:09",
+      "duration_hours": 0.6858333333333333,
+      "note": "Establish whether CNCF just shut off my GitHub Copilot business (kingdonb) usage - they did!",
+      "nonbillable": false
+    },
+    {
+      "activity": "Email",
+      "duration": "00:44:44",
+      "duration_hours": 0.7455555555555555,
+      "note": "Talk with Amber about AWS Backups & Persistent Volumes in Kubernetes",
+      "nonbillable": false
+    },
+    {
+      "activity": "Food / Learning",
+      "duration": "03:16:50",
+      "duration_hours": 3.2805555555555554,
+      "note": "Keep going with the monitoring implementation in star-infra-dev",
+      "nonbillable": false
+    },
+    {
+      "activity": "Email",
+      "duration": "00:59:02",
+      "duration_hours": 0.9838888888888888,
+      "note": "Walk Boris <{{|t|12505450|}}>",
+      "nonbillable": true
+    },
+    {
+      "activity": "Email",
+      "duration": "00:29:00",
+      "duration_hours": 0.48333333333333334,
+      "note": "Work on SMDC-1296",
+      "nonbillable": false
+    },
+    {
+      "activity": "Flux Bug Scrub",
+      "duration": "01:10:27",
+      "duration_hours": 1.1741666666666668,
+      "note": "Flux Bug Scrub <{{|t|12505450|}}>",
+      "nonbillable": true
+    },
+    {
+      "activity": "Email",
+      "duration": "05:00:59",
+      "duration_hours": 5.016388888888889,
+      "note": "Work on deploying the VPC Flow Logs (SC-8 flow logs for VPC-EC)",
+      "nonbillable": false
+    },
+    {
+      "activity": "Gather (meet)",
+      "duration": "00:26:09",
+      "duration_hours": 0.43583333333333335,
+      "note": "STAR Tagup",
+      "nonbillable": false
+    },
+    {
+      "activity": "Email",
+      "duration": "00:54:27",
+      "duration_hours": 0.9075,
+      "note": "Review flow logs MR (Number 58 on security-account-infrastructure) with Amber before merge",
+      "nonbillable": false
+    },
+    {
+      "activity": "Food / Learning",
+      "duration": "01:03:41",
+      "duration_hours": 1.061388888888889,
+      "note": "Apply the change in prod.  Document what we found.",
+      "nonbillable": false
+    },
+    {
+      "activity": "Email",
+      "duration": "01:15:17",
+      "duration_hours": 1.2547222222222223,
+      "note": "Work on the lets-encrypt tool and see what our VPC flow logs assessment looks like - first time running assess-vpc-flow-logs or assess-vpc-encryption from a position where there should be flow logs that conform (and thus can tell us what we need to know about vpc-ec! 🎉)",
+      "nonbillable": false
+    },
+    {
+      "activity": "Personal Finance",
+      "duration": "02:19:25",
+      "duration_hours": 2.323611111111111,
+      "note": "Walking with Boris <{{|t|12505450|}}>",
+      "nonbillable": true
     }
   ],
-  "generated_at": "2026-04-27T14:31:04-04:00"
+  "generated_at": "2026-04-30T21:14:08-04:00"
 }

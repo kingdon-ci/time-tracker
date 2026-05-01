@@ -92,8 +92,22 @@ class HttpHandler(Handler):
             return None
 
     async def fetch_entries(self, token, start_date, end_date):
-        start_iso = start_date.strftime("%Y-%m-%dT00:00:00.000")
-        end_iso = end_date.strftime("%Y-%m-%dT23:59:59.999")
+        from datetime import datetime, time, timezone, timedelta
+        try:
+            from zoneinfo import ZoneInfo
+            tz = ZoneInfo("America/New_York")
+            start_dt = datetime.combine(start_date, time.min, tzinfo=tz)
+            end_dt = datetime.combine(end_date, time.max, tzinfo=tz)
+        except Exception:
+            tz = timezone(timedelta(hours=-4))
+            start_dt = datetime.combine(start_date, time.min, tzinfo=tz)
+            end_dt = datetime.combine(end_date, time.max, tzinfo=tz)
+            
+        start_utc = start_dt.astimezone(timezone.utc)
+        end_utc = end_dt.astimezone(timezone.utc)
+
+        start_iso = start_utc.strftime("%Y-%m-%dT%H:%M:%S.000")
+        end_iso = end_utc.strftime("%Y-%m-%dT%H:%M:%S.999")
         
         url = f"https://api.early.app/api/v4/time-entries/{start_iso}/{end_iso}"
         try:
@@ -149,12 +163,21 @@ class HttpHandler(Handler):
             return any(t.get("label", "").lower() == "nonbillable" for t in tags)
         return False
 
+    def get_today_et(self):
+        from datetime import datetime, timezone, timedelta
+        try:
+            from zoneinfo import ZoneInfo
+            return datetime.now(ZoneInfo("America/New_York")).date()
+        except Exception:
+            utc_now = datetime.now(timezone.utc)
+            return (utc_now - timedelta(hours=4)).date()
+
     async def get_current_month_data(self):
         token = await self.authenticate()
         if not token:
             return Response(500, {"content-type": "application/json"}, bytes(json.dumps({"error": "Auth failed"}), "utf-8"))
             
-        today = date.today()
+        today = self.get_today_et()
         start_date = date(today.year, today.month, 1)
         _, last_day = calendar.monthrange(today.year, today.month)
         end_date = date(today.year, today.month, last_day)
@@ -203,7 +226,7 @@ class HttpHandler(Handler):
         if not token:
             return Response(500, {"content-type": "application/json"}, bytes(json.dumps({"error": "Auth failed"}), "utf-8"))
             
-        today = date.today()
+        today = self.get_today_et()
         start_date = today - timedelta(days=5)
         
         entries = await self.fetch_entries(token, start_date, today)

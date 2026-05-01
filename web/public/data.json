@@ -1,14 +1,14 @@
 {
   "progress": {
-    "total_hours": 200.09166666666664,
-    "expected_hours": 152.0,
-    "percentage": 131.63925438596488,
-    "hours_diff": 48.09166666666664,
+    "total_hours": 240.20694444444447,
+    "expected_hours": 176.0,
+    "percentage": 136.48121843434345,
+    "hours_diff": 64.20694444444447,
     "status": "over",
-    "weekdays": 19,
+    "weekdays": 22,
     "start_date": "2026-04-01",
     "end_date": "2026-04-30",
-    "effective_end_date": "2026-04-28"
+    "effective_end_date": "2026-05-01"
   },
   "entries": [
     {
@@ -1424,7 +1424,238 @@
       "duration_hours": 0.5938888888888889,
       "note": "Lunch <{{|t|12505450|}}>",
       "nonbillable": true
+    },
+    {
+      "activity": "Email",
+      "duration": "01:15:01",
+      "duration_hours": 1.2502777777777778,
+      "note": "Return to conversation about AWS Config task - can we finish the documentation and repeat this process in production today? - Yes!",
+      "nonbillable": false
+    },
+    {
+      "activity": "Food / Learning",
+      "duration": "03:00:26",
+      "duration_hours": 3.007222222222222,
+      "note": "Run this workflow in production now. Document everything. Close out 007 feature with a merge request into discover-iac-crypto and link it back to SMDC-1094.",
+      "nonbillable": false
+    },
+    {
+      "activity": "Email",
+      "duration": "00:13:37",
+      "duration_hours": 0.22694444444444445,
+      "note": "Wrap up the day",
+      "nonbillable": false
+    },
+    {
+      "activity": "Email",
+      "duration": "01:22:30",
+      "duration_hours": 1.375,
+      "note": "Mecris <{{|t|12505450|}}> <{{|t|14963373|}}>",
+      "nonbillable": true
+    },
+    {
+      "activity": "Email",
+      "duration": "02:25:15",
+      "duration_hours": 2.4208333333333334,
+      "note": "Log into NASA - figure out what work we're going to do today. Looks like we're working on SMDC-1296 to bring more observability to the STAR cluster",
+      "nonbillable": false
+    },
+    {
+      "activity": "Gather (meet)",
+      "duration": "00:18:44",
+      "duration_hours": 0.31222222222222223,
+      "note": "Twice Weekly SCIP Sprint Tag Up",
+      "nonbillable": false
+    },
+    {
+      "activity": "Food / Learning",
+      "duration": "00:41:09",
+      "duration_hours": 0.6858333333333333,
+      "note": "Establish whether CNCF just shut off my GitHub Copilot business (kingdonb) usage - they did!",
+      "nonbillable": false
+    },
+    {
+      "activity": "Email",
+      "duration": "00:44:44",
+      "duration_hours": 0.7455555555555555,
+      "note": "Talk with Amber about AWS Backups & Persistent Volumes in Kubernetes",
+      "nonbillable": false
+    },
+    {
+      "activity": "Food / Learning",
+      "duration": "03:16:50",
+      "duration_hours": 3.2805555555555554,
+      "note": "Keep going with the monitoring implementation in star-infra-dev",
+      "nonbillable": false
+    },
+    {
+      "activity": "Email",
+      "duration": "00:59:02",
+      "duration_hours": 0.9838888888888888,
+      "note": "Walk Boris <{{|t|12505450|}}>",
+      "nonbillable": true
+    },
+    {
+      "activity": "Email",
+      "duration": "00:29:00",
+      "duration_hours": 0.48333333333333334,
+      "note": "Work on SMDC-1296",
+      "nonbillable": false
+    },
+    {
+      "activity": "Flux Bug Scrub",
+      "duration": "01:10:27",
+      "duration_hours": 1.1741666666666668,
+      "note": "Flux Bug Scrub <{{|t|12505450|}}>",
+      "nonbillable": true
+    },
+    {
+      "activity": "Email",
+      "duration": "05:00:59",
+      "duration_hours": 5.016388888888889,
+      "note": "Work on deploying the VPC Flow Logs (SC-8 flow logs for VPC-EC)",
+      "nonbillable": false
+    },
+    {
+      "activity": "Gather (meet)",
+      "duration": "00:26:09",
+      "duration_hours": 0.43583333333333335,
+      "note": "STAR Tagup",
+      "nonbillable": false
+    },
+    {
+      "activity": "Email",
+      "duration": "00:54:27",
+      "duration_hours": 0.9075,
+      "note": "Review flow logs MR (Number 58 on security-account-infrastructure) with Amber before merge",
+      "nonbillable": false
+    },
+    {
+      "activity": "Food / Learning",
+      "duration": "01:03:41",
+      "duration_hours": 1.061388888888889,
+      "note": "Apply the change in prod.  Document what we found.",
+      "nonbillable": false
+    },
+    {
+      "activity": "Email",
+      "duration": "01:15:17",
+      "duration_hours": 1.2547222222222223,
+      "note": "Work on the lets-encrypt tool and see what our VPC flow logs assessment looks like - first time running assess-vpc-flow-logs or assess-vpc-encryption from a position where there should be flow logs that conform (and thus can tell us what we need to know about vpc-ec! 🎉)",
+      "nonbillable": false
+    },
+    {
+      "activity": "Personal Finance",
+      "duration": "02:19:25",
+      "duration_hours": 2.323611111111111,
+      "note": "Walking with Boris <{{|t|12505450|}}>",
+      "nonbillable": true
+    },
+    {
+      "activity": "Email",
+      "duration": "00:48:23",
+      "duration_hours": 0.8063888888888889,
+      "note": "Mecris <{{|t|12505450|}}> <{{|t|14963373|}}>",
+      "nonbillable": true
+    },
+    {
+      "activity": "Food / Learning",
+      "duration": "00:54:45",
+      "duration_hours": 0.9125,
+      "note": "Coffee and ramping up",
+      "nonbillable": false
+    },
+    {
+      "activity": "Email",
+      "duration": "01:18:26",
+      "duration_hours": 1.3072222222222223,
+      "note": "Log into NASA & work out security-account-infrastructure issue - why did our stacksets fail? How do we fix it",
+      "nonbillable": false
+    },
+    {
+      "activity": "Food / Learning",
+      "duration": "01:04:37",
+      "duration_hours": 1.0769444444444445,
+      "note": "Aaron needs the time reporting for the month and bullet points",
+      "nonbillable": false
+    },
+    {
+      "activity": "Gather (meet)",
+      "duration": "00:33:14",
+      "duration_hours": 0.553888888888889,
+      "note": "Twice Weekly SCIP Sprint Tag Up",
+      "nonbillable": false
+    },
+    {
+      "activity": "Email",
+      "duration": "00:56:35",
+      "duration_hours": 0.9430555555555555,
+      "note": "Try the stackset in production now / finish bullets for Aaron. Hey, the StackSet failed. (We can try and see why now... just enough time for that before Sprint Planning!)",
+      "nonbillable": false
+    },
+    {
+      "activity": "Gather (meet)",
+      "duration": "01:00:29",
+      "duration_hours": 1.0080555555555555,
+      "note": "Sprint Planning",
+      "nonbillable": false
+    },
+    {
+      "activity": "Food / Learning",
+      "duration": "00:53:14",
+      "duration_hours": 0.8872222222222222,
+      "note": "Lunch <{{|t|12505450|}}>",
+      "nonbillable": true
+    },
+    {
+      "activity": "Gather (meet)",
+      "duration": "00:19:57",
+      "duration_hours": 0.33249999999999996,
+      "note": "Walk Boris <{{|t|12505450|}}>",
+      "nonbillable": true
+    },
+    {
+      "activity": "Email",
+      "duration": "00:08:55",
+      "duration_hours": 0.1486111111111111,
+      "note": "Return to work - log back in",
+      "nonbillable": false
+    },
+    {
+      "activity": "Food / Learning",
+      "duration": "02:09:46",
+      "duration_hours": 2.162777777777778,
+      "note": "Check if AWS Config remediated anything and if we can try again - security-account-infrastructure - ok, it worked this time!",
+      "nonbillable": false
+    },
+    {
+      "activity": "Food / Learning",
+      "duration": "00:55:45",
+      "duration_hours": 0.9291666666666666,
+      "note": "Think through how to monitor the stackset health - kimi 2.6 thinking free chat, non gfe)",
+      "nonbillable": false
+    },
+    {
+      "activity": "Email",
+      "duration": "00:23:01",
+      "duration_hours": 0.3836111111111111,
+      "note": "",
+      "nonbillable": false
+    },
+    {
+      "activity": "Food / Learning",
+      "duration": "00:46:12",
+      "duration_hours": 0.77,
+      "note": "Coffee",
+      "nonbillable": false
+    },
+    {
+      "activity": "Email",
+      "duration": "00:56:53",
+      "duration_hours": 0.9480555555555555,
+      "note": "",
+      "nonbillable": false
     }
   ],
-  "generated_at": "2026-04-27T14:31:03-04:00"
+  "generated_at": "2026-04-30T21:14:07-04:00"
 }
