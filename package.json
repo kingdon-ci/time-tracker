@@ -4,13 +4,17 @@
   "description": "Time tracker with carburetor visualization",
   "main": "export.rb",
   "scripts": {
-    "dev": "npm --prefix web run dev",
-    "build": "npm --prefix web run build",
+    "dev": "make spin-watch",
+    "spin-up": "make spin-up",
+    "build": "make spin-build",
     "export-json": "make export-json",
     "export-six": "make export-six",
     "export-summary": "make summary-json"
   },
   "keywords": [],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "puppeteer": "^24.42.0"
+  }
 }

@@ -1,166 +1,85 @@
-# EARLY CSV Export Tool
+# Time Carburetor
 
-A simple Ruby script to export time tracking data from the EARLY API (formerly Timeular) in CSV format.
+A real-time performance dashboard and historical accounting tool for the EARLY API (formerly Timeular).
 
-## Features
+The Time Carburetor provides high-visibility into billable performance, tracking monthly targets and long-term comp-time balances through an interactive, mobile-optimized dashboard.
 
-- Export time entries with Activity, Duration, and Note fields
-- Simple date range specification using Beeminder-style syntax
-- Minimal configuration via environment variables
-- Clean CSV output suitable for further processing
-- Progress tracking for monthly work hours vs. 40-hour work week
-- Progress output showing percentage and hours over/under target
-- Smart current month handling - only counts started workdays
-- Smart workday handling for '@' mode - shows previous workday and today (Friday on Monday)
+## Key Features
 
-## Requirements
+- **Real-time Performance Monitoring**: Instant feedback on your current month's billable balance.
+- **Cumulative Trend Analysis**: All-time surplus/deficit visualization with 4-month moving averages.
+- **Rolling Comp Balance**: Track your Year-To-Date (YTD) historical context at a glance.
+- **"Make Six" Mixture**: Specialized gauge for monitoring the Billable vs. Non-billable split over a 6-day window.
+- **Automated Archiving**: Ruby-based export tools for maintaining monthly CSV records.
+- **Mobile Optimized**: Responsive design for monitoring performance on the go.
 
-- Ruby (tested with standard library only)
+## Architecture
+
+The project is built on the **Fermyon Spin** framework:
+- **Frontend**: React (TypeScript) with Vite, utilizing stylized SVG components and Vanilla CSS.
+- **Backend**: Python-based API (Wasm) providing live data proxying and historical summary serving.
+- **Data Layer**: Hybrid approach using live API data and local pre-processed JSON/CSV summaries.
+
+## Getting Started
+
+### Prerequisites
+
+- [Ruby](https://www.ruby-lang.org/) (for data archival scripts)
+- [Spin CLI](https://developer.fermyon.com/spin/v2/install) (for running the dashboard)
+- [Node.js & npm](https://nodejs.org/) (for frontend development)
 - EARLY API credentials (API Key and Secret)
 
-## Setup
+### Setup
 
-1. Create a `.env.local` file with your EARLY API credentials:
-```bash
-EARLY_API_KEY=your_api_key_here
-EARLY_API_SECRET=your_api_secret_here
-```
+1. Create a `.env.local` file with your credentials:
+   ```bash
+   EARLY_API_KEY=your_api_key_here
+   EARLY_API_SECRET=your_api_secret_here
+   ```
 
-2. Make the script executable:
-```bash
-chmod +x export.rb
-```
+2. Install dependencies:
+   ```bash
+   cd web && npm install
+   ```
 
-## Usage
+3. Initialize your history (optional):
+   ```bash
+   mkdir -p history
+   # Run archival for previous months if you have them
+   # ./export.rb 2024 11
+   ```
 
-The script accepts date range parameters in a simplified Beeminder format:
+### Running the Dashboard
 
-- `@` - Yesterday and today (or previous workday and today if run on Monday)
-- `w` or `weekly` - Past 7 days including today
-- `6` or `six` - Past 6 days excluding today
-- `^` - Current month (partial data if run mid-month)
-- `^^` - Previous month
-- `YYYY M` - Specific month (e.g., `2024 6` for June 2024)
-
-### Examples
+The easiest way to develop and run the dashboard is using `make`:
 
 ```bash
-# Export yesterday and today (or previous workday + today on Monday)
-./export.rb '@'      # or 'make today'
-
-# Export past 7 days (including today) - nonbillable only
-./export.rb 'w'      # or 'make weekly'
-
-# Export past 6 days (excluding today) - all entries
-./export.rb '6'      # or 'make six'
-
-# Export current month
-./export.rb '^'      # or 'make'
-
-# Export last month
-./export.rb '^^'     # or 'make run'
-
-# Export June 2024
-./export.rb '2024 6' # see also './hack/since_the_start.sh' to export several months
+# Start the dashboard in watch mode (auto-rebuilds on changes)
+make spin-watch
 ```
 
-### Using the provided scripts
+This will:
+1. Export current month data to `web/public/data.json`.
+2. Generate a 6-day mixture summary.
+3. Update the historical summary (auto-backfilling missing months).
+4. Build the React frontend.
+5. Start the Spin runtime at `http://localhost:3000`.
 
-```bash
-# Run with default settings (last month)
-make run
+## Legacy CLI Usage
 
-# Or directly
-./hack/runme.sh
+The core Ruby export tool remains available for direct CLI usage:
 
-# Run now (this month's progress report)
-make this
+- `make this`: Quick monthly progress report.
+- `make weekly`: 7-day nonbillable report (for travel/conference reporting).
+- `make six`: 6-day all-entry report.
+- `make test`: Run the comprehensive test suite for date/filtering logic.
 
-# Generate weekly report (nonbillable only, past 7 days)
-make weekly
+See the `export.rb` script for full date range options (`@`, `w`, `6`, `^`, `^^`, etc.).
 
-# Generate 6-day report (all entries, past 6 days excluding today)
-make six
+## Project Philosophy
 
-# Run the test suite
-make test
-
-# Clean up after
-make clean
-```
-
-## Output
-
-The script creates `output.csv` by default with three columns:
-- **Activity**: The name of the tracked activity
-- **Duration**: Time spent in HH:MM:SS format
-- **Note**: Associated note text (empty if no note)
-
-Example output:
-```csv
-Activity,Duration,Note
-Email,08:00:00,Vacation - PTO
-Flux / Community,00:32:41,Flux Dev Meeting
-Recording,02:45:00,
-```
-
-The next run will overwrite the file. Historical records are meant to be kept
-as copies of the CSV `output.csv`, in `history/YYYY_MM_history.csv` as needed.
-
-## Configuration
-
-Environment variables:
-- `EARLY_API_KEY` - Your EARLY API key (required)
-- `EARLY_API_SECRET` - Your EARLY API secret (required)
-- `OUTPUT_FILE` - Custom output filename (default: `output.csv`)
-- `INCLUDE_NONBILLABLE` - Include #nonbillable entries (default: false)
-- `ONLY_NONBILLABLE` - Include ONLY #nonbillable entries (overrides INCLUDE_NONBILLABLE)
-- `DEBUG` - Enable debug output (optional)
-
-## Error Handling
-
-The script will:
-- Print success messages to stdout
-- Print error messages to stderr
-- Exit with status code 1 on failure
-- Include HTTP status codes for API errors
+The Time Carburetor is designed for "accuracy where it counts." It maintains a consistent historical record while providing the real-time feedback loop necessary for professional self-management. It prioritizes simplicity, fast execution, and zero-maintenance reliability.
 
 ## License
 
 MIT License
-
-## Filtering Options
-
-The tool supports three filtering modes for #nonbillable entries:
-
-1. **Default mode**: Excludes #nonbillable entries (standard work reporting)
-2. **Include all**: Set `INCLUDE_NONBILLABLE=true` to include both billable and nonbillable
-3. **Nonbillable only**: Set `ONLY_NONBILLABLE=true` to show only nonbillable entries (conference/travel reporting)
-
-The `make weekly` command uses nonbillable-only mode by default, while `make six` includes all entries.
-
-## Testing
-
-The tool includes a comprehensive test suite with automated CI:
-
-```bash
-# Run the test suite locally
-make test
-```
-
-**Test Coverage:**
-- 14 test methods covering date range calculation and filtering logic
-- 55 total assertions validating critical functionality
-- Sub-millisecond execution time
-- GitHub Actions CI running on all PRs
-
-For more information about the tests, see [test/README.md](test/README.md).
-
-## Version
-
-* 0.4.1 - Add test suite for date range and filtering logic
-* 0.4.0 - Add weekly/6-day reporting and nonbillable-only filtering for conference travel
-* 0.3.1 - Fix weekend handling (bug) in today and yesterday code
-* 0.3.0 - Support status reports that include today and yesterday
-* 0.2.0 - Track simple progress against 8d/40w on a monthly basis
-* 0.1.0 - Basic CSV export functionality

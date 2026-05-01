@@ -1,5 +1,52 @@
 # Changelog
 
+## v0.5.1 - Carburetor Robustness & Mobile Optimization
+
+### New Features
+
+**Automated History Management:**
+- Added automatic backfilling for missing historical months in `generate_summary.rb`.
+- Improved Makefile to ensure summary generation has consistent API access.
+- Excluded live JSON data files from Git tracking to maintain clean repository state.
+
+**Mobile-First Dashboard Improvements:**
+- Implemented fully responsive layout for the Time Carburetor.
+- Fixed table "blowouts" and overflow issues on small viewports.
+- Normalized global CSS for better scaling and interactive feedback.
+- Added `dashboard-mobile-debugger` skill using Puppeteer for visual regression testing.
+
+**Accuracy & Reliability:**
+- Fixed timezone-related edge cases in month boundary calculation (the "rollover" bug).
+- Enhanced frontend data fetching with HTML detection and robust fallback logic.
+- Improved Gauge and TrendChart rendering for better clarity on various devices.
+
+## v0.5.0 - The Time Carburetor (Jubilee Release)
+
+### New Features
+
+**Real-time Performance Dashboard:**
+- Transitioned from CLI-only reporting to a rich, interactive React/Vite dashboard.
+- **Monthly Billable Balance**: High-visibility gauge showing performance against the current month's target.
+- **Rolling Comp Balance**: Historical context (YTD) to track accumulated surplus or deficit.
+- **Fuel Mixture (Make Six)**: Visualization of Billable vs. Non-billable split over the past 6 days.
+- **Cumulative Trend Chart**: All-time performance visualization with moving average overlay.
+
+**Spin Architecture:**
+- Re-architected backend as a Wasm-based service using the Fermyon Spin framework.
+- Combined static file serving with a Python-based API for live data proxying.
+- Consolidated development workflow around `spin watch` for near-instant feedback.
+
+**Interactive History Room:**
+- Added modal views for detailed drill-down into historical performance.
+- Daily activity breakdowns for past months.
+- Enhanced data visualization using stylized SVG components.
+
+### Implementation Notes
+
+- Maintained the Ruby-based export scripts for data archival and summary pre-processing.
+- Leveraged Vanilla CSS for maximum flexibility and modern aesthetic.
+- Preserved historical accounting logic to ensure consistency with previous reports.
+
 ## v0.4.1 - Test Suite & CI
 
 ### New Features

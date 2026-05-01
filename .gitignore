@@ -5,3 +5,7 @@
 /weekly.csv
 /this_month.csv
 /history/????_??_history.csv
+.debug/
+web/public/data.json
+web/public/history_summary.json
+web/public/six.json

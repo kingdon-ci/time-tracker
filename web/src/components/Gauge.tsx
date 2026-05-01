@@ -25,7 +25,7 @@ const Gauge: React.FC<GaugeProps> = ({ value, min, max, label, unit }) => {
   return (
     <div style={{ textAlign: 'center', padding: '20px', fontFamily: 'monospace' }}>
       <h3 style={{ margin: '0 0 10px 0', color: '#ccc' }}>{label}</h3>
-      <svg width="200" height="120" viewBox="0 0 200 120">
+      <svg width="100%" height="100%" viewBox="0 0 200 120" style={{ maxWidth: '200px' }}>
         {/* Background Arc */}
         <path
           d="M 20 100 A 80 80 0 0 1 180 100"

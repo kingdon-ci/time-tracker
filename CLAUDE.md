@@ -1,55 +1,43 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides guidance for AI assistants working in this repository.
 
 ## Development Commands
 
-### Primary Commands
-- `make run` - Export last month's data using the default script (`./hack/runme.sh`)
-- `make this` - Generate current month progress report (`this_month.csv`)
-- `make all` - Clean and run current month report
-- `make clean` - Remove generated CSV files (`this_month.csv`, `output.csv`)
+### Dashboard (Spin)
+- `make spin-watch` - **Recommended Development Loop**. Runs exports, summary generation, builds frontend, and starts Spin with live reload.
+- `make spin-up` - Build and start the production Spin app.
+- `make spin-build` - Build the React frontend and Spin Wasm component.
 
-### Direct Script Usage
-- `./export.rb '^'` - Export current month (partial data)
-- `./export.rb '^^'` - Export previous month (complete data)
-- `./export.rb 'YYYY M'` - Export specific month (e.g., `2024 6` for June 2024)
+### Data Archival (Ruby)
+- `make this` - Generate current month progress report (`this_month.csv`).
+- `make weekly` - Generate 7-day report (nonbillable only).
+- `make six` - Generate 6-day mixture report.
+- `make summary-json` - Update `web/public/history_summary.json` (includes auto-backfill).
+- `make test` - Run the Ruby test suite for date/filtering logic.
 
 ### Environment Setup
-The application requires a `.env.local` file with EARLY API credentials:
+Required `.env.local`:
 ```bash
 EARLY_API_KEY=your_api_key_here
 EARLY_API_SECRET=your_api_secret_here
 ```
 
-Optional environment variables:
-- `OUTPUT_FILE` - Custom output filename (default: `output.csv`)
-- `DEBUG` - Enable debug output for API response inspection
-
 ## Architecture
 
-### Core Components
-- **`export.rb`** - Main Ruby script containing the `EarlyExporter` class
-  - Handles EARLY API authentication and data fetching
-- **`hack/`** - Utility scripts for common operations
-  - `runme.sh` - Default export (previous month)
-  - `this-month.sh` - Current month progress
-  - `since_the_start.sh` - Batch historical exports
-- **`history/`** - Historical CSV exports organized by month (`YYYY_MM_history.csv`)
+### Components
+- **`web/`** - React/Vite/TypeScript frontend.
+- **`spin-app/`** - Python-based Wasm API (Spin framework).
+- **`export.rb`** - Core Ruby logic for API interaction and CSV archival.
+- **`generate_summary.rb`** - Pre-processes historical CSVs into JSON for the dashboard.
+- **`history/`** - Source of truth for historical records (`YYYY_MM_history.csv`).
 
-### Data Flow
-1. Script authenticates with EARLY API using developer credentials
-2. Fetches time entries for specified date range via `/time-entries/{start}/{end}` endpoint
-3. Processes entries to calculate work progress (8 hours/day, 40 hours/week baseline)
-4. Outputs CSV with Activity, Duration (HH:MM:SS), and Note columns
-5. Displays progress percentage and hours over/under target
+### Implementation Details
+- **Timezone Handling**: Always use `America/New_York` for business day calculations.
+- **Progress Calculation**: 8-hour workday standard (Mon-Fri).
+- **Historical Consistency**: A legacy 8-hour discount exists for months before April 2026; do not modify historical logic to preserve past balances.
+- **Live Data**: `web/public/*.json` are generated dynamically and excluded from Git.
 
-### Date Range Parsing
-- `^` - Current month (partial data if run mid-month)
-- `^^` - Previous month (complete data)
-- `YYYY M` - Specific month format
-
-### Progress Calculation
-- Uses 8-hour workday standard (Monday-Friday only)
-- For current month: only counts weekdays up to today
-- Shows percentage completion and hours over/under 40-hour work week target
+## Testing Standards
+- Ruby logic: Tested in `test/` using Minitest.
+- Dashboard: Visual regression testing via `dashboard-mobile-debugger` skill (Puppeteer).

@@ -10,6 +10,8 @@ class SummaryGenerator
   end
 
   def generate(output_file = 'web/public/history_summary.json')
+    backfill_missing_months if ENV['EARLY_API_KEY'] && ENV['EARLY_API_SECRET']
+    
     files = Dir.glob(File.join(@history_dir, '*_history.csv')).sort
     
     monthly_data = files.map do |file|
@@ -44,6 +46,37 @@ class SummaryGenerator
 
   private
 
+  def backfill_missing_months
+    files = Dir.glob(File.join(@history_dir, '*_history.csv')).sort
+    return if files.empty?
+
+    # Find the range of months we have
+    first_file = File.basename(files.first)
+    return unless first_file =~ /^(\d{4})_(\d{2})_history\.csv$/
+    
+    start_date = Date.new($1.to_i, $2.to_i, 1)
+    # End date is the first of THIS month (so we check up to LAST month)
+    end_date = Date.new(Date.today.year, Date.today.month, 1)
+
+    current = start_date
+    while current < end_date
+      file_path = File.join(@history_dir, "#{current.strftime('%Y_%m')}_history.csv")
+      unless File.exist?(file_path)
+        puts "Backfilling missing history for #{current.strftime('%B %Y')}..."
+        begin
+          exporter = EarlyExporter.new(
+            output_file: file_path,
+            include_nonbillable: false
+          )
+          exporter.run("#{current.year} #{current.month}")
+        rescue => e
+          puts "Failed to backfill #{current.strftime('%Y_%m')}: #{e.message}"
+        end
+      end
+      current = current.next_month
+    end
+  end
+
   def process_file(file, year, month)
     start_date = Date.new(year, month, 1)
     end_date = Date.new(year, month, -1)
@@ -59,10 +92,16 @@ class SummaryGenerator
     end
 
     # Use the logic from EarlyExporter to be consistent
-    # For historical files, we assume they are completed months unless it's the current month
-    eff_end = end_date.next_day
+    # Preserve the "buggy" 8-hour discount for months before April 2026
+    # so we don't destroy historical comp time balances.
+    if year < 2026 || (year == 2026 && month < 4)
+      eff_end = end_date
+    else
+      eff_end = end_date.next_day
+    end
+
     if Date.today.year == year && Date.today.month == month
-      eff_end = Date.today.next_day if Date.today < end_date
+      eff_end = Date.today.next_day if Date.today <= end_date
     end
 
     weekdays = @exporter.count_weekdays(start_date, eff_end)

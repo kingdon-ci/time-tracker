@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import './App.css'
 import Gauge from './components/Gauge'
 import FuelGauge from './components/FuelGauge'
+import DashboardModal from './components/DashboardModal'
 
 interface ProgressData {
   total_hours: number;
@@ -50,12 +51,42 @@ function App() {
   const [historyData, setHistoryData] = useState<HistoryData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [activeModal, setActiveModal] = useState<{ type: 'pacing' | 'bank' | 'energy' | 'history', data?: any } | null>(null);
 
   useEffect(() => {
+    const fetchData = async (url: string, fallback: string) => {
+      try {
+        const response = await fetch(url);
+        if (!response.ok) {
+          console.warn(`Fetch to ${url} failed with status ${response.status}, falling back to ${fallback}`);
+          const fallbackRes = await fetch(fallback);
+          return await fallbackRes.json();
+        }
+        
+        const contentType = response.headers.get('content-type');
+        if (contentType && contentType.includes('text/html')) {
+          console.warn(`Fetch to ${url} returned HTML instead of JSON, falling back to ${fallback}`);
+          const fallbackRes = await fetch(fallback);
+          return await fallbackRes.json();
+        }
+        
+        return await response.json();
+      } catch (e) {
+        console.error(`Error fetching ${url}, falling back to ${fallback}:`, e);
+        try {
+          const fallbackRes = await fetch(fallback);
+          return await fallbackRes.json();
+        } catch (fallbackError) {
+          console.error(`Fallback to ${fallback} also failed:`, fallbackError);
+          throw fallbackError;
+        }
+      }
+    };
+
     Promise.all([
-      fetch('/data.json').then(res => res.json()),
-      fetch('/six.json').then(res => res.json()),
-      fetch('/history_summary.json').then(res => res.json())
+      fetchData('/api/data', '/data.json'),
+      fetchData('/api/six', '/six.json'),
+      fetchData('/api/history', '/history_summary.json')
     ])
     .then(([current, six, history]) => {
       setCurrentData(current);
@@ -80,8 +111,9 @@ function App() {
   const currentBillableDiff = currentBillableHours - progress.expected_hours;
 
   // Historical context
-  const currentYear = new Date(progress.start_date).getFullYear();
-  const historyMonths = historyData.months;
+  const [startYear, startMonth] = progress.start_date.split('-').map(Number);
+  const currentYear = startYear;
+  const historyMonths = historyData?.months || [];
   
   const relevantHistoricalMonths = historyMonths
     .filter(m => m.year === currentYear)
@@ -92,11 +124,11 @@ function App() {
   const lookbackCount = relevantHistoricalMonths.length + 1;
 
   // Calculate billable vs nonbillable for "Make Six"
-  const sixBillable = sixData.entries.filter(e => !e.nonbillable).reduce((sum, e) => sum + e.duration_hours, 0);
-  const sixNonBillable = sixData.entries.filter(e => e.nonbillable).reduce((sum, e) => sum + e.duration_hours, 0);
+  const sixBillable = sixData.entries.filter((e: any) => !e.nonbillable).reduce((sum: number, e: any) => sum + e.duration_hours, 0);
+  const sixNonBillable = sixData.entries.filter((e: any) => e.nonbillable).reduce((sum: number, e: any) => sum + e.duration_hours, 0);
 
   // Calculate billable vs nonbillable for this month
-  const monthNonBillable = entries.filter(e => e.nonbillable).reduce((sum, e) => sum + e.duration_hours, 0);
+  const monthNonBillable = entries.filter((e: any) => e.nonbillable).reduce((sum: number, e: any) => sum + e.duration_hours, 0);
 
   return (
     <div className="container">
@@ -115,7 +147,7 @@ function App() {
       <main className="dashboard main-view">
         <div className="left-col">
           {/* Gauge 1: Monthly Balance (Primary) */}
-          <section className="panel gauge-panel highlight">
+          <section className="panel gauge-panel highlight" onClick={() => setActiveModal({ type: 'pacing' })}>
             <Gauge 
               value={currentBillableDiff} 
               min={-40} 
@@ -140,7 +172,7 @@ function App() {
           </section>
 
           {/* Gauge 2: Rolling Comp Balance */}
-          <section className="panel gauge-panel small">
+          <section className="panel gauge-panel small" onClick={() => setActiveModal({ type: 'bank' })}>
             <Gauge 
               value={compTimeBalance} 
               min={-80} 
@@ -159,7 +191,7 @@ function App() {
           </section>
 
           {/* Gauge 3: Fuel Mixture (Past 6 Days) */}
-          <section className="panel fuel-panel">
+          <section className="panel fuel-panel" onClick={() => setActiveModal({ type: 'energy' })}>
             <FuelGauge 
               billable={sixBillable} 
               nonbillable={sixNonBillable} 
@@ -170,9 +202,25 @@ function App() {
 
         <div className="right-col">
           <section className="panel trend-panel">
-            <h3>Cumulative Surplus/Deficit (12 Mo)</h3>
-            <div className="chart-container">
-              <TrendChart months={historyData.months.slice(-12)} />
+            <h3>Cumulative Surplus/Deficit (All-Time)</h3>
+            <div className="chart-container" style={{cursor: 'pointer'}}>
+              <TrendChart 
+                months={[
+                  ...historyData.months,
+                  {
+                    year: startYear,
+                    month: startMonth,
+                    hours_diff: currentBillableDiff,
+                    // Minimal properties needed for the chart
+                    total_hours: currentBillableHours,
+                    expected_hours: progress.expected_hours,
+                    percentage: (currentBillableHours / progress.expected_hours) * 100,
+                    weekdays: progress.weekdays,
+                    moving_avg_4m: null
+                  }
+                ]} 
+                onPointClick={(m: any) => setActiveModal({ type: 'history', data: m })} 
+              />
             </div>
           </section>
 
@@ -198,7 +246,7 @@ function App() {
                   </tr>
                 </thead>
                 <tbody>
-                  {entries.slice(-12).reverse().map((entry, i) => (
+                  {entries.slice(-15).reverse().map((entry, i) => (
                     <tr key={i} className={entry.nonbillable ? 'nb-row' : 'b-row'}>
                       <td><span className={`tag ${entry.nonbillable ? 'tag-nb' : 'tag-b'}`}>{entry.nonbillable ? 'NB' : 'B'}</span></td>
                       <td>{entry.activity}</td>
@@ -219,11 +267,30 @@ function App() {
           <p>Expectation based on 8h/weekday up to current date.</p>
         </div>
       </footer>
+
+      <DashboardModal 
+        isOpen={activeModal !== null}
+        onClose={() => setActiveModal(null)}
+        type={activeModal?.type || 'pacing'}
+        title={
+          activeModal?.type === 'pacing' ? 'The Pacing Room' :
+          activeModal?.type === 'bank' ? 'The Bank Vault' :
+          activeModal?.type === 'history' ? `Historical Record: ${activeModal.data?.year}-${String(activeModal.data?.month).padStart(2, '0')}` :
+          'The Energy Lab'
+        }
+        data={{
+          entries: entries,
+          progress: progress,
+          historyData: historyData,
+          sixData: sixData,
+          selectedMonth: activeModal?.data
+        }}
+      />
     </div>
   )
 }
 
-function TrendChart({ months }: { months: HistoricalMonth[] }) {
+function TrendChart({ months, onPointClick }: { months: HistoricalMonth[], onPointClick: (m: HistoricalMonth) => void }) {
   const maxDiff = Math.max(...months.map(m => Math.abs(m.hours_diff)), 20);
   const height = 150;
   const width = 600;
@@ -232,22 +299,59 @@ function TrendChart({ months }: { months: HistoricalMonth[] }) {
   const points = months.map((m, i) => {
     const x = padding + (i * (width - 2 * padding) / (months.length - 1 || 1));
     const y = height / 2 - (m.hours_diff / maxDiff) * (height / 2 - padding);
-    return { x, y, val: m.hours_diff };
+    return { x, y, val: m.hours_diff, monthData: m };
   });
 
   const pathD = points.map((p, i) => (i === 0 ? `M ${p.x} ${p.y}` : `L ${p.x} ${p.y}`)).join(' ');
+
+  const nbStartPoint = points.find(p => p.monthData.year === 2025 && p.monthData.month === 8);
+  const mathFixPoint = points.find(p => p.monthData.year === 2026 && p.monthData.month === 4);
 
   return (
     <svg width="100%" height={height} viewBox={`0 0 ${width} ${height}`}>
       <line x1={padding} y1={height/2} x2={width-padding} y2={height/2} stroke="#444" strokeDasharray="4 2" />
       <line x1={padding} y1={padding} x2={width-padding} y2={padding} stroke="#222" />
       <line x1={padding} y1={height-padding} x2={width-padding} y2={height-padding} stroke="#222" />
+      
+      {nbStartPoint && (
+        <>
+          <line x1={nbStartPoint.x} y1={padding} x2={nbStartPoint.x} y2={height-padding} stroke="#666" strokeDasharray="2 2" />
+          <text x={nbStartPoint.x - 5} y={padding - 5} fill="#666" fontSize="9" fontWeight="bold" textAnchor="end">NB TRACKING</text>
+        </>
+      )}
+
+      {mathFixPoint && (
+        <>
+          <line x1={mathFixPoint.x} y1={padding} x2={mathFixPoint.x} y2={height-padding} stroke="#f39c12" strokeDasharray="2 2" />
+          <text 
+            x={mathFixPoint.x > width - 100 ? mathFixPoint.x - 5 : mathFixPoint.x + 5} 
+            y={padding - 5} 
+            fill="#f39c12" 
+            fontSize="9" 
+            fontWeight="bold"
+            textAnchor={mathFixPoint.x > width - 100 ? "end" : "start"}
+          >
+            STRICT MATH
+          </text>
+        </>
+      )}
+
       <path d={pathD} fill="none" stroke="#4caf50" strokeWidth="2" />
       {points.map((p, i) => (
-        <circle key={i} cx={p.x} cy={p.y} r="3" fill={p.val >= 0 ? '#4caf50' : '#f44336'} />
+        <circle 
+          key={i} 
+          cx={p.x} 
+          cy={p.y} 
+          r="6" 
+          fill={p.val >= 0 ? '#4caf50' : '#f44336'} 
+          onClick={() => onPointClick(p.monthData)}
+          style={{cursor: 'pointer', transition: 'r 0.2s'}}
+          onMouseOver={(e) => (e.target as any).setAttribute('r', '10')}
+          onMouseOut={(e) => (e.target as any).setAttribute('r', '6')}
+        />
       ))}
       {points.length > 0 && (
-        <text x={points[points.length-1].x} y={points[points.length-1].y - 10} fill="#fff" fontSize="10" textAnchor="middle">
+        <text x={points[points.length-1].x} y={points[points.length-1].y - 15} fill="#fff" fontSize="12" textAnchor="middle">
           {points[points.length-1].val.toFixed(1)}
         </text>
       )}
