@@ -45,6 +45,7 @@ h1 {
 .header-stats {
   display: flex;
   align-items: center;
+  gap: 1rem;
 }
 
 .balance-badge {
@@ -54,6 +55,14 @@ h1 {
   font-size: 0.9rem;
   border: 1px solid #444;
   white-space: nowrap;
+}
+
+.groq-badge.pos strong {
+  color: #4caf50;
+}
+
+.groq-badge.neg strong {
+  color: #f44336;
 }
 
 .balance-badge strong {

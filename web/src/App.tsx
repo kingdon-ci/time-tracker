@@ -45,10 +45,18 @@ interface HistoryData {
   generated_at: string;
 }
 
+interface GroqData {
+  todayTotal: number;
+  thisMonthTotal: number;
+  lastMonthTotal: number;
+  generated_at?: string;
+}
+
 function App() {
   const [currentData, setCurrentData] = useState<TrackerData | null>(null);
   const [sixData, setSixData] = useState<TrackerData | null>(null);
   const [historyData, setHistoryData] = useState<HistoryData | null>(null);
+  const [groqData, setGroqData] = useState<GroqData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [activeModal, setActiveModal] = useState<{ type: 'pacing' | 'bank' | 'energy' | 'history', data?: any } | null>(null);
@@ -86,12 +94,14 @@ function App() {
     Promise.all([
       fetchData('/api/data', '/data.json'),
       fetchData('/api/six', '/six.json'),
-      fetchData('/api/history', '/history_summary.json')
+      fetchData('/api/history', '/history_summary.json'),
+      fetchData('/api/groq', '/groq_summary.json')
     ])
-    .then(([current, six, history]) => {
+    .then(([current, six, history, groq]) => {
       setCurrentData(current);
       setSixData(six);
       setHistoryData(history);
+      setGroqData(groq);
     })
     .catch(err => setError(err.message))
     .finally(() => setLoading(false));
@@ -136,6 +146,14 @@ function App() {
         <div className="header-main">
           <h1>Time Carburetor</h1>
           <div className="header-stats">
+            {groqData && (
+              <span 
+                className={`balance-badge groq-badge ${groqData.todayTotal >= 0.03 ? 'pos' : 'neg'}`}
+                title={`Groq Spend:\nToday: $${groqData.todayTotal.toFixed(2)}\nThis Month: $${groqData.thisMonthTotal.toFixed(2)}\nLast Month: $${groqData.lastMonthTotal.toFixed(2)}`}
+              >
+                Groq: <strong>${groqData.todayTotal.toFixed(2)}</strong>
+              </span>
+            )}
             <span className="balance-badge">
               Monthly: <strong>{currentBillableDiff >= 0 ? '+' : ''}{currentBillableDiff.toFixed(1)}h</strong>
             </span>
