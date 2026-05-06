@@ -16,5 +16,8 @@
   "license": "ISC",
   "dependencies": {
     "puppeteer": "^24.42.0"
+  },
+  "devDependencies": {
+    "playwright": "^1.59.1"
   }
 }
