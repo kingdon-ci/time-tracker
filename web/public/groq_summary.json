@@ -1,0 +1,15 @@
+{
+  "accounts": [
+    {
+      "name": "Account A",
+      "id": "kingdon@tuesdaystudios.com",
+      "today": 0.03,
+      "thisMonth": 0.03,
+      "lastMonth": 0.31
+    }
+  ],
+  "todayTotal": 0.03,
+  "thisMonthTotal": 0.03,
+  "lastMonthTotal": 0.31,
+  "generated_at": "2026-05-06T13:56:16.418Z"
+}

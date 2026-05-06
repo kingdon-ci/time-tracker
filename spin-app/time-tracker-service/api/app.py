@@ -13,6 +13,8 @@ class HttpHandler(Handler):
             return await self.get_six_day_data()
         elif path.startswith("/api/history"):
             return await self.get_history_summary()
+        elif path.startswith("/api/groq"):
+            return await self.get_groq_summary()
         elif path.startswith("/api/month"):
             return await self.get_historical_month_data(request)
         else:
@@ -255,3 +257,13 @@ class HttpHandler(Handler):
             return Response(200, {"content-type": "application/json"}, bytes(content, "utf-8"))
         except Exception as e:
             return Response(500, {"content-type": "application/json"}, bytes(json.dumps({"error": str(e)}), "utf-8"))
+
+    async def get_groq_summary(self):
+        try:
+            with open("/groq_summary.json", "r") as f:
+                content = f.read()
+            return Response(200, {"content-type": "application/json"}, bytes(content, "utf-8"))
+        except Exception as e:
+            # If file doesn't exist yet, return a graceful null structure
+            default = json.dumps({"todayTotal": 0, "thisMonthTotal": 0, "lastMonthTotal": 0})
+            return Response(200, {"content-type": "application/json"}, bytes(default, "utf-8"))
