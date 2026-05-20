@@ -27,9 +27,23 @@ class HttpHandler(Handler):
         if not started_at:
             return ""
         try:
-            # ISO string: 2024-11-01T...
-            return started_at.split('T')[0]
-        except Exception:
+            # ISO string is in UTC (often with 'Z' suffix)
+            # Example: 2024-11-01T23:54:00Z
+            dt_utc = datetime.fromisoformat(started_at.replace('Z', '+00:00'))
+            
+            # Convert to America/New_York
+            try:
+                from zoneinfo import ZoneInfo
+                dt_et = dt_utc.astimezone(ZoneInfo("America/New_York"))
+            except Exception:
+                # Fallback if ZoneInfo not available or TZ data missing
+                from datetime import timezone, timedelta
+                et_tz = timezone(timedelta(hours=-4)) # Simple fallback to ET (approx)
+                dt_et = dt_utc.astimezone(et_tz)
+                
+            return dt_et.date().isoformat()
+        except Exception as e:
+            print(f"Error parsing date {started_at}: {e}")
             return ""
 
     async def get_historical_month_data(self, request: Request):
@@ -198,7 +212,8 @@ class HttpHandler(Handler):
                 "duration": self.format_duration(duration_secs),
                 "duration_hours": duration_hours,
                 "note": e.get("note", {}).get("text", ""),
-                "nonbillable": nonbillable
+                "nonbillable": nonbillable,
+                "date": self.get_entry_date(e.get("duration"))
             })
             total_hours += duration_hours
 
@@ -241,7 +256,8 @@ class HttpHandler(Handler):
             processed_entries.append({
                 "activity": e.get("activity", {}).get("name", ""),
                 "duration_hours": duration_hours,
-                "nonbillable": nonbillable
+                "nonbillable": nonbillable,
+                "date": self.get_entry_date(e.get("duration"))
             })
             
         result = {
