@@ -239,24 +239,20 @@ class EarlyExporter
   # Counts weekdays between start_date (inclusive) and end_date (exclusive).
   # The method treats end_date as the day *after* the last day to include, matching the logic used elsewhere.
   def count_weekdays(start_date, end_date)
-    puts "Debug count_weekdays: start_date=#{start_date}, end_date=#{end_date}" if ENV['DEBUG']
     count = 0
     current_date = start_date
 
     while current_date < end_date
       # Monday = 1, Sunday = 7
       is_weekday = current_date.wday >= 1 && current_date.wday <= 5
-      puts "Debug count_weekdays: #{current_date} (wday=#{current_date.wday}) is_weekday=#{is_weekday}" if ENV['DEBUG']
 
       if is_weekday
         count += 1
-        puts "Debug count_weekdays: incremented count to #{count}" if ENV['DEBUG']
       end
 
       current_date = current_date.next_day
     end
 
-    puts "Debug count_weekdays: final count=#{count}" if ENV['DEBUG']
     count
   end
 

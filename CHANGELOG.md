@@ -6,14 +6,23 @@
 
 **Daily Performance View:**
 - Added "Daily" view toggle to the main trend chart, showing cumulative balance relative to an 8h/weekday target.
+- **Dynamic Color Logic**: Workdays (M-F) turn green only at ≥8h; Weekends turn green for any work (>0h) to reward "clearing the books."
+- **Reset Logic**: Cumulative balance now resets to 0.0h at the start of each month for better accuracy.
+- **Context Awareness**: Shows last 3 days of the previous month only if they contain work, providing continuity during handoffs.
 - Implemented robust local timezone normalization (America/New_York) to prevent evening work from rolling over to the next day.
 
-**Enhanced "Make Six" Visualization:**
+**Enhanced "Make Six" Mixture:**
 - Replaced the simple Fuel Gauge with a high-granularity 6-Day Stacked Bar Chart.
 - Visualizes the "Fuel/Air" (Billable/Non-Billable) split for each day with an 8h target reference line.
 
+**Dashboard Navigation:**
+- Added Month Paging controls to step through historical data.
+- Added a "Current" button to quickly return to the real-time month.
+
 **Development Workflow:**
-- Improved `spin watch` to automatically trigger React frontend rebuilds when source files change.
+- Improved `spin watch` reliability with explicit directory patterns.
+- Consolidated and silenced noisy debug logs in the data preparation phase.
+- Added a build timestamp to the footer for easy version verification.
 
 ## v0.5.1 - Carburetor Robustness & Mobile Optimization
 

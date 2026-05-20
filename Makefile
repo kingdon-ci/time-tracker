@@ -21,26 +21,24 @@ this: this_month.csv
 this_month.csv:
 	./hack/this-month.sh
 
-export-json:
-	set -a && . ./.env.local && set +a && INCLUDE_NONBILLABLE=true OUTPUT_FILE=web/public/data.json ruby export.rb ^
+prep-data:
+	@echo "Preparing dashboard data..."
+	@set -a && . ./.env.local && set +a && \
+	INCLUDE_NONBILLABLE=true OUTPUT_FILE=web/public/data.json ruby export.rb ^ && \
+	INCLUDE_NONBILLABLE=true OUTPUT_FILE=web/public/six.json ruby export.rb 6 && \
+	ruby generate_summary.rb
 
-export-six:
-	set -a && . ./.env.local && set +a && INCLUDE_NONBILLABLE=true OUTPUT_FILE=web/public/six.json ruby export.rb 6
-
-summary-json:
-	set -a && . ./.env.local && set +a && ruby generate_summary.rb
-
-spin-build:
+spin-build: prep-data
 	cd web && npm run build
 	cd spin-app/time-tracker-service && spin build
 
-spin-up: export-json export-six summary-json spin-build
+spin-up: prep-data spin-build
 	set -a && . ./.env.local && set +a && \
 	cd spin-app/time-tracker-service && \
 	spin up --variable early_api_key=$$EARLY_API_KEY --variable early_api_secret=$$EARLY_API_SECRET
 
-spin-watch: export-json export-six summary-json
-	set -a && . ./.env.local && set +a && \
+spin-watch: prep-data
+	@set -a && . ./.env.local && set +a && \
 	cd spin-app/time-tracker-service && \
 	spin watch --variable early_api_key=$$EARLY_API_KEY --variable early_api_secret=$$EARLY_API_SECRET
 

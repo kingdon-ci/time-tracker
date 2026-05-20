@@ -39,4 +39,4 @@ files = [{ source = "../../web/dist", destination = "/" }]
 [component.frontend.build]
 command = "npm run build"
 workdir = "../../web"
-watch = ["src/**/*", "index.html", "vite.config.ts", "package.json"]
+watch = ["../../web/src/**/*", "../../web/index.html", "../../web/vite.config.ts", "../../web/package.json"]

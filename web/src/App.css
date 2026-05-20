@@ -26,6 +26,74 @@ header {
   gap: 1rem;
 }
 
+.title-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.month-pager {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #1a1a1a;
+  padding: 5px 12px;
+  border-radius: 6px;
+  border: 1px solid #333;
+  width: fit-content;
+}
+
+.pager-btn {
+  background: #333;
+  border: 1px solid #444;
+  color: #fff;
+  border-radius: 4px;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.2s;
+}
+
+.pager-btn:hover:not(:disabled) {
+  background: #444;
+  border-color: #555;
+}
+
+.pager-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.current-month-label {
+  font-size: 0.85rem;
+  font-weight: bold;
+  color: #4caf50;
+  min-width: 120px;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.today-btn {
+  background: #2e7d32;
+  border: none;
+  color: white;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  cursor: pointer;
+  text-transform: uppercase;
+  font-weight: bold;
+}
+
+.today-btn:hover {
+  background: #388e3c;
+}
+
 h1 {
   margin: 0;
   font-size: 2.2rem;

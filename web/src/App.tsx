@@ -62,51 +62,92 @@ function App() {
   const [activeModal, setActiveModal] = useState<{ type: 'pacing' | 'bank' | 'energy' | 'history', data?: any } | null>(null);
   const [trendView, setTrendView] = useState<'monthly' | 'daily'>('monthly');
 
+  // Month Paging State
+  const now = new Date();
+  const [viewDate, setViewDate] = useState(new Date(now.getFullYear(), now.getMonth(), 1));
+  const isCurrentMonth = viewDate.getMonth() === now.getMonth() && viewDate.getFullYear() === now.getFullYear();
+
   useEffect(() => {
-    const fetchData = async (url: string, fallback: string) => {
+    const fetchData = async (url: string, fallback?: string) => {
       try {
         const response = await fetch(url);
         if (!response.ok) {
-          console.warn(`Fetch to ${url} failed with status ${response.status}, falling back to ${fallback}`);
-          const fallbackRes = await fetch(fallback);
-          return await fallbackRes.json();
+          if (fallback) {
+            console.warn(`Fetch to ${url} failed with status ${response.status}, falling back to ${fallback}`);
+            const fallbackRes = await fetch(fallback);
+            return await fallbackRes.json();
+          }
+          throw new Error(`Fetch failed: ${response.status}`);
         }
         
         const contentType = response.headers.get('content-type');
         if (contentType && contentType.includes('text/html')) {
-          console.warn(`Fetch to ${url} returned HTML instead of JSON, falling back to ${fallback}`);
-          const fallbackRes = await fetch(fallback);
-          return await fallbackRes.json();
+          if (fallback) {
+            console.warn(`Fetch to ${url} returned HTML instead of JSON, falling back to ${fallback}`);
+            const fallbackRes = await fetch(fallback);
+            return await fallbackRes.json();
+          }
+          throw new Error("Returned HTML instead of JSON");
         }
         
         return await response.json();
       } catch (e) {
-        console.error(`Error fetching ${url}, falling back to ${fallback}:`, e);
-        try {
+        if (fallback) {
+          console.error(`Error fetching ${url}, falling back to ${fallback}:`, e);
           const fallbackRes = await fetch(fallback);
           return await fallbackRes.json();
-        } catch (fallbackError) {
-          console.error(`Fallback to ${fallback} also failed:`, fallbackError);
-          throw fallbackError;
         }
+        throw e;
       }
     };
 
+    setLoading(true);
+    const year = viewDate.getFullYear();
+    const month = viewDate.getMonth() + 1;
+
+    const mainDataUrl = isCurrentMonth ? '/api/data' : `/api/month?year=${year}&month=${month}`;
+    const mainFallback = isCurrentMonth ? '/data.json' : undefined;
+
     Promise.all([
-      fetchData('/api/data', '/data.json'),
+      fetchData(mainDataUrl, mainFallback),
       fetchData('/api/six', '/six.json'),
       fetchData('/api/history', '/history_summary.json'),
       fetchData('/api/groq', '/groq_summary.json')
     ])
     .then(([current, six, history, groq]) => {
-      setCurrentData(current);
+      // Normalize historical month data to match TrackerData structure if needed
+      if (!isCurrentMonth) {
+        // Mock progress for historical month
+        const histMonth = history.months.find((m: any) => m.year === year && m.month === month);
+        const lastDay = new Date(year, month, 0).getDate();
+        setCurrentData({
+          progress: {
+            total_hours: histMonth?.total_hours || 0,
+            expected_hours: histMonth?.expected_hours || 0,
+            percentage: histMonth?.percentage || 0,
+            hours_diff: histMonth?.hours_diff || 0,
+            status: (histMonth?.hours_diff || 0) >= 0 ? 'over' : 'under',
+            weekdays: histMonth?.weekdays || 0,
+            start_date: `${year}-${String(month).padStart(2, '0')}-01`,
+            end_date: `${year}-${String(month).padStart(2, '0')}-${lastDay}`
+          },
+          entries: current.entries,
+          generated_at: new Date().toISOString()
+        });
+      } else {
+        setCurrentData(current);
+      }
       setSixData(six);
       setHistoryData(history);
       setGroqData(groq);
     })
     .catch(err => setError(err.message))
     .finally(() => setLoading(false));
-  }, []);
+  }, [viewDate]);
+
+  const changeMonth = (offset: number) => {
+    setViewDate(prev => new Date(prev.getFullYear(), prev.getMonth() + offset, 1));
+  };
 
   if (loading) return <div className="loading">Loading Carburetor...</div>;
   if (error) return <div className="error">Error: {error}</div>;
@@ -114,20 +155,21 @@ function App() {
 
   const { progress, entries } = currentData;
   
-  // Calculate BILLABLE only for current month
+  // Calculate BILLABLE only for current view
   const currentBillableHours = entries
     .filter(e => !e.nonbillable)
     .reduce((sum, e) => sum + e.duration_hours, 0);
   
   const currentBillableDiff = currentBillableHours - progress.expected_hours;
 
-  // Historical context
-  const [startYear, startMonth] = progress.start_date.split('-').map(Number);
-  const currentYear = startYear;
+  // Historical context (for the bank/rolling balance)
   const historyMonths = historyData?.months || [];
   
   const relevantHistoricalMonths = historyMonths
-    .filter(m => m.year === currentYear)
+    .filter(m => {
+      const mDate = new Date(m.year, m.month - 1, 1);
+      return mDate < viewDate;
+    })
     .slice(-5);
     
   const historicalDiff = relevantHistoricalMonths.reduce((sum, m) => sum + m.hours_diff, 0);
@@ -160,29 +202,55 @@ function App() {
   
   const dailyHistory: any[] = [];
   let runningBalance = 0;
-  let currDateObj = new Date(startDate);
-  // Use a more robust way to get today's date in local time for comparison
-  const now = new Date();
+  
+  // Calculate start of context (3 days before start of current view)
+  const contextStart = new Date(startDate);
+  contextStart.setDate(contextStart.getDate() - 3);
+  
+  let currDateObj = new Date(contextStart);
+  
   const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+  const endOfViewStr = isCurrentMonth ? todayStr : `${eY}-${String(eM).padStart(2, '0')}-${String(eD).padStart(2, '0')}`;
+  const monthStartStr = `${sY}-${String(sM).padStart(2, '0')}-${String(sD).padStart(2, '0')}`;
 
   while (currDateObj <= endDate) {
-    // Format current date object to YYYY-MM-DD local
     const dStr = `${currDateObj.getFullYear()}-${String(currDateObj.getMonth() + 1).padStart(2, '0')}-${String(currDateObj.getDate()).padStart(2, '0')}`;
+    const isNewMonth = dStr === monthStartStr;
+    const isContext = dStr < monthStartStr;
     
+    // Reset balance at the official start of the month
+    if (isNewMonth) runningBalance = 0;
+
     const dayData = dailyEntries[dStr] || { billable: 0, nonbillable: 0 };
     const expected = isWorkday(dStr) ? 8 : 0;
     
     runningBalance += dayData.billable - expected;
     
-    dailyHistory.push({
-      date: dStr,
-      billable: dayData.billable,
-      expected: expected,
-      hours_diff: runningBalance,
-      label: dStr.split('-')[2] // Just the day number
-    });
+    // Only show context days if you actually worked (removes the "red deficit" lead-in)
+    if (!isContext || dayData.billable > 0) {
+      // Color logic: 
+      // Workdays (M-F): Green if you hit the 8h target, otherwise red.
+      // Weekends (S-S): Green if you did any work (>0h), otherwise neutral/red.
+      const isWeekend = !isWorkday(dStr);
+      let statusColor = '#f44336'; // Default red
+      if (isWeekend) {
+        statusColor = dayData.billable > 0 ? '#4caf50' : '#444'; // Green for effort, otherwise neutral
+      } else {
+        statusColor = dayData.billable >= 8 ? '#4caf50' : '#f44336'; // Green only if target hit
+      }
+
+      dailyHistory.push({
+        date: dStr,
+        billable: dayData.billable,
+        expected: expected,
+        hours_diff: runningBalance,
+        label: dStr.split('-')[2],
+        isContext: isContext,
+        statusColor: statusColor
+      });
+    }
     
-    if (dStr === todayStr) break;
+    if (dStr === endOfViewStr) break;
     currDateObj.setDate(currDateObj.getDate() + 1);
   }
 
@@ -190,7 +258,23 @@ function App() {
     <div className="container">
       <header>
         <div className="header-main">
-          <h1>Time Carburetor</h1>
+          <div className="title-group">
+            <h1>Time Carburetor</h1>
+            <div className="month-pager">
+              <button onClick={() => changeMonth(-1)} className="pager-btn">&lt;</button>
+              <span className="current-month-label">
+                {viewDate.toLocaleString('default', { month: 'long', year: 'numeric' })}
+              </span>
+              <button 
+                onClick={() => changeMonth(1)} 
+                className="pager-btn" 
+                disabled={isCurrentMonth}
+              >&gt;</button>
+              {!isCurrentMonth && (
+                <button onClick={() => setViewDate(new Date(now.getFullYear(), now.getMonth(), 1))} className="today-btn">Current</button>
+              )}
+            </div>
+          </div>
           <div className="header-stats">
             {groqData && (
               <span 
@@ -201,7 +285,7 @@ function App() {
               </span>
             )}
             <span className="balance-badge">
-              Monthly: <strong>{currentBillableDiff >= 0 ? '+' : ''}{currentBillableDiff.toFixed(1)}h</strong>
+              {isCurrentMonth ? 'Monthly' : 'Period'}: <strong>{currentBillableDiff >= 0 ? '+' : ''}{currentBillableDiff.toFixed(1)}h</strong>
             </span>
           </div>
         </div>
@@ -294,10 +378,13 @@ function App() {
               {trendView === 'monthly' ? (
                 <TrendChart 
                   months={[
-                    ...historyData.months,
+                    ...historyData.months.filter(m => {
+                      const mDate = new Date(m.year, m.month - 1, 1);
+                      return mDate < viewDate;
+                    }),
                     {
-                      year: startYear,
-                      month: startMonth,
+                      year: viewDate.getFullYear(),
+                      month: viewDate.getMonth() + 1,
                       hours_diff: currentBillableDiff,
                       total_hours: currentBillableHours,
                       expected_hours: progress.expected_hours,
@@ -354,7 +441,7 @@ function App() {
       <footer>
         <div className="footer-info">
           <p>Last updated: {new Date(currentData.generated_at).toLocaleString()}</p>
-          <p>Expectation based on 8h/weekday up to current date.</p>
+          <p>Expectation based on 8h/weekday up to current date. (Build: 2026-05-19.2315)</p>
         </div>
       </footer>
 
@@ -385,26 +472,36 @@ function App() {
   const height = 150;
   const width = 600;
   const padding = 30;
-
+  
   const points = data.map((d, i) => {
     const x = padding + (i * (width - 2 * padding) / (data.length - 1 || 1));
     const y = height / 2 - (d.hours_diff / maxDiff) * (height / 2 - padding);
-    return { x, y, val: d.hours_diff, label: d.label, billable: d.billable, expected: d.expected };
+    return { ...d, x, y };
   });
 
-  const pathD = points.map((p, i) => (i === 0 ? `M ${p.x} ${p.y}` : `L ${p.x} ${p.y}`)).join(' ');
+  // Separate context and main month points for independent paths (allows discontinuity)
+  const contextPoints = points.filter(p => p.isContext);
+  const mainPoints = points.filter(p => !p.isContext);
+
+  const getPath = (pts: any[]) => pts.map((p, i) => (i === 0 ? `M ${p.x} ${p.y}` : `L ${p.x} ${p.y}`)).join(' ');
+  const contextPath = getPath(contextPoints);
+  const mainPath = getPath(mainPoints);
+
+  // Find where the new month starts
+  const firstMonthDayIndex = points.findIndex(p => !p.isContext);
+  const dividerX = firstMonthDayIndex > 0 ? points[firstMonthDayIndex].x - (points[firstMonthDayIndex].x - points[firstMonthDayIndex-1].x)/2 : null;
 
   return (
     <div className="daily-chart-wrapper">
       <svg width="100%" height={height} viewBox={`0 0 ${width} ${height}`} style={{ overflow: 'visible' }}>
         <line x1={padding} y1={height/2} x2={width-padding} y2={height/2} stroke="#444" strokeDasharray="4 2" />
-
-        {/* Fill area under/above the line */}
-        <path 
-          d={`${pathD} L ${points[points.length-1].x} ${height/2} L ${points[0].x} ${height/2} Z`} 
-          fill="url(#gradient-daily)" 
-          opacity="0.2" 
-        />
+        
+        {dividerX && (
+          <g>
+            <line x1={dividerX} y1={padding} x2={dividerX} y2={height-padding} stroke="#666" strokeDasharray="2 2" />
+            <text x={dividerX + 5} y={padding} fill="#666" fontSize="8" fontWeight="bold">PERIOD START (0.0h)</text>
+          </g>
+        )}
 
         <defs>
           <linearGradient id="gradient-daily" x1="0" y1="0" x2="0" y2="1">
@@ -414,45 +511,62 @@ function App() {
           </linearGradient>
         </defs>
 
-        <path d={pathD} fill="none" stroke="#3498db" strokeWidth="2" />
+        {/* Fill and Path for Context */}
+        {contextPath && (
+          <g opacity="0.4">
+            <path d={contextPath} fill="none" stroke="#3498db" strokeWidth="2" strokeDasharray="4 2" />
+          </g>
+        )}
 
+        {/* Fill and Path for Main Month */}
+        {mainPath && (
+          <>
+            <path 
+              d={`${mainPath} L ${mainPoints[mainPoints.length-1].x} ${height/2} L ${mainPoints[0].x} ${height/2} Z`} 
+              fill="url(#gradient-daily)" 
+              opacity="0.2" 
+            />
+            <path d={mainPath} fill="none" stroke="#3498db" strokeWidth="2" />
+          </>
+        )}
+        
         {points.map((p, i) => (
-          <g key={i}>
+          <g key={i} style={{ opacity: p.isContext ? 0.4 : 1 }}>
             <circle 
               cx={p.x} 
               cy={p.y} 
               r={i === points.length - 1 ? "5" : "3"} 
-              fill={p.val >= 0 ? '#4caf50' : '#f44336'} 
+              fill={p.statusColor} 
               style={{ transition: 'all 0.3s' }}
             >
-              <title>{`Day ${p.label}: ${p.billable.toFixed(1)}h worked (Target: ${p.expected}h)\nBalance: ${p.val >= 0 ? '+' : ''}${p.val.toFixed(1)}h`}</title>
+              <title>{`${p.isContext ? '(PREV MONTH) ' : ''}Day ${p.label}: ${p.billable.toFixed(1)}h worked (Target: ${p.expected}h)\nBalance: ${p.hours_diff >= 0 ? '+' : ''}${p.hours_diff.toFixed(1)}h`}</title>
             </circle>
-            {(i % 5 === 0 || i === points.length - 1) && (
+            {((i % 5 === 0 || i === points.length - 1) && !p.isContext) && (
               <text x={p.x} y={height + 15} fill="#666" fontSize="10" textAnchor="middle">{p.label}</text>
             )}
           </g>
         ))}
-
-        {points.length > 0 && (
+        
+        {mainPoints.length > 0 && (
           <g>
             <rect 
-              x={points[points.length-1].x - 25} 
-              y={points[points.length-1].y - 25} 
+              x={mainPoints[mainPoints.length-1].x - 25} 
+              y={mainPoints[mainPoints.length-1].y - 25} 
               width="50" height="20" rx="4" 
               fill="#333" stroke="#555"
             />
-            <text x={points[points.length-1].x} y={points[points.length-1].y - 11} fill="#fff" fontSize="11" fontWeight="bold" textAnchor="middle">
-              {points[points.length-1].val >= 0 ? '+' : ''}{points[points.length-1].val.toFixed(1)}h
+            <text x={mainPoints[mainPoints.length-1].x} y={mainPoints[mainPoints.length-1].y - 11} fill="#fff" fontSize="11" fontWeight="bold" textAnchor="middle">
+              {mainPoints[mainPoints.length-1].hours_diff >= 0 ? '+' : ''}{mainPoints[mainPoints.length-1].hours_diff.toFixed(1)}h
             </text>
           </g>
         )}
       </svg>
       <div style={{ marginTop: '20px', fontSize: '0.75rem', color: '#888', textAlign: 'center' }}>
-        Shows cumulative deviation from 8h/weekday target. Returns to 0 when exactly on schedule.
+        Current period cumulative: {mainPoints[mainPoints.length-1]?.hours_diff.toFixed(1)}h
       </div>
     </div>
   );
-  }
+}
 
   function MixtureChart({ entries, label }: { entries: any[], label: string }) {
   // Group by date
