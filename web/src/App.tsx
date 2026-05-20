@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react'
 import './App.css'
 import Gauge from './components/Gauge'
-import FuelGauge from './components/FuelGauge'
 import DashboardModal from './components/DashboardModal'
 
 interface ProgressData {
@@ -21,6 +20,7 @@ interface Entry {
   duration_hours: number;
   note: string;
   nonbillable: boolean;
+  date?: string;
 }
 
 interface TrackerData {
@@ -60,6 +60,7 @@ function App() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [activeModal, setActiveModal] = useState<{ type: 'pacing' | 'bank' | 'energy' | 'history', data?: any } | null>(null);
+  const [trendView, setTrendView] = useState<'monthly' | 'daily'>('monthly');
 
   useEffect(() => {
     const fetchData = async (url: string, fallback: string) => {
@@ -133,12 +134,57 @@ function App() {
   const compTimeBalance = historicalDiff + currentBillableDiff;
   const lookbackCount = relevantHistoricalMonths.length + 1;
 
-  // Calculate billable vs nonbillable for "Make Six"
-  const sixBillable = sixData.entries.filter((e: any) => !e.nonbillable).reduce((sum: number, e: any) => sum + e.duration_hours, 0);
-  const sixNonBillable = sixData.entries.filter((e: any) => e.nonbillable).reduce((sum: number, e: any) => sum + e.duration_hours, 0);
-
   // Calculate billable vs nonbillable for this month
   const monthNonBillable = entries.filter((e: any) => e.nonbillable).reduce((sum: number, e: any) => sum + e.duration_hours, 0);
+
+  // Daily processing for current month
+  const dailyEntries = entries.reduce((acc: any, e) => {
+    if (!e.date) return acc;
+    if (!acc[e.date]) acc[e.date] = { billable: 0, nonbillable: 0 };
+    if (e.nonbillable) acc[e.date].nonbillable += e.duration_hours;
+    else acc[e.date].billable += e.duration_hours;
+    return acc;
+  }, {});
+
+  const isWorkday = (dateStr: string) => {
+    const [y, m, d] = dateStr.split('-').map(Number);
+    const date = new Date(y, m - 1, d);
+    const day = date.getDay();
+    return day !== 0 && day !== 6;
+  };
+
+  const [sY, sM, sD] = progress.start_date.split('-').map(Number);
+  const [eY, eM, eD] = progress.end_date.split('-').map(Number);
+  const startDate = new Date(sY, sM - 1, sD);
+  const endDate = new Date(eY, eM - 1, eD);
+  
+  const dailyHistory: any[] = [];
+  let runningBalance = 0;
+  let currDateObj = new Date(startDate);
+  // Use a more robust way to get today's date in local time for comparison
+  const now = new Date();
+  const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+
+  while (currDateObj <= endDate) {
+    // Format current date object to YYYY-MM-DD local
+    const dStr = `${currDateObj.getFullYear()}-${String(currDateObj.getMonth() + 1).padStart(2, '0')}-${String(currDateObj.getDate()).padStart(2, '0')}`;
+    
+    const dayData = dailyEntries[dStr] || { billable: 0, nonbillable: 0 };
+    const expected = isWorkday(dStr) ? 8 : 0;
+    
+    runningBalance += dayData.billable - expected;
+    
+    dailyHistory.push({
+      date: dStr,
+      billable: dayData.billable,
+      expected: expected,
+      hours_diff: runningBalance,
+      label: dStr.split('-')[2] // Just the day number
+    });
+    
+    if (dStr === todayStr) break;
+    currDateObj.setDate(currDateObj.getDate() + 1);
+  }
 
   return (
     <div className="container">
@@ -210,9 +256,8 @@ function App() {
 
           {/* Gauge 3: Fuel Mixture (Past 6 Days) */}
           <section className="panel fuel-panel" onClick={() => setActiveModal({ type: 'energy' })}>
-            <FuelGauge 
-              billable={sixBillable} 
-              nonbillable={sixNonBillable} 
+            <MixtureChart 
+              entries={sixData.entries} 
               label="Make Six Mixture" 
             />
           </section>
@@ -220,25 +265,52 @@ function App() {
 
         <div className="right-col">
           <section className="panel trend-panel">
-            <h3>Cumulative Surplus/Deficit (All-Time)</h3>
+            <div className="panel-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', borderBottom: '1px solid #333', paddingBottom: '0.5rem' }}>
+              <h3 style={{ margin: 0, border: 'none' }}>{trendView === 'monthly' ? 'Cumulative Surplus/Deficit (All-Time)' : 'Daily Performance Balance (Current Month)'}</h3>
+              <div className="toggle-group" style={{ display: 'flex', gap: '5px', background: '#333', padding: '3px', borderRadius: '5px' }}>
+                <button 
+                  onClick={() => setTrendView('monthly')}
+                  style={{ 
+                    padding: '3px 8px', fontSize: '0.7rem', border: 'none', borderRadius: '3px',
+                    background: trendView === 'monthly' ? '#4caf50' : 'transparent',
+                    color: trendView === 'monthly' ? '#fff' : '#888',
+                    cursor: 'pointer',
+                    fontWeight: 'bold'
+                  }}
+                >MONTHLY</button>
+                <button 
+                  onClick={() => setTrendView('daily')}
+                  style={{ 
+                    padding: '3px 8px', fontSize: '0.7rem', border: 'none', borderRadius: '3px',
+                    background: trendView === 'daily' ? '#4caf50' : 'transparent',
+                    color: trendView === 'daily' ? '#fff' : '#888',
+                    cursor: 'pointer',
+                    fontWeight: 'bold'
+                  }}
+                >DAILY</button>
+              </div>
+            </div>
             <div className="chart-container" style={{cursor: 'pointer'}}>
-              <TrendChart 
-                months={[
-                  ...historyData.months,
-                  {
-                    year: startYear,
-                    month: startMonth,
-                    hours_diff: currentBillableDiff,
-                    // Minimal properties needed for the chart
-                    total_hours: currentBillableHours,
-                    expected_hours: progress.expected_hours,
-                    percentage: (currentBillableHours / progress.expected_hours) * 100,
-                    weekdays: progress.weekdays,
-                    moving_avg_4m: null
-                  }
-                ]} 
-                onPointClick={(m: any) => setActiveModal({ type: 'history', data: m })} 
-              />
+              {trendView === 'monthly' ? (
+                <TrendChart 
+                  months={[
+                    ...historyData.months,
+                    {
+                      year: startYear,
+                      month: startMonth,
+                      hours_diff: currentBillableDiff,
+                      total_hours: currentBillableHours,
+                      expected_hours: progress.expected_hours,
+                      percentage: (currentBillableHours / progress.expected_hours) * 100,
+                      weekdays: progress.weekdays,
+                      moving_avg_4m: null
+                    }
+                  ]} 
+                  onPointClick={(m: any) => setActiveModal({ type: 'history', data: m })} 
+                />
+              ) : (
+                <DailyTrendChart data={dailyHistory} />
+              )}
             </div>
           </section>
 
@@ -305,7 +377,136 @@ function App() {
         }}
       />
     </div>
-  )
+  );
+  }
+
+  function DailyTrendChart({ data }: { data: any[] }) {
+  const maxDiff = Math.max(...data.map(d => Math.abs(d.hours_diff)), 8);
+  const height = 150;
+  const width = 600;
+  const padding = 30;
+
+  const points = data.map((d, i) => {
+    const x = padding + (i * (width - 2 * padding) / (data.length - 1 || 1));
+    const y = height / 2 - (d.hours_diff / maxDiff) * (height / 2 - padding);
+    return { x, y, val: d.hours_diff, label: d.label, billable: d.billable, expected: d.expected };
+  });
+
+  const pathD = points.map((p, i) => (i === 0 ? `M ${p.x} ${p.y}` : `L ${p.x} ${p.y}`)).join(' ');
+
+  return (
+    <div className="daily-chart-wrapper">
+      <svg width="100%" height={height} viewBox={`0 0 ${width} ${height}`} style={{ overflow: 'visible' }}>
+        <line x1={padding} y1={height/2} x2={width-padding} y2={height/2} stroke="#444" strokeDasharray="4 2" />
+
+        {/* Fill area under/above the line */}
+        <path 
+          d={`${pathD} L ${points[points.length-1].x} ${height/2} L ${points[0].x} ${height/2} Z`} 
+          fill="url(#gradient-daily)" 
+          opacity="0.2" 
+        />
+
+        <defs>
+          <linearGradient id="gradient-daily" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#4caf50" />
+            <stop offset="50%" stopColor="transparent" />
+            <stop offset="100%" stopColor="#f44336" />
+          </linearGradient>
+        </defs>
+
+        <path d={pathD} fill="none" stroke="#3498db" strokeWidth="2" />
+
+        {points.map((p, i) => (
+          <g key={i}>
+            <circle 
+              cx={p.x} 
+              cy={p.y} 
+              r={i === points.length - 1 ? "5" : "3"} 
+              fill={p.val >= 0 ? '#4caf50' : '#f44336'} 
+              style={{ transition: 'all 0.3s' }}
+            >
+              <title>{`Day ${p.label}: ${p.billable.toFixed(1)}h worked (Target: ${p.expected}h)\nBalance: ${p.val >= 0 ? '+' : ''}${p.val.toFixed(1)}h`}</title>
+            </circle>
+            {(i % 5 === 0 || i === points.length - 1) && (
+              <text x={p.x} y={height + 15} fill="#666" fontSize="10" textAnchor="middle">{p.label}</text>
+            )}
+          </g>
+        ))}
+
+        {points.length > 0 && (
+          <g>
+            <rect 
+              x={points[points.length-1].x - 25} 
+              y={points[points.length-1].y - 25} 
+              width="50" height="20" rx="4" 
+              fill="#333" stroke="#555"
+            />
+            <text x={points[points.length-1].x} y={points[points.length-1].y - 11} fill="#fff" fontSize="11" fontWeight="bold" textAnchor="middle">
+              {points[points.length-1].val >= 0 ? '+' : ''}{points[points.length-1].val.toFixed(1)}h
+            </text>
+          </g>
+        )}
+      </svg>
+      <div style={{ marginTop: '20px', fontSize: '0.75rem', color: '#888', textAlign: 'center' }}>
+        Shows cumulative deviation from 8h/weekday target. Returns to 0 when exactly on schedule.
+      </div>
+    </div>
+  );
+  }
+
+  function MixtureChart({ entries, label }: { entries: any[], label: string }) {
+  // Group by date
+  const daily: any = {};
+  entries.forEach(e => {
+    if (!e.date) return;
+    if (!daily[e.date]) daily[e.date] = { billable: 0, nonbillable: 0 };
+    if (e.nonbillable) daily[e.date].nonbillable += e.duration_hours;
+    else daily[e.date].billable += e.duration_hours;
+  });
+
+  const sortedDates = Object.keys(daily).sort();
+  const maxHours = Math.max(...Object.values(daily).map((d: any) => d.billable + d.nonbillable), 8);
+  
+  return (
+    <div style={{ textAlign: 'center', padding: '10px 0' }}>
+      <h3 style={{ margin: '0 0 15px 0', color: '#aaa', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.1rem' }}>{label}</h3>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', height: '100px', padding: '0 10px', gap: '8px' }}>
+        {sortedDates.map(date => {
+          const d = daily[date];
+          const total = d.billable + d.nonbillable;
+          return (
+            <div key={date} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '5px' }}>
+              <div style={{ 
+                width: '100%', 
+                height: '80px', 
+                background: '#333', 
+                borderRadius: '3px', 
+                display: 'flex', 
+                flexDirection: 'column-reverse',
+                overflow: 'hidden',
+                position: 'relative'
+              }}>
+                <div style={{ height: `${(d.billable / maxHours) * 100}%`, background: '#ff9800', transition: 'height 0.5s' }} title={`Billable: ${d.billable.toFixed(1)}h`}></div>
+                <div style={{ height: `${(d.nonbillable / maxHours) * 100}%`, background: '#00bcd4', transition: 'height 0.5s' }} title={`Non-billable: ${d.nonbillable.toFixed(1)}h`}></div>
+                {total > 8 && <div style={{ position: 'absolute', bottom: `${(8/maxHours)*100}%`, width: '100%', height: '1px', background: 'rgba(255,255,255,0.3)', borderTop: '1px dashed #fff' }}></div>}
+              </div>
+              <span style={{ fontSize: '8px', color: '#666' }}>{date.split('-')[2]}</span>
+            </div>
+          );
+        })}
+      </div>
+      <div style={{ display: 'flex', justifyContent: 'center', gap: '15px', marginTop: '15px', fontSize: '10px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+          <div style={{ width: '8px', height: '8px', background: '#ff9800', borderRadius: '2px' }}></div>
+          <span style={{ color: '#ff9800' }}>FUEL</span>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+          <div style={{ width: '8px', height: '8px', background: '#00bcd4', borderRadius: '2px' }}></div>
+          <span style={{ color: '#00bcd4' }}>AIR</span>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 function TrendChart({ months, onPointClick }: { months: HistoricalMonth[], onPointClick: (m: HistoricalMonth) => void }) {
