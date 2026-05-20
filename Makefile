@@ -40,7 +40,6 @@ spin-up: export-json export-six summary-json spin-build
 	spin up --variable early_api_key=$$EARLY_API_KEY --variable early_api_secret=$$EARLY_API_SECRET
 
 spin-watch: export-json export-six summary-json
-	cd web && npm run build
 	set -a && . ./.env.local && set +a && \
 	cd spin-app/time-tracker-service && \
 	spin watch --variable early_api_key=$$EARLY_API_KEY --variable early_api_secret=$$EARLY_API_SECRET
