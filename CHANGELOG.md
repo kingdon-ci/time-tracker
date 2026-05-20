@@ -1,5 +1,20 @@
 # Changelog
 
+## v0.6.0 - Daily Precision & Mixture Mastery (2026-05-19)
+
+### New Features
+
+**Daily Performance View:**
+- Added "Daily" view toggle to the main trend chart, showing cumulative balance relative to an 8h/weekday target.
+- Implemented robust local timezone normalization (America/New_York) to prevent evening work from rolling over to the next day.
+
+**Enhanced "Make Six" Visualization:**
+- Replaced the simple Fuel Gauge with a high-granularity 6-Day Stacked Bar Chart.
+- Visualizes the "Fuel/Air" (Billable/Non-Billable) split for each day with an 8h target reference line.
+
+**Development Workflow:**
+- Improved `spin watch` to automatically trigger React frontend rebuilds when source files change.
+
 ## v0.5.1 - Carburetor Robustness & Mobile Optimization
 
 ### New Features
