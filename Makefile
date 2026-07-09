@@ -36,7 +36,6 @@ lint:
 
 format:
 	cd brain && cargo fmt
-	cd android && ./gradlew format --no-daemon || echo "Format task not configured"
 
 clean:
 	cd brain && cargo clean || true

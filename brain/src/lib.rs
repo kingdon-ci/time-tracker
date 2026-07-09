@@ -22,7 +22,6 @@ pub extern "C" fn get_result_buffer_ptr() -> *const u8 {
 }
 
 // Safely copy a string to the RESULT_BUFFER with null termination
-// Safely copy a string to the RESULT_BUFFER with null termination
 unsafe fn write_result_str(s: &str) -> *const u8 {
     let bytes = s.as_bytes();
     if bytes.len() >= 1048575 {
