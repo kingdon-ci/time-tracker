@@ -1,0 +1,31 @@
+name: Ruby CI
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'legacy/**'
+      - 'history/**'
+      - '.github/workflows/ruby-ci.yml'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'legacy/**'
+      - 'history/**'
+      - '.github/workflows/ruby-ci.yml'
+
+jobs:
+  ruby-test:
+    name: Ruby Test Suite
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.4'
+          bundler-cache: true
+
+      - name: Run Tests
+        run: cd legacy/test && ruby run_tests.rb

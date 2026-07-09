@@ -28,6 +28,33 @@ The project is structured to enforce a strict local-first separation of concerns
                      [ Early API ]         [  brain.wasm ]
 ```
 
+## Two-Flow Architecture
+
+The codebase maintains two independent work pipelines that serve different purposes and use separate math definitions:
+
+```mermaid
+graph TD
+    subgraph Android Flow (Current Dashboard)
+        A1[WASM Brain] -->|Unified Strict Math| A2[Android App]
+        A2 -->|Displays Live Data| A3[User Dashboard]
+    end
+    subgraph Ruby Archive Flow (Legacy CLI)
+        B1[export.rb] -->|Historical Math| B2[since_the_start.sh]
+        B2 -->|Populates CSVs| B3[history/ Directory]
+        B3 -->|Aggregates| B4[summary_report.md]
+    end
+```
+
+### 1. Android Flow (Current)
+- **Components**: WASM brain (`brain/`) + Jetpack Compose host (`android/`).
+- **Purpose**: Provides the real-time, local-first daily dashboard and targets tracking.
+- **Math**: **Unified Strict Math**. Every month is computed independently using inclusive weekday math (each month counts all weekdays fully). It does **not** count or read from the Ruby CSV history archives.
+
+### 2. Ruby Archive Flow (Legacy)
+- **Components**: `export.rb` + `since_the_start.sh` + `summary_report.md` (located under `legacy/`).
+- **Purpose**: Produces and updates the long-term, read-only historical CSV files in the `history/` folder (gitignored). Used for retrospective devlog archives.
+- **Math**: **Historical Math**. Preserves the pre-April 2026 "jubilee math" (which excluded the last day of each month for reprieves) so that historical monthly comp-time balances do not change retrospectively over time.
+
 ## Getting Started
 
 ### Prerequisites

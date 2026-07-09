@@ -78,13 +78,7 @@ pub fn compute_target(input: TargetInput) -> TargetResponse {
     let eff_end = if is_current_month {
         today.succ_opt().unwrap_or(today)
     } else {
-        let year = start_date.year() as i32;
-        let month = start_date.month() as i32;
-        if year < 2026 || (year == 2026 && month < 4) {
-            end_date
-        } else {
-            end_date.succ_opt().unwrap_or(end_date)
-        }
+        end_date.succ_opt().unwrap_or(end_date)
     };
 
     let weekdays = count_weekdays(start_date, eff_end);

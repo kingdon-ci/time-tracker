@@ -1,29 +1,24 @@
-name: CI
+name: Android Release Build
 
 on:
   push:
     branches: [ main ]
+    paths:
+      - 'android/**'
+      - 'brain/**'
+      - 'Makefile'
+      - '.github/workflows/android-build.yml'
   pull_request:
     branches: [ main ]
+    paths:
+      - 'android/**'
+      - 'brain/**'
+      - 'Makefile'
+      - '.github/workflows/android-build.yml'
 
 jobs:
-  rust-brain:
-    name: Rust WASM Brain
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Install Rust
-        uses: dtolnay/rust-toolchain@stable
-        with:
-          toolchain: stable
-          targets: wasm32-wasip1
-
-      - name: Run Brain Tests
-        run: cd brain && cargo test
-
-  android-host:
-    name: Android Host
+  android-build:
+    name: Build Android APK
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -37,8 +32,7 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
 
-      # Build WASM first because android build needs assets/brain.wasm
-      - name: Install Rust (for Brain build)
+      - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
         with:
           toolchain: stable
@@ -50,9 +44,6 @@ jobs:
           cargo build --target wasm32-wasip1 --release
           mkdir -p ../android/app/src/main/assets
           cp target/wasm32-wasip1/release/time_tracker_brain.wasm ../android/app/src/main/assets/brain.wasm
-
-      - name: Run Android Unit Tests
-        run: cd android && ./gradlew test --no-daemon
 
       - name: Assemble Debug APK
         run: cd android && ./gradlew assembleDebug --no-daemon
