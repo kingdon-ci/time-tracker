@@ -47,3 +47,9 @@ jobs:
 
       - name: Assemble Debug APK
         run: cd android && ./gradlew assembleDebug --no-daemon
+
+      - name: Upload APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: time-carburetor-debug-apk
+          path: android/app/build/outputs/apk/debug/app-debug.apk
