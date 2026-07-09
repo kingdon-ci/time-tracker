@@ -10,3 +10,4 @@ build/
 *.iml
 *.log
 .DS_Store
+app/src/main/assets/brain.wasm

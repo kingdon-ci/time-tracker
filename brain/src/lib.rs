@@ -22,9 +22,16 @@ pub extern "C" fn get_result_buffer_ptr() -> *const u8 {
 }
 
 // Safely copy a string to the RESULT_BUFFER with null termination
+// Safely copy a string to the RESULT_BUFFER with null termination
 unsafe fn write_result_str(s: &str) -> *const u8 {
     let bytes = s.as_bytes();
-    let len = bytes.len().min(1048575); // Reserve 1 byte for null terminator
+    if bytes.len() >= 1048575 {
+        let err_msg = r#"{"error":"WASM output buffer overflow: Result size exceeds 1MB"}"#.as_bytes();
+        RESULT_BUFFER[..err_msg.len()].copy_from_slice(err_msg);
+        RESULT_BUFFER[err_msg.len()] = 0;
+        return RESULT_BUFFER.as_ptr();
+    }
+    let len = bytes.len();
     RESULT_BUFFER[..len].copy_from_slice(&bytes[..len]);
     RESULT_BUFFER[len] = 0; // Null terminator
     RESULT_BUFFER.as_ptr()
@@ -32,6 +39,9 @@ unsafe fn write_result_str(s: &str) -> *const u8 {
 
 #[no_mangle]
 pub extern "C" fn compute_monthly_target(len: i32) -> *const u8 {
+    if len < 0 || len >= 1048576 {
+        return unsafe { write_result_str(r#"{"error":"Input size exceeds buffer limit of 1MB"}"#) };
+    }
     let input_bytes = unsafe { &INPUT_BUFFER[..len as usize] };
     let input_str = match std::str::from_utf8(input_bytes) {
         Ok(s) => s,
@@ -54,6 +64,9 @@ pub extern "C" fn compute_monthly_target(len: i32) -> *const u8 {
 
 #[no_mangle]
 pub extern "C" fn compute_six_mixture(len: i32) -> *const u8 {
+    if len < 0 || len >= 1048576 {
+        return unsafe { write_result_str(r#"{"error":"Input size exceeds buffer limit of 1MB"}"#) };
+    }
     let input_bytes = unsafe { &INPUT_BUFFER[..len as usize] };
     let input_str = match std::str::from_utf8(input_bytes) {
         Ok(s) => s,
@@ -76,6 +89,9 @@ pub extern "C" fn compute_six_mixture(len: i32) -> *const u8 {
 
 #[no_mangle]
 pub extern "C" fn compute_moving_average(len: i32) -> *const u8 {
+    if len < 0 || len >= 1048576 {
+        return unsafe { write_result_str(r#"{"error":"Input size exceeds buffer limit of 1MB"}"#) };
+    }
     let input_bytes = unsafe { &INPUT_BUFFER[..len as usize] };
     let input_str = match std::str::from_utf8(input_bytes) {
         Ok(s) => s,

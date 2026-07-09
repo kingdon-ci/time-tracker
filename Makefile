@@ -1,65 +1,44 @@
-.PHONY: run this clean all weekly six test export-json spin-up spin-build spin-watch build-brain build-android build
+.PHONY: setup build-brain test-brain test-android build install lint format clean all
+
+# Detect Android Studio JBR path on macOS
+AS_JDK := /Applications/Android Studio.app/Contents/jbr/Contents/Home/bin
+ifeq ($(shell uname), Darwin)
+  ifeq ($(shell [ -d "$(AS_JDK)" ] && echo yes), yes)
+    export PATH := $(AS_JDK):$(PATH)
+  endif
+endif
+
+all: build
+
+setup:
+	rustup target add wasm32-wasip1
 
 build-brain:
 	cd brain && cargo build --target wasm32-wasip1 --release
 	mkdir -p android/app/src/main/assets
 	cp brain/target/wasm32-wasip1/release/time_tracker_brain.wasm android/app/src/main/assets/brain.wasm
 
-build-android: build-brain
-	export PATH="/Applications/Android Studio.app/Contents/jbr/Contents/Home/bin:$$PATH" && \
-	cd android && chmod +x gradlew && ./gradlew assembleDebug
+test-brain:
+	cd brain && cargo test
 
-build: build-android
+test-android: build-brain
+	cd android && chmod +x gradlew && ./gradlew test --no-daemon
 
-all:
+build: test-brain test-android
+	cd android && chmod +x gradlew && ./gradlew assembleDebug --no-daemon
 
+install: build
+	cd android && ./gradlew installDebug --no-daemon
 
-	-make clean
-	make this
+lint:
+	cd brain && cargo clippy --target wasm32-wasip1 -- -D warnings
+	cd android && ./gradlew lint --no-daemon
 
-today:
-	./hack/today.sh
-
-weekly:
-	./hack/weekly.sh
-
-six:
-	./hack/six.sh
-
-run:
-	./hack/runme.sh
-
-this: this_month.csv
-
-this_month.csv:
-	./hack/this-month.sh
-
-prep-data:
-	@echo "Preparing dashboard data..."
-	@set -a && . ./.env.local && set +a && \
-	INCLUDE_NONBILLABLE=true OUTPUT_FILE=web/public/data.json ruby export.rb ^ && \
-	INCLUDE_NONBILLABLE=true OUTPUT_FILE=web/public/six.json ruby export.rb 6 && \
-	ruby generate_summary.rb
-
-spin-build: prep-data
-	cd web && npm run build
-	cd spin-app/time-tracker-service && spin build
-
-spin-up: prep-data spin-build
-	set -a && . ./.env.local && set +a && \
-	cd spin-app/time-tracker-service && \
-	spin up --variable early_api_key=$$EARLY_API_KEY --variable early_api_secret=$$EARLY_API_SECRET
-
-spin-watch: prep-data
-	@set -a && . ./.env.local && set +a && \
-	cd spin-app/time-tracker-service && \
-	spin watch --variable early_api_key=$$EARLY_API_KEY --variable early_api_secret=$$EARLY_API_SECRET
+format:
+	cd brain && cargo fmt
+	cd android && ./gradlew format --no-daemon || echo "Format task not configured"
 
 clean:
-	rm this_month.csv
-	rm output.csv
-	rm -f web/public/data.json
-	rm -rf web/dist
-
-test:
-	cd test && ruby run_tests.rb
+	cd brain && cargo clean || true
+	cd android && ./gradlew clean --no-daemon || true
+	rm -f android/app/src/main/assets/brain.wasm

@@ -14,7 +14,16 @@ class DashboardTest {
     @Test
     fun testWasmIntegrationFlowOnJvm() {
         // Load WASM from assets directory directly as a file on JVM
-        val wasmFile = File("src/main/assets/brain.wasm")
+        var wasmFile = File("src/main/assets/brain.wasm")
+        if (!wasmFile.exists()) {
+            wasmFile = File("app/src/main/assets/brain.wasm")
+        }
+        if (!wasmFile.exists()) {
+            wasmFile = File("../app/src/main/assets/brain.wasm")
+        }
+        if (!wasmFile.exists()) {
+            wasmFile = File("android/app/src/main/assets/brain.wasm")
+        }
         assertTrue("WASM file should exist in assets", wasmFile.exists())
         
         val wasmInputStream = wasmFile.inputStream()

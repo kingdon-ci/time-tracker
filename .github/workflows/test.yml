@@ -1,4 +1,4 @@
-name: Tests
+name: CI
 
 on:
   push:
@@ -7,27 +7,52 @@ on:
     branches: [ main ]
 
 jobs:
-  test:
+  rust-brain:
+    name: Rust WASM Brain
     runs-on: ubuntu-latest
-    name: Ruby Test Suite
-    
     steps:
       - uses: actions/checkout@v4
-      
-      - name: Set up Ruby
-        uses: ruby/setup-ruby@v1
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
         with:
-          ruby-version: '3.4'
-          bundler-cache: true
-      
-      - name: Check Ruby version
-        run: ruby -v
-      
-      - name: Make scripts executable
+          toolchain: stable
+          targets: wasm32-wasip1
+
+      - name: Run Brain Tests
+        run: cd brain && cargo test
+
+  android-host:
+    name: Android Host
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
+
+      # Build WASM first because android build needs assets/brain.wasm
+      - name: Install Rust (for Brain build)
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: stable
+          targets: wasm32-wasip1
+
+      - name: Compile WASM Brain
         run: |
-          chmod +x export.rb
-          chmod +x test/run_tests.rb
-          chmod +x test/test_*.rb
-          
-      - name: Run tests
-        run: cd test && ruby run_tests.rb
+          cd brain
+          cargo build --target wasm32-wasip1 --release
+          mkdir -p ../android/app/src/main/assets
+          cp target/wasm32-wasip1/release/time_tracker_brain.wasm ../android/app/src/main/assets/brain.wasm
+
+      - name: Run Android Unit Tests
+        run: cd android && ./gradlew test --no-daemon
+
+      - name: Assemble Debug APK
+        run: cd android && ./gradlew assembleDebug --no-daemon
