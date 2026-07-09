@@ -5,13 +5,11 @@ on:
     branches: [ main ]
     paths:
       - 'legacy/**'
-      - 'history/**'
       - '.github/workflows/ruby-ci.yml'
   pull_request:
     branches: [ main ]
     paths:
       - 'legacy/**'
-      - 'history/**'
       - '.github/workflows/ruby-ci.yml'
 
 jobs:
