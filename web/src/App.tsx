@@ -120,16 +120,53 @@ function App() {
         // Mock progress for historical month
         const histMonth = history.months.find((m: any) => m.year === year && m.month === month);
         const lastDay = new Date(year, month, 0).getDate();
+        const start_date = `${year}-${String(month).padStart(2, '0')}-01`;
+        const end_date = `${year}-${String(month).padStart(2, '0')}-${lastDay}`;
+        
+        let total_hours = 0;
+        let expected_hours = 0;
+        let weekdays = 0;
+        let hours_diff = 0;
+        let percentage = 0;
+
+        if (histMonth) {
+          total_hours = histMonth.total_hours;
+          expected_hours = histMonth.expected_hours;
+          percentage = histMonth.percentage;
+          hours_diff = histMonth.hours_diff;
+          weekdays = histMonth.weekdays;
+        } else {
+          // Calculate dynamically from the historical month entries
+          total_hours = (current.entries || [])
+            .filter((e: any) => !e.nonbillable)
+            .reduce((sum: number, e: any) => sum + e.duration_hours, 0);
+          
+          // Calculate weekdays
+          const [sY, sM, sD] = start_date.split('-').map(Number);
+          const [eY, eM, eD] = end_date.split('-').map(Number);
+          const cur = new Date(sY, sM - 1, sD);
+          const end = new Date(eY, eM - 1, eD);
+          while (cur <= end) {
+            const day = cur.getDay();
+            if (day !== 0 && day !== 6) weekdays++;
+            cur.setDate(cur.getDate() + 1);
+          }
+          
+          expected_hours = weekdays * 8.0;
+          hours_diff = total_hours - expected_hours;
+          percentage = expected_hours > 0 ? (total_hours / expected_hours) * 100 : 0;
+        }
+
         setCurrentData({
           progress: {
-            total_hours: histMonth?.total_hours || 0,
-            expected_hours: histMonth?.expected_hours || 0,
-            percentage: histMonth?.percentage || 0,
-            hours_diff: histMonth?.hours_diff || 0,
-            status: (histMonth?.hours_diff || 0) >= 0 ? 'over' : 'under',
-            weekdays: histMonth?.weekdays || 0,
-            start_date: `${year}-${String(month).padStart(2, '0')}-01`,
-            end_date: `${year}-${String(month).padStart(2, '0')}-${lastDay}`
+            total_hours,
+            expected_hours,
+            percentage,
+            hours_diff,
+            status: hours_diff >= 0 ? 'over' : 'under',
+            weekdays,
+            start_date,
+            end_date
           },
           entries: current.entries,
           generated_at: new Date().toISOString()
@@ -180,14 +217,6 @@ function App() {
   const monthNonBillable = entries.filter((e: any) => e.nonbillable).reduce((sum: number, e: any) => sum + e.duration_hours, 0);
 
   // Daily processing for current month
-  const dailyEntries = entries.reduce((acc: any, e) => {
-    if (!e.date) return acc;
-    if (!acc[e.date]) acc[e.date] = { billable: 0, nonbillable: 0 };
-    if (e.nonbillable) acc[e.date].nonbillable += e.duration_hours;
-    else acc[e.date].billable += e.duration_hours;
-    return acc;
-  }, {});
-
   const isWorkday = (dateStr: string) => {
     const [y, m, d] = dateStr.split('-').map(Number);
     const date = new Date(y, m - 1, d);
@@ -199,6 +228,31 @@ function App() {
   const [eY, eM, eD] = progress.end_date.split('-').map(Number);
   const startDate = new Date(sY, sM - 1, sD);
   const endDate = new Date(eY, eM - 1, eD);
+
+  const allEntries = [...entries];
+  if (isCurrentMonth && sixData?.entries) {
+    const startStr = `${sY}-${String(sM).padStart(2, '0')}-01`;
+    sixData.entries.forEach((e: any) => {
+      if (e.date && e.date < startStr) {
+        allEntries.push({
+          activity: e.activity || '',
+          duration: e.duration || '',
+          duration_hours: e.duration_hours,
+          nonbillable: e.nonbillable,
+          date: e.date,
+          note: e.note || ''
+        });
+      }
+    });
+  }
+
+  const dailyEntries = allEntries.reduce((acc: any, e) => {
+    if (!e.date) return acc;
+    if (!acc[e.date]) acc[e.date] = { billable: 0, nonbillable: 0 };
+    if (e.nonbillable) acc[e.date].nonbillable += e.duration_hours;
+    else acc[e.date].billable += e.duration_hours;
+    return acc;
+  }, {});
   
   const dailyHistory: any[] = [];
   let runningBalance = 0;
@@ -468,105 +522,160 @@ function App() {
   }
 
   function DailyTrendChart({ data }: { data: any[] }) {
-  const maxDiff = Math.max(...data.map(d => Math.abs(d.hours_diff)), 8);
-  const height = 150;
-  const width = 600;
-  const padding = 30;
-  
-  const points = data.map((d, i) => {
-    const x = padding + (i * (width - 2 * padding) / (data.length - 1 || 1));
-    const y = height / 2 - (d.hours_diff / maxDiff) * (height / 2 - padding);
-    return { ...d, x, y };
-  });
+    if (data.length === 0) return null;
 
-  // Separate context and main month points for independent paths (allows discontinuity)
-  const contextPoints = points.filter(p => p.isContext);
-  const mainPoints = points.filter(p => !p.isContext);
+    const maxDiff = Math.max(...data.map(d => Math.abs(d.hours_diff)), 8);
+    const height = 150;
+    const width = 600;
+    const padding = 30;
 
-  const getPath = (pts: any[]) => pts.map((p, i) => (i === 0 ? `M ${p.x} ${p.y}` : `L ${p.x} ${p.y}`)).join(' ');
-  const contextPath = getPath(contextPoints);
-  const mainPath = getPath(mainPoints);
+    // Get the year and month from the first main point
+    const firstMainPoint = data.find(d => !d.isContext);
+    const refDateStr = firstMainPoint ? firstMainPoint.date : data[0].date;
+    const [refY, refM] = refDateStr.split('-').map(Number);
+    
+    const startDate = new Date(refY, refM - 1, 1);
+    const lastDay = new Date(refY, refM, 0).getDate();
 
-  // Find where the new month starts
-  const firstMonthDayIndex = points.findIndex(p => !p.isContext);
-  const dividerX = firstMonthDayIndex > 0 ? points[firstMonthDayIndex].x - (points[firstMonthDayIndex].x - points[firstMonthDayIndex-1].x)/2 : null;
+    const minDiffDays = -3;
+    const maxDiffDays = lastDay - 1;
 
-  return (
-    <div className="daily-chart-wrapper">
-      <svg width="100%" height={height} viewBox={`0 0 ${width} ${height}`} style={{ overflow: 'visible' }}>
-        <line x1={padding} y1={height/2} x2={width-padding} y2={height/2} stroke="#444" strokeDasharray="4 2" />
-        
-        {dividerX && (
-          <g>
-            <line x1={dividerX} y1={padding} x2={dividerX} y2={height-padding} stroke="#666" strokeDasharray="2 2" />
-            <text x={dividerX + 5} y={padding} fill="#666" fontSize="8" fontWeight="bold">PERIOD START (0.0h)</text>
-          </g>
-        )}
+    const getX = (dateStr: string) => {
+      const [y, m, d] = dateStr.split('-').map(Number);
+      const dateObj = new Date(y, m - 1, d);
+      
+      const diffTime = dateObj.getTime() - startDate.getTime();
+      const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
+      
+      const fraction = (diffDays - minDiffDays) / (maxDiffDays - minDiffDays);
+      return padding + fraction * (width - 2 * padding);
+    };
 
-        <defs>
-          <linearGradient id="gradient-daily" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#4caf50" />
-            <stop offset="50%" stopColor="transparent" />
-            <stop offset="100%" stopColor="#f44336" />
-          </linearGradient>
-        </defs>
+    const points = data.map((d) => {
+      const x = getX(d.date);
+      const y = height / 2 - (d.hours_diff / maxDiff) * (height / 2 - padding);
+      return { ...d, x, y };
+    });
 
-        {/* Fill and Path for Context */}
-        {contextPath && (
-          <g opacity="0.4">
-            <path d={contextPath} fill="none" stroke="#3498db" strokeWidth="2" strokeDasharray="4 2" />
-          </g>
-        )}
+    // Separate context and main month points for independent paths (allows discontinuity)
+    const contextPoints = points.filter(p => p.isContext);
+    const mainPoints = points.filter(p => !p.isContext);
 
-        {/* Fill and Path for Main Month */}
-        {mainPath && (
-          <>
-            <path 
-              d={`${mainPath} L ${mainPoints[mainPoints.length-1].x} ${height/2} L ${mainPoints[0].x} ${height/2} Z`} 
-              fill="url(#gradient-daily)" 
-              opacity="0.2" 
-            />
-            <path d={mainPath} fill="none" stroke="#3498db" strokeWidth="2" />
-          </>
-        )}
-        
-        {points.map((p, i) => (
-          <g key={i} style={{ opacity: p.isContext ? 0.4 : 1 }}>
-            <circle 
-              cx={p.x} 
-              cy={p.y} 
-              r={i === points.length - 1 ? "5" : "3"} 
-              fill={p.statusColor} 
-              style={{ transition: 'all 0.3s' }}
-            >
-              <title>{`${p.isContext ? '(PREV MONTH) ' : ''}Day ${p.label}: ${p.billable.toFixed(1)}h worked (Target: ${p.expected}h)\nBalance: ${p.hours_diff >= 0 ? '+' : ''}${p.hours_diff.toFixed(1)}h`}</title>
-            </circle>
-            {((i % 5 === 0 || i === points.length - 1) && !p.isContext) && (
-              <text x={p.x} y={height + 15} fill="#666" fontSize="10" textAnchor="middle">{p.label}</text>
-            )}
-          </g>
-        ))}
-        
-        {mainPoints.length > 0 && (
-          <g>
-            <rect 
-              x={mainPoints[mainPoints.length-1].x - 25} 
-              y={mainPoints[mainPoints.length-1].y - 25} 
-              width="50" height="20" rx="4" 
-              fill="#333" stroke="#555"
-            />
-            <text x={mainPoints[mainPoints.length-1].x} y={mainPoints[mainPoints.length-1].y - 11} fill="#fff" fontSize="11" fontWeight="bold" textAnchor="middle">
-              {mainPoints[mainPoints.length-1].hours_diff >= 0 ? '+' : ''}{mainPoints[mainPoints.length-1].hours_diff.toFixed(1)}h
-            </text>
-          </g>
-        )}
-      </svg>
-      <div style={{ marginTop: '20px', fontSize: '0.75rem', color: '#888', textAlign: 'center' }}>
-        Current period cumulative: {mainPoints[mainPoints.length-1]?.hours_diff.toFixed(1)}h
+    const getPath = (pts: any[]) => pts.map((p, i) => (i === 0 ? `M ${p.x} ${p.y}` : `L ${p.x} ${p.y}`)).join(' ');
+    const contextPath = getPath(contextPoints);
+    const mainPath = getPath(mainPoints);
+
+    // Position of divider line is -0.5 days (halfway between last day of last month and first day of this month)
+    const dividerX = padding + (-0.5 - minDiffDays) / (maxDiffDays - minDiffDays) * (width - 2 * padding);
+
+    const formatDateTooltip = (dateStr: string) => {
+      const [y, m, d] = dateStr.split('-').map(Number);
+      const date = new Date(y, m - 1, d);
+      return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    };
+
+    return (
+      <div className="daily-chart-wrapper">
+        <svg width="100%" height={height} viewBox={`0 0 ${width} ${height}`} style={{ overflow: 'visible' }}>
+          <line x1={padding} y1={height/2} x2={width-padding} y2={height/2} stroke="#444" strokeDasharray="4 2" />
+          
+          {dividerX && (
+            <g>
+              <line x1={dividerX} y1={padding} x2={dividerX} y2={height-padding} stroke="#666" strokeDasharray="2 2" />
+              <text x={dividerX + 5} y={padding} fill="#666" fontSize="8" fontWeight="bold">PERIOD START (0.0h)</text>
+            </g>
+          )}
+
+          <defs>
+            <linearGradient id="gradient-daily" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#4caf50" />
+              <stop offset="50%" stopColor="transparent" />
+              <stop offset="100%" stopColor="#f44336" />
+            </linearGradient>
+          </defs>
+
+          {/* Fill and Path for Context */}
+          {contextPath && (
+            <g opacity="0.4">
+              <path d={contextPath} fill="none" stroke="#3498db" strokeWidth="2" strokeDasharray="4 2" />
+            </g>
+          )}
+
+          {/* Fill and Path for Main Month */}
+          {mainPath && (
+            <>
+              <path 
+                d={`${mainPath} L ${mainPoints[mainPoints.length-1].x} ${height/2} L ${mainPoints[0].x} ${height/2} Z`} 
+                fill="url(#gradient-daily)" 
+                opacity="0.2" 
+              />
+              <path d={mainPath} fill="none" stroke="#3498db" strokeWidth="2" />
+            </>
+          )}
+          
+          {points.map((p, i) => (
+            <g key={i} style={{ opacity: p.isContext ? 0.4 : 1 }}>
+              <circle 
+                cx={p.x} 
+                cy={p.y} 
+                r={i === points.length - 1 ? "5" : "3"} 
+                fill={p.statusColor} 
+                style={{ transition: 'all 0.3s' }}
+              >
+                <title>{`${formatDateTooltip(p.date)}${p.isContext ? ' (Previous Month lookback)' : ''}\nBillable worked: ${p.billable.toFixed(1)}h (Target: ${p.expected}h)\nDaily balance: ${p.billable - p.expected >= 0 ? '+' : ''}${(p.billable - p.expected).toFixed(1)}h\nRunning period balance: ${p.hours_diff >= 0 ? '+' : ''}${p.hours_diff.toFixed(1)}h`}</title>
+              </circle>
+            </g>
+          ))}
+          
+          {/* Draw fixed X-axis labels for the month */}
+          {Array.from({ length: Math.ceil(lastDay / 5) + 1 }, (_, index) => {
+            const dayNum = index * 5 || 1; // 1, 5, 10, 15, ...
+            if (dayNum > lastDay) return null;
+            
+            const diffDays = dayNum - 1;
+            const fraction = (diffDays - minDiffDays) / (maxDiffDays - minDiffDays);
+            const x = padding + fraction * (width - 2 * padding);
+            
+            return (
+              <text key={dayNum} x={x} y={height + 15} fill="#666" fontSize="10" textAnchor="middle">
+                {dayNum}
+              </text>
+            );
+          })}
+
+          {/* Draw a label for the previous month lookback area */}
+          <text 
+            x={padding + (-1.5 - minDiffDays) / (maxDiffDays - minDiffDays) * (width - 2 * padding)} 
+            y={height + 15} 
+            fill="#666" 
+            fontSize="9" 
+            fontWeight="bold" 
+            textAnchor="middle" 
+            opacity="0.6"
+          >
+            LOOKBACK
+          </text>
+
+          {mainPoints.length > 0 && (
+            <g>
+              <rect 
+                x={mainPoints[mainPoints.length-1].x - 25} 
+                y={mainPoints[mainPoints.length-1].y - 25} 
+                width="50" height="20" rx="4" 
+                fill="#333" stroke="#555"
+              />
+              <text x={mainPoints[mainPoints.length-1].x} y={mainPoints[mainPoints.length-1].y - 11} fill="#fff" fontSize="11" fontWeight="bold" textAnchor="middle">
+                {mainPoints[mainPoints.length-1].hours_diff >= 0 ? '+' : ''}{mainPoints[mainPoints.length-1].hours_diff.toFixed(1)}h
+              </text>
+            </g>
+          )}
+        </svg>
+        <div style={{ marginTop: '20px', fontSize: '0.75rem', color: '#888', textAlign: 'center' }}>
+          Current period cumulative: {mainPoints[mainPoints.length-1]?.hours_diff.toFixed(1)}h
+        </div>
       </div>
-    </div>
-  );
-}
+    );
+  }
 
   function MixtureChart({ entries, label }: { entries: any[], label: string }) {
   // Group by date

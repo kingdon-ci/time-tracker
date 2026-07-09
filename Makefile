@@ -1,6 +1,19 @@
-.PHONY: run this clean all weekly six test export-json spin-up spin-build spin-watch
+.PHONY: run this clean all weekly six test export-json spin-up spin-build spin-watch build-brain build-android build
+
+build-brain:
+	cd brain && cargo build --target wasm32-wasip1 --release
+	mkdir -p android/app/src/main/assets
+	cp brain/target/wasm32-wasip1/release/time_tracker_brain.wasm android/app/src/main/assets/brain.wasm
+
+build-android: build-brain
+	export PATH="/Applications/Android Studio.app/Contents/jbr/Contents/Home/bin:$$PATH" && \
+	cd android && chmod +x gradlew && ./gradlew assembleDebug
+
+build: build-android
 
 all:
+
+
 	-make clean
 	make this
 

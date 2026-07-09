@@ -1,0 +1,7 @@
+package kingdon:time-tracker@0.1.0;
+
+world time-tracker {
+    export compute-monthly-target: func(input: string) -> string;
+    export compute-six-mixture: func(input: string) -> string;
+    export compute-moving-average: func(input: string) -> string;
+}
