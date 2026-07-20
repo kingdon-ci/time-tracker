@@ -36,13 +36,15 @@ impl RawTimeEntry {
     pub fn duration_hours(&self) -> f64 {
         if let Some(ref dur) = self.duration {
             if let (Some(ref start), Some(ref stop)) = (&dur.started_at, &dur.stopped_at) {
-                // Try RFC3339 first, fallback to basic ISO patterns
+                // Try RFC3339 first, fallback to basic ISO patterns (assume UTC if no timezone)
                 let start_dt = chrono::DateTime::parse_from_rfc3339(start)
-                    .or_else(|_| chrono::DateTime::parse_from_str(start, "%Y-%m-%dT%H:%M:%S%.fZ"))
-                    .or_else(|_| chrono::DateTime::parse_from_str(start, "%Y-%m-%dT%H:%M:%S%.f"));
+                    .map(|dt| dt.with_timezone(&chrono::Utc))
+                    .or_else(|_| chrono::NaiveDateTime::parse_from_str(start, "%Y-%m-%dT%H:%M:%S%.f").map(|dt| dt.and_utc()))
+                    .or_else(|_| chrono::NaiveDateTime::parse_from_str(start, "%Y-%m-%dT%H:%M:%S%f").map(|dt| dt.and_utc()));
                 let stop_dt = chrono::DateTime::parse_from_rfc3339(stop)
-                    .or_else(|_| chrono::DateTime::parse_from_str(stop, "%Y-%m-%dT%H:%M:%S%.fZ"))
-                    .or_else(|_| chrono::DateTime::parse_from_str(stop, "%Y-%m-%dT%H:%M:%S%.f"));
+                    .map(|dt| dt.with_timezone(&chrono::Utc))
+                    .or_else(|_| chrono::NaiveDateTime::parse_from_str(stop, "%Y-%m-%dT%H:%M:%S%.f").map(|dt| dt.and_utc()))
+                    .or_else(|_| chrono::NaiveDateTime::parse_from_str(stop, "%Y-%m-%dT%H:%M:%S%f").map(|dt| dt.and_utc()));
                 if let (Ok(t1), Ok(t2)) = (start_dt, stop_dt) {
                     let diff = t2.signed_duration_since(t1);
                     return diff.num_seconds() as f64 / 3600.0;
@@ -68,8 +70,9 @@ impl RawTimeEntry {
         if let Some(ref dur) = self.duration {
             if let Some(ref start) = dur.started_at {
                 let dt = chrono::DateTime::parse_from_rfc3339(start)
-                    .or_else(|_| chrono::DateTime::parse_from_str(start, "%Y-%m-%dT%H:%M:%S%.fZ"))
-                    .or_else(|_| chrono::DateTime::parse_from_str(start, "%Y-%m-%dT%H:%M:%S%.f"));
+                    .map(|dt| dt.with_timezone(&chrono::Utc))
+                    .or_else(|_| chrono::NaiveDateTime::parse_from_str(start, "%Y-%m-%dT%H:%M:%S%.f").map(|dt| dt.and_utc()))
+                    .or_else(|_| chrono::NaiveDateTime::parse_from_str(start, "%Y-%m-%dT%H:%M:%S%f").map(|dt| dt.and_utc()));
                 if let Ok(utc_dt) = dt {
                     let utc_naive = utc_dt.naive_utc();
                     let offset_hours = if is_dst(utc_naive.date()) { -4 } else { -5 };

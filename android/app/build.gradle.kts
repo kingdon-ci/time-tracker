@@ -46,8 +46,8 @@ android {
 
 dependencies {
     // Chicory: Pure Java WASM Interpreter
-    implementation("com.dylibso.chicory:runtime:1.0.0-M2")
-    implementation("com.dylibso.chicory:wasi:1.0.0-M2")
+    implementation("com.dylibso.chicory:runtime:1.7.5")
+    implementation("com.dylibso.chicory:wasi:1.7.5")
 
     // AndroidX & Compose
     implementation("androidx.core:core-ktx:1.12.0")

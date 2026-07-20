@@ -1,6 +1,7 @@
 package com.kingdon.timetracker
 
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -282,9 +283,11 @@ class TimeTrackerViewModel : ViewModel() {
 
                     // 1. Fetch main entries
                     val rawEntriesStr = client.fetchTimeEntries(mainStart, mainEnd)
+                    Log.d("TimeTrackerViewModel", "Raw entries from API: $rawEntriesStr")
                     
                     // Parse entries array
                     val entriesJsonArray = JSONArray(rawEntriesStr)
+                    Log.d("TimeTrackerViewModel", "Parsed ${entriesJsonArray.length()} entries")
                     
                     // Compile monthly target via WASM brain
                     val targetInput = JSONObject().apply {
@@ -293,7 +296,9 @@ class TimeTrackerViewModel : ViewModel() {
                         put("end_date", mainEnd.toString())
                         put("entries", entriesJsonArray)
                     }
+                    Log.d("TimeTrackerViewModel", "Target input: ${targetInput.toString()}")
                     val targetOutputStr = brain.computeMonthlyTarget(targetInput.toString())
+                    Log.d("TimeTrackerViewModel", "Target output: $targetOutputStr")
                     val targetResponse = JSONObject(targetOutputStr)
                     if (targetResponse.has("error")) {
                         throw Exception(targetResponse.getString("error"))
@@ -311,13 +316,16 @@ class TimeTrackerViewModel : ViewModel() {
                     if (isCurrentMonth) {
                         val sixStart = today.minusDays(5)
                         val rawSixStr = client.fetchTimeEntries(sixStart, today)
+                        Log.d("TimeTrackerViewModel", "Raw six mixture entries from API: $rawSixStr")
                         val rawSixArr = JSONArray(rawSixStr)
                         
                         val sixInput = JSONObject().apply {
                             put("today", today.toString())
                             put("entries", rawSixArr)
                         }
+                        Log.d("TimeTrackerViewModel", "Six mixture input: ${sixInput.toString()}")
                         val sixOutputStr = brain.computeSixMixture(sixInput.toString())
+                        Log.d("TimeTrackerViewModel", "Six mixture output: $sixOutputStr")
                         val sixResponse = JSONObject(sixOutputStr)
                         val sixDaysArr = sixResponse.getJSONArray("entries")
                         for (i in 0 until sixDaysArr.length()) {
@@ -343,8 +351,10 @@ class TimeTrackerViewModel : ViewModel() {
                         put("current_month_diff", progress.hoursDiff)
                         put("history", JSONArray(historyMonths))
                     }
+                    Log.d("TimeTrackerViewModel", "History input: ${historyInput.toString()}")
                     
                     val historyOutputStr = brain.computeMovingAverage(historyInput.toString())
+                    Log.d("TimeTrackerViewModel", "History output: $historyOutputStr")
                     val historyResponse = JSONObject(historyOutputStr)
                     if (historyResponse.has("error")) {
                         throw Exception(historyResponse.getString("error"))
