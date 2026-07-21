@@ -31,6 +31,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.TextStyle as ComposeTextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
@@ -769,7 +770,13 @@ fun DashboardScreen(state: UiState.Dashboard, viewModel: TimeTrackerViewModel) {
                                 .fillMaxWidth()
                                 .padding(16.dp)
                         ) {
-                            MixtureChart(days = state.sixMixture, label = "Make Six Mixture")
+                            val sixBillable = state.sixMixture.sumOf { it.billable }
+                            val sixNonBillable = state.sixMixture.sumOf { it.nonbillable }
+                            MixtureGauge(
+                                billable = sixBillable,
+                                nonbillable = sixNonBillable,
+                                label = "Make Six Mixture"
+                            )
                         }
                     }
                 }
@@ -1013,6 +1020,129 @@ fun CarburetorGauge(
                         textAlign = TextAlign.Center
                     )
                 }
+            }
+        }
+    }
+}
+
+@Composable
+fun MixtureGauge(
+    billable: Double,
+    nonbillable: Double,
+    label: String,
+    modifier: Modifier = Modifier
+) {
+    val total = billable + nonbillable
+    val billablePercent = if (total > 0) (billable / total) * 100.0 else 0.0
+    
+    // Needle rotation: 0% billable = -90° (left/AIR), 100% billable = +90° (right/FUEL)
+    val rotation = (billablePercent / 100.0) * 180.0 - 90.0
+
+    Column(
+        modifier = modifier.fillMaxWidth().height(140.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Box(
+            modifier = Modifier.size(200.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Canvas(modifier = Modifier.fillMaxSize()) {
+                val strokeWidth = 16.dp.toPx()
+                val radius = (size.minDimension - strokeWidth) / 2
+                val center = Offset(size.width / 2f, size.height / 2f + 20.dp.toPx())
+
+                // AIR zone (left side - cyan)
+                drawArc(
+                    color = Color(0xFF00BCD4),
+                    startAngle = 180f,
+                    sweepAngle = 90f,
+                    useCenter = false,
+                    topLeft = Offset(center.x - radius, center.y - radius),
+                    size = Size(radius * 2, radius * 2),
+                    style = Stroke(width = strokeWidth, cap = StrokeCap.Round)
+                )
+
+                // FUEL zone (right side - orange)
+                drawArc(
+                    color = Color(0xFFFF9800),
+                    startAngle = 90f,
+                    sweepAngle = 90f,
+                    useCenter = false,
+                    topLeft = Offset(center.x - radius, center.y - radius),
+                    size = Size(radius * 2, radius * 2),
+                    style = Stroke(width = strokeWidth, cap = StrokeCap.Round)
+                )
+
+                // Center pin
+                drawCircle(
+                    color = Color.White,
+                    radius = 8.dp.toPx(),
+                    center = center
+                )
+
+                // Needle
+                val needleLength = radius - 12.dp.toPx()
+                val needleAngleRad = (90f + rotation) * PI / 180f
+                val needleEnd = Offset(
+                    center.x + needleLength.toFloat() * cos(needleAngleRad).toFloat(),
+                    center.y + needleLength.toFloat() * sin(needleAngleRad).toFloat()
+                )
+
+                drawLine(
+                    color = Color.White,
+                    start = center,
+                    end = needleEnd,
+                    strokeWidth = 4.dp.toPx(),
+                    cap = StrokeCap.Round
+                )
+            }
+        }
+
+        // Labels as Text composables overlay
+        // Gauge size: 200.dp, center: 100.dp, stroke: 16.dp, radius: (200-16)/2 = 92.dp
+        // labelRadius = 92.dp + 24.dp = 116.dp
+        val centerX = 100f
+        val centerY = 120f
+        val radius = 92f
+        val labelRadius = 116f
+        val airLabelAngle = 225f * PI / 180f
+        val fuelLabelAngle = 315f * PI / 180f
+
+        Box(
+            modifier = Modifier
+                .offset(x = (centerX + labelRadius * cos(airLabelAngle) - 30f).dp, y = (centerY + labelRadius * sin(airLabelAngle)).dp)
+        ) {
+            Text(text = "AIR (NB)", color = Color(0xFF00BCD4), fontSize = 10.sp)
+        }
+        Box(
+            modifier = Modifier
+                .offset(x = (centerX + labelRadius * cos(fuelLabelAngle) - 30f).dp, y = (centerY + labelRadius * sin(fuelLabelAngle)).dp)
+        ) {
+            Text(text = "FUEL (B)", color = Color(0xFFFF9800), fontSize = 10.sp)
+        }
+        Box(
+            modifier = Modifier
+                .offset(x = (centerX - 40f).dp, y = (centerY - 8f).dp)
+        ) {
+            Text(text = String.format("%.0f%% RICH", billablePercent), color = Color.White, fontSize = 14.sp, fontWeight = FontWeight.Bold)
+        }
+
+        // Numeric values below gauge
+        Spacer(modifier = Modifier.height(8.dp))
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Text(text = "FUEL", color = Color(0xFFFF9800), fontSize = 9.sp, fontWeight = FontWeight.Bold)
+                Text(text = String.format("%.1fh", billable), color = Color.White, fontSize = 16.sp, fontWeight = FontWeight.Bold)
+            }
+            Spacer(modifier = Modifier.width(24.dp))
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Text(text = "AIR", color = Color(0xFF00BCD4), fontSize = 9.sp, fontWeight = FontWeight.Bold)
+                Text(text = String.format("%.1fh", nonbillable), color = Color.White, fontSize = 16.sp, fontWeight = FontWeight.Bold)
             }
         }
     }
