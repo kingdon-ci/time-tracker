@@ -26,14 +26,14 @@ pub fn compute_six_mixture(input: SixMixtureInput) -> SixMixtureOutput {
     let today = NaiveDate::parse_from_str(&input.today, "%Y-%m-%d")
         .unwrap_or_else(|_| chrono::Utc::now().naive_utc().date());
     
-    // Yesterday back 6 days (excludes today)
-    let yesterday = today - Duration::days(1);
-    let start_date = yesterday - Duration::days(5);
+    // 6-day rolling window ending today (inclusive) - "today" must be included
+    let end_date = today;
+    let start_date = end_date - Duration::days(5);
 
     // Generate list of 6 dates
     let mut dates = Vec::new();
     let mut curr = start_date;
-    while curr <= yesterday {
+    while curr <= end_date {
         dates.push(curr);
         match curr.succ_opt() {
             Some(next) => curr = next,
@@ -47,7 +47,7 @@ pub fn compute_six_mixture(input: SixMixtureInput) -> SixMixtureOutput {
         if let Some(ref date_str) = entry.entry_date() {
             let entry_date = NaiveDate::parse_from_str(date_str, "%Y-%m-%d");
             if let Ok(ed) = entry_date {
-                if ed >= start_date && ed <= yesterday {
+                if ed >= start_date && ed <= end_date {
                     let entry_key = ed.format("%Y-%m-%d").to_string();
                     let record = day_map.entry(entry_key).or_insert((0.0, 0.0));
                     let hours = entry.duration_hours();

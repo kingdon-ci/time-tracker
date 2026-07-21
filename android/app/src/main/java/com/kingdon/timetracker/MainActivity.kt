@@ -777,6 +777,13 @@ fun DashboardScreen(state: UiState.Dashboard, viewModel: TimeTrackerViewModel) {
                                 nonbillable = sixNonBillable,
                                 label = "Make Six Mixture"
                             )
+
+                            Spacer(modifier = Modifier.height(8.dp))
+                            HorizontalDivider(color = Color(0x11FFFFFF))
+                            Spacer(modifier = Modifier.height(12.dp))
+
+                            // Daily breakdown - restores per-day visibility that the aggregate gauge above obscures
+                            MixtureChart(days = state.sixMixture, label = "Daily Breakdown")
                         }
                     }
                 }
@@ -999,9 +1006,9 @@ fun CarburetorGauge(
                 )
             }
 
-            // Numeric Display inside Arc
+            // Numeric Display inside Arc - anchored from top for predictable, non-overlapping placement
             Column(
-                modifier = Modifier.offset(y = 10.dp),
+                modifier = Modifier.align(Alignment.TopCenter).padding(top = 80.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 val valueText = (if (clampedValue >= 0) "+" else "") + String.format("%.1f", clampedValue)
@@ -1034,102 +1041,92 @@ fun MixtureGauge(
 ) {
     val total = billable + nonbillable
     val billablePercent = if (total > 0) (billable / total) * 100.0 else 0.0
-    
-    // Needle rotation: 0% billable = -90° (left/AIR), 100% billable = +90° (right/FUEL)
-    val rotation = (billablePercent / 100.0) * 180.0 - 90.0
+    val progress = billablePercent / 100.0
+
+    // Matches CarburetorGauge's proven dome shape: startAngle=180, sweepAngle=180 (opens at bottom)
+    val startAngle = 180f
+    val sweepAngle = 180f
 
     Column(
-        modifier = modifier.fillMaxWidth().height(140.dp),
+        modifier = modifier.fillMaxWidth().wrapContentHeight(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
         Box(
-            modifier = Modifier.size(200.dp),
+            modifier = Modifier.size(140.dp).padding(top = 8.dp),
             contentAlignment = Alignment.Center
         ) {
             Canvas(modifier = Modifier.fillMaxSize()) {
-                val strokeWidth = 16.dp.toPx()
+                val strokeWidth = 14.dp.toPx()
                 val radius = (size.minDimension - strokeWidth) / 2
-                val center = Offset(size.width / 2f, size.height / 2f + 20.dp.toPx())
+                val arcSize = Size(radius * 2, radius * 2)
+                val topLeft = Offset((size.width - radius * 2) / 2, (size.height - radius * 2) / 2)
 
-                // AIR zone (left side - cyan)
+                // AIR zone (left half of dome - cyan)
                 drawArc(
                     color = Color(0xFF00BCD4),
-                    startAngle = 180f,
-                    sweepAngle = 90f,
+                    startAngle = startAngle,
+                    sweepAngle = sweepAngle / 2f,
                     useCenter = false,
-                    topLeft = Offset(center.x - radius, center.y - radius),
-                    size = Size(radius * 2, radius * 2),
+                    topLeft = topLeft,
+                    size = arcSize,
                     style = Stroke(width = strokeWidth, cap = StrokeCap.Round)
                 )
 
-                // FUEL zone (right side - orange)
+                // FUEL zone (right half of dome - orange)
                 drawArc(
                     color = Color(0xFFFF9800),
-                    startAngle = 90f,
-                    sweepAngle = 90f,
+                    startAngle = startAngle + sweepAngle / 2f,
+                    sweepAngle = sweepAngle / 2f,
                     useCenter = false,
-                    topLeft = Offset(center.x - radius, center.y - radius),
-                    size = Size(radius * 2, radius * 2),
+                    topLeft = topLeft,
+                    size = arcSize,
                     style = Stroke(width = strokeWidth, cap = StrokeCap.Round)
                 )
 
-                // Center pin
-                drawCircle(
-                    color = Color.White,
-                    radius = 8.dp.toPx(),
-                    center = center
-                )
-
-                // Needle
-                val needleLength = radius - 12.dp.toPx()
-                val needleAngleRad = (90f + rotation) * PI / 180f
+                // Needle logic (same math as CarburetorGauge)
+                val needleLength = radius - 8.dp.toPx()
+                val needleAngleRad = (startAngle + sweepAngle * progress) * PI / 180f
                 val needleEnd = Offset(
                     center.x + needleLength.toFloat() * cos(needleAngleRad).toFloat(),
                     center.y + needleLength.toFloat() * sin(needleAngleRad).toFloat()
                 )
 
+                // Draw needle pin
+                drawCircle(
+                    color = Color.White,
+                    radius = 6.dp.toPx(),
+                    center = center
+                )
+
+                // Draw needle line
                 drawLine(
                     color = Color.White,
                     start = center,
                     end = needleEnd,
-                    strokeWidth = 4.dp.toPx(),
+                    strokeWidth = 3.dp.toPx(),
                     cap = StrokeCap.Round
+                )
+            }
+
+            // Numeric Display inside Arc (matches CarburetorGauge pattern - single line like "+0.6hrs")
+            Column(
+                modifier = Modifier.offset(y = 10.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = String.format("%.0f%% RICH", billablePercent),
+                    color = Color.White,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 20.sp,
+                    fontFamily = FontFamily.Monospace
                 )
             }
         }
 
-        // Labels as Text composables overlay
-        // Gauge size: 200.dp, center: 100.dp, stroke: 16.dp, radius: (200-16)/2 = 92.dp
-        // labelRadius = 92.dp + 24.dp = 116.dp
-        val centerX = 100f
-        val centerY = 120f
-        val radius = 92f
-        val labelRadius = 116f
-        val airLabelAngle = 225f * PI / 180f
-        val fuelLabelAngle = 315f * PI / 180f
+        Spacer(modifier = Modifier.height(16.dp))
 
-        Box(
-            modifier = Modifier
-                .offset(x = (centerX + labelRadius * cos(airLabelAngle) - 30f).dp, y = (centerY + labelRadius * sin(airLabelAngle)).dp)
-        ) {
-            Text(text = "AIR (NB)", color = Color(0xFF00BCD4), fontSize = 10.sp)
-        }
-        Box(
-            modifier = Modifier
-                .offset(x = (centerX + labelRadius * cos(fuelLabelAngle) - 30f).dp, y = (centerY + labelRadius * sin(fuelLabelAngle)).dp)
-        ) {
-            Text(text = "FUEL (B)", color = Color(0xFFFF9800), fontSize = 10.sp)
-        }
-        Box(
-            modifier = Modifier
-                .offset(x = (centerX - 40f).dp, y = (centerY - 8f).dp)
-        ) {
-            Text(text = String.format("%.0f%% RICH", billablePercent), color = Color.White, fontSize = 14.sp, fontWeight = FontWeight.Bold)
-        }
-
-        // Numeric values below gauge
-        Spacer(modifier = Modifier.height(8.dp))
+        // Numeric values below gauge, matching the "stats" row style of other panels
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.Center,
@@ -1137,12 +1134,12 @@ fun MixtureGauge(
         ) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Text(text = "FUEL", color = Color(0xFFFF9800), fontSize = 9.sp, fontWeight = FontWeight.Bold)
-                Text(text = String.format("%.1fh", billable), color = Color.White, fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                Text(text = String.format("%.1fh", billable), color = Color.White, fontSize = 14.sp, fontWeight = FontWeight.Bold)
             }
-            Spacer(modifier = Modifier.width(24.dp))
+            Spacer(modifier = Modifier.width(32.dp))
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Text(text = "AIR", color = Color(0xFF00BCD4), fontSize = 9.sp, fontWeight = FontWeight.Bold)
-                Text(text = String.format("%.1fh", nonbillable), color = Color.White, fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                Text(text = String.format("%.1fh", nonbillable), color = Color.White, fontSize = 14.sp, fontWeight = FontWeight.Bold)
             }
         }
     }
@@ -1222,8 +1219,9 @@ fun MixtureChart(days: List<SixMixtureDay>, label: String) {
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
                         text = day.date.substring(day.date.length - 2),
-                        color = Color.Gray,
-                        fontSize = 8.sp
+                        color = if (total > 0) Color.White else Color.Gray,
+                        fontSize = 8.sp,
+                        fontWeight = if (total > 0) FontWeight.Bold else FontWeight.Normal
                     )
                 }
             }
