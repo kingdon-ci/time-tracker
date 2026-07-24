@@ -1,6 +1,7 @@
 package com.kingdon.timetracker
 
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -30,6 +31,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.TextStyle as ComposeTextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
@@ -282,9 +284,11 @@ class TimeTrackerViewModel : ViewModel() {
 
                     // 1. Fetch main entries
                     val rawEntriesStr = client.fetchTimeEntries(mainStart, mainEnd)
+                    Log.d("TimeTrackerViewModel", "Raw entries from API: $rawEntriesStr")
                     
                     // Parse entries array
                     val entriesJsonArray = JSONArray(rawEntriesStr)
+                    Log.d("TimeTrackerViewModel", "Parsed ${entriesJsonArray.length()} entries")
                     
                     // Compile monthly target via WASM brain
                     val targetInput = JSONObject().apply {
@@ -293,7 +297,9 @@ class TimeTrackerViewModel : ViewModel() {
                         put("end_date", mainEnd.toString())
                         put("entries", entriesJsonArray)
                     }
+                    Log.d("TimeTrackerViewModel", "Target input: ${targetInput.toString()}")
                     val targetOutputStr = brain.computeMonthlyTarget(targetInput.toString())
+                    Log.d("TimeTrackerViewModel", "Target output: $targetOutputStr")
                     val targetResponse = JSONObject(targetOutputStr)
                     if (targetResponse.has("error")) {
                         throw Exception(targetResponse.getString("error"))
@@ -311,13 +317,16 @@ class TimeTrackerViewModel : ViewModel() {
                     if (isCurrentMonth) {
                         val sixStart = today.minusDays(5)
                         val rawSixStr = client.fetchTimeEntries(sixStart, today)
+                        Log.d("TimeTrackerViewModel", "Raw six mixture entries from API: $rawSixStr")
                         val rawSixArr = JSONArray(rawSixStr)
                         
                         val sixInput = JSONObject().apply {
                             put("today", today.toString())
                             put("entries", rawSixArr)
                         }
+                        Log.d("TimeTrackerViewModel", "Six mixture input: ${sixInput.toString()}")
                         val sixOutputStr = brain.computeSixMixture(sixInput.toString())
+                        Log.d("TimeTrackerViewModel", "Six mixture output: $sixOutputStr")
                         val sixResponse = JSONObject(sixOutputStr)
                         val sixDaysArr = sixResponse.getJSONArray("entries")
                         for (i in 0 until sixDaysArr.length()) {
@@ -343,8 +352,10 @@ class TimeTrackerViewModel : ViewModel() {
                         put("current_month_diff", progress.hoursDiff)
                         put("history", JSONArray(historyMonths))
                     }
+                    Log.d("TimeTrackerViewModel", "History input: ${historyInput.toString()}")
                     
                     val historyOutputStr = brain.computeMovingAverage(historyInput.toString())
+                    Log.d("TimeTrackerViewModel", "History output: $historyOutputStr")
                     val historyResponse = JSONObject(historyOutputStr)
                     if (historyResponse.has("error")) {
                         throw Exception(historyResponse.getString("error"))
@@ -759,7 +770,20 @@ fun DashboardScreen(state: UiState.Dashboard, viewModel: TimeTrackerViewModel) {
                                 .fillMaxWidth()
                                 .padding(16.dp)
                         ) {
-                            MixtureChart(days = state.sixMixture, label = "Make Six Mixture")
+                            val sixBillable = state.sixMixture.sumOf { it.billable }
+                            val sixNonBillable = state.sixMixture.sumOf { it.nonbillable }
+                            MixtureGauge(
+                                billable = sixBillable,
+                                nonbillable = sixNonBillable,
+                                label = "Make Six Mixture"
+                            )
+
+                            Spacer(modifier = Modifier.height(8.dp))
+                            HorizontalDivider(color = Color(0x11FFFFFF))
+                            Spacer(modifier = Modifier.height(12.dp))
+
+                            // Daily breakdown - restores per-day visibility that the aggregate gauge above obscures
+                            MixtureChart(days = state.sixMixture, label = "Daily Breakdown")
                         }
                     }
                 }
@@ -982,9 +1006,9 @@ fun CarburetorGauge(
                 )
             }
 
-            // Numeric Display inside Arc
+            // Numeric Display inside Arc - anchored from top for predictable, non-overlapping placement
             Column(
-                modifier = Modifier.offset(y = 10.dp),
+                modifier = Modifier.align(Alignment.TopCenter).padding(top = 80.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 val valueText = (if (clampedValue >= 0) "+" else "") + String.format("%.1f", clampedValue)
@@ -1003,6 +1027,119 @@ fun CarburetorGauge(
                         textAlign = TextAlign.Center
                     )
                 }
+            }
+        }
+    }
+}
+
+@Composable
+fun MixtureGauge(
+    billable: Double,
+    nonbillable: Double,
+    label: String,
+    modifier: Modifier = Modifier
+) {
+    val total = billable + nonbillable
+    val billablePercent = if (total > 0) (billable / total) * 100.0 else 0.0
+    val progress = billablePercent / 100.0
+
+    // Matches CarburetorGauge's proven dome shape: startAngle=180, sweepAngle=180 (opens at bottom)
+    val startAngle = 180f
+    val sweepAngle = 180f
+
+    Column(
+        modifier = modifier.fillMaxWidth().wrapContentHeight(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Box(
+            modifier = Modifier.size(140.dp).padding(top = 8.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Canvas(modifier = Modifier.fillMaxSize()) {
+                val strokeWidth = 14.dp.toPx()
+                val radius = (size.minDimension - strokeWidth) / 2
+                val arcSize = Size(radius * 2, radius * 2)
+                val topLeft = Offset((size.width - radius * 2) / 2, (size.height - radius * 2) / 2)
+
+                // AIR zone (left half of dome - cyan)
+                drawArc(
+                    color = Color(0xFF00BCD4),
+                    startAngle = startAngle,
+                    sweepAngle = sweepAngle / 2f,
+                    useCenter = false,
+                    topLeft = topLeft,
+                    size = arcSize,
+                    style = Stroke(width = strokeWidth, cap = StrokeCap.Round)
+                )
+
+                // FUEL zone (right half of dome - orange)
+                drawArc(
+                    color = Color(0xFFFF9800),
+                    startAngle = startAngle + sweepAngle / 2f,
+                    sweepAngle = sweepAngle / 2f,
+                    useCenter = false,
+                    topLeft = topLeft,
+                    size = arcSize,
+                    style = Stroke(width = strokeWidth, cap = StrokeCap.Round)
+                )
+
+                // Needle logic (same math as CarburetorGauge)
+                val needleLength = radius - 8.dp.toPx()
+                val needleAngleRad = (startAngle + sweepAngle * progress) * PI / 180f
+                val needleEnd = Offset(
+                    center.x + needleLength.toFloat() * cos(needleAngleRad).toFloat(),
+                    center.y + needleLength.toFloat() * sin(needleAngleRad).toFloat()
+                )
+
+                // Draw needle pin
+                drawCircle(
+                    color = Color.White,
+                    radius = 6.dp.toPx(),
+                    center = center
+                )
+
+                // Draw needle line
+                drawLine(
+                    color = Color.White,
+                    start = center,
+                    end = needleEnd,
+                    strokeWidth = 3.dp.toPx(),
+                    cap = StrokeCap.Round
+                )
+            }
+
+            // Numeric Display inside Arc (matches CarburetorGauge pattern - single line like "+0.6hrs")
+            Column(
+                modifier = Modifier.offset(y = 10.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = String.format("%.0f%% RICH", billablePercent),
+                    color = Color.White,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 20.sp,
+                    fontFamily = FontFamily.Monospace
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Numeric values below gauge, matching the "stats" row style of other panels
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Text(text = "FUEL", color = Color(0xFFFF9800), fontSize = 9.sp, fontWeight = FontWeight.Bold)
+                Text(text = String.format("%.1fh", billable), color = Color.White, fontSize = 14.sp, fontWeight = FontWeight.Bold)
+            }
+            Spacer(modifier = Modifier.width(32.dp))
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Text(text = "AIR", color = Color(0xFF00BCD4), fontSize = 9.sp, fontWeight = FontWeight.Bold)
+                Text(text = String.format("%.1fh", nonbillable), color = Color.White, fontSize = 14.sp, fontWeight = FontWeight.Bold)
             }
         }
     }
@@ -1082,8 +1219,9 @@ fun MixtureChart(days: List<SixMixtureDay>, label: String) {
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
                         text = day.date.substring(day.date.length - 2),
-                        color = Color.Gray,
-                        fontSize = 8.sp
+                        color = if (total > 0) Color.White else Color.Gray,
+                        fontSize = 8.sp,
+                        fontWeight = if (total > 0) FontWeight.Bold else FontWeight.Normal
                     )
                 }
             }

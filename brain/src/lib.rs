@@ -169,4 +169,31 @@ mod tests {
         assert_eq!(jul6.billable, 8.0);
         assert_eq!(jul6.nonbillable, 0.0);
     }
+
+    #[test]
+    fn test_six_mixture_includes_today() {
+        // Regression test: "today" must be included in the 6-day window.
+        // Previously the window was [yesterday-5, yesterday], silently dropping
+        // any hours logged on the current day.
+        let entries_json = r#"[
+            {"activity": {"name": "Work"}, "duration": {"startedAt": "2026-07-08T08:00:00Z", "stoppedAt": "2026-07-08T12:00:00Z"}, "note": {"text": "today's work", "tags": []}}
+        ]"#;
+        let entries: Vec<RawTimeEntry> = serde_json::from_str(entries_json).unwrap();
+        let input = SixMixtureInput {
+            today: "2026-07-08".to_string(),
+            entries
+        };
+
+        let output = run_six_mixture(input);
+
+        assert_eq!(output.entries.len(), 6);
+        let today_entry = output.entries.iter().find(|d| d.date == "2026-07-08")
+            .expect("today's date must be present in the six-day window");
+        assert_eq!(today_entry.billable, 4.0);
+        assert_eq!(today_entry.nonbillable, 0.0);
+
+        // Window should span July 3 through July 8 inclusive (6 days ending today)
+        assert!(output.entries.iter().any(|d| d.date == "2026-07-03"));
+        assert!(!output.entries.iter().any(|d| d.date == "2026-07-02"));
+    }
 }

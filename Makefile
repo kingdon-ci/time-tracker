@@ -1,4 +1,4 @@
-.PHONY: setup build-brain test-brain test-android build install lint format clean all
+.PHONY: setup build-brain test-brain test-ruby test test-android build install lint format clean all
 
 # Detect Android Studio JBR path on macOS
 AS_JDK := /Applications/Android Studio.app/Contents/jbr/Contents/Home/bin
@@ -20,6 +20,11 @@ build-brain:
 
 test-brain:
 	cd brain && cargo test
+
+test-ruby:
+	ruby legacy/test/run_tests.rb
+
+test: test-ruby
 
 test-android: build-brain
 	cd android && chmod +x gradlew && ./gradlew test --no-daemon

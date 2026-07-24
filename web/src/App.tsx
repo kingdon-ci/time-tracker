@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import './App.css'
 import Gauge from './components/Gauge'
+import FuelGauge from './components/FuelGauge'
 import DashboardModal from './components/DashboardModal'
 
 interface ProgressData {
@@ -216,6 +217,14 @@ function App() {
   // Calculate billable vs nonbillable for this month
   const monthNonBillable = entries.filter((e: any) => e.nonbillable).reduce((sum: number, e: any) => sum + e.duration_hours, 0);
 
+  // Calculate billable/nonbillable for Make Six (past 6 days)
+  const sixBillable = sixData.entries
+    .filter((e: any) => !e.nonbillable)
+    .reduce((sum: number, e: any) => sum + e.duration_hours, 0);
+  const sixNonBillable = sixData.entries
+    .filter((e: any) => e.nonbillable)
+    .reduce((sum: number, e: any) => sum + e.duration_hours, 0);
+
   // Daily processing for current month
   const isWorkday = (dateStr: string) => {
     const [y, m, d] = dateStr.split('-').map(Number);
@@ -394,8 +403,9 @@ function App() {
 
           {/* Gauge 3: Fuel Mixture (Past 6 Days) */}
           <section className="panel fuel-panel" onClick={() => setActiveModal({ type: 'energy' })}>
-            <MixtureChart 
-              entries={sixData.entries} 
+            <FuelGauge 
+              billable={sixBillable} 
+              nonbillable={sixNonBillable} 
               label="Make Six Mixture" 
             />
           </section>
@@ -677,60 +687,6 @@ function App() {
     );
   }
 
-  function MixtureChart({ entries, label }: { entries: any[], label: string }) {
-  // Group by date
-  const daily: any = {};
-  entries.forEach(e => {
-    if (!e.date) return;
-    if (!daily[e.date]) daily[e.date] = { billable: 0, nonbillable: 0 };
-    if (e.nonbillable) daily[e.date].nonbillable += e.duration_hours;
-    else daily[e.date].billable += e.duration_hours;
-  });
-
-  const sortedDates = Object.keys(daily).sort();
-  const maxHours = Math.max(...Object.values(daily).map((d: any) => d.billable + d.nonbillable), 8);
-  
-  return (
-    <div style={{ textAlign: 'center', padding: '10px 0' }}>
-      <h3 style={{ margin: '0 0 15px 0', color: '#aaa', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.1rem' }}>{label}</h3>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', height: '100px', padding: '0 10px', gap: '8px' }}>
-        {sortedDates.map(date => {
-          const d = daily[date];
-          const total = d.billable + d.nonbillable;
-          return (
-            <div key={date} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '5px' }}>
-              <div style={{ 
-                width: '100%', 
-                height: '80px', 
-                background: '#333', 
-                borderRadius: '3px', 
-                display: 'flex', 
-                flexDirection: 'column-reverse',
-                overflow: 'hidden',
-                position: 'relative'
-              }}>
-                <div style={{ height: `${(d.billable / maxHours) * 100}%`, background: '#ff9800', transition: 'height 0.5s' }} title={`Billable: ${d.billable.toFixed(1)}h`}></div>
-                <div style={{ height: `${(d.nonbillable / maxHours) * 100}%`, background: '#00bcd4', transition: 'height 0.5s' }} title={`Non-billable: ${d.nonbillable.toFixed(1)}h`}></div>
-                {total > 8 && <div style={{ position: 'absolute', bottom: `${(8/maxHours)*100}%`, width: '100%', height: '1px', background: 'rgba(255,255,255,0.3)', borderTop: '1px dashed #fff' }}></div>}
-              </div>
-              <span style={{ fontSize: '8px', color: '#666' }}>{date.split('-')[2]}</span>
-            </div>
-          );
-        })}
-      </div>
-      <div style={{ display: 'flex', justifyContent: 'center', gap: '15px', marginTop: '15px', fontSize: '10px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-          <div style={{ width: '8px', height: '8px', background: '#ff9800', borderRadius: '2px' }}></div>
-          <span style={{ color: '#ff9800' }}>FUEL</span>
-        </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-          <div style={{ width: '8px', height: '8px', background: '#00bcd4', borderRadius: '2px' }}></div>
-          <span style={{ color: '#00bcd4' }}>AIR</span>
-        </div>
-      </div>
-    </div>
-  );
-}
 
 function TrendChart({ months, onPointClick }: { months: HistoricalMonth[], onPointClick: (m: HistoricalMonth) => void }) {
   const maxDiff = Math.max(...months.map(m => Math.abs(m.hours_diff)), 20);
