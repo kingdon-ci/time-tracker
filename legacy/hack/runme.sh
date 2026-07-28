@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
-source .env.local
+source "$(dirname "$0")/../../.env.local" 2>/dev/null || source .env.local 2>/dev/null
 export EARLY_API_KEY EARLY_API_SECRET
-ruby ./export.rb '^^'
+ruby "$(dirname "$0")/../export.rb" '^^'

@@ -2,7 +2,7 @@
   "name": "time-tracker",
   "version": "1.0.0",
   "description": "Time tracker with carburetor visualization",
-  "main": "export.rb",
+  "main": "legacy/export.rb",
   "scripts": {
     "dev": "make spin-watch",
     "spin-up": "make spin-up",

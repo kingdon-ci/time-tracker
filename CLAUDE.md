@@ -27,9 +27,9 @@ EARLY_API_SECRET=your_api_secret_here
 
 ### Components
 - **`web/`** - React/Vite/TypeScript frontend.
-- **`spin-app/`** - Python-based Wasm API (Spin framework).
-- **`export.rb`** - Core Ruby logic for API interaction and CSV archival.
-- **`generate_summary.rb`** - Pre-processes historical CSVs into JSON for the dashboard.
+- **`legacy/spin-app/`** - Python-based Wasm API (Spin framework).
+- **`legacy/export.rb`** - Core Ruby logic for API interaction and CSV archival.
+- **`legacy/generate_summary.rb`** - Pre-processes historical CSVs into JSON for the dashboard.
 - **`history/`** - Source of truth for historical records (`YYYY_MM_history.csv`).
 
 ### Implementation Details

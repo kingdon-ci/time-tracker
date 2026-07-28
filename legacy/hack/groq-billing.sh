@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Ensure we are in the project root
-cd "$(dirname "$0")/.."
+cd "$(dirname "$0")/../.."
 
 echo "Starting Groq Billing Scraper..."
 echo "This script will open a browser window for manual login."

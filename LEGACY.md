@@ -1,6 +1,6 @@
 # Legacy Time Carburetor (Spin + Ruby CLI)
 
-This document preserves the documentation and instructions for the legacy Spin-based web dashboard and Ruby CLI tools. The code has been moved to the `legacy/` directory.
+This document preserves the documentation and instructions for the legacy Spin-based web dashboard and Ruby CLI tools. The code has been moved to the [legacy/](legacy/) directory, but the targets are fully integrated into the root [Makefile](Makefile).
 
 ## Getting Started
 
@@ -28,7 +28,7 @@ This document preserves the documentation and instructions for the legacy Spin-b
    ```bash
    mkdir -p history
    # Run archival for previous months if you have them
-   # ./export.rb 2024 11
+   # ruby legacy/export.rb 2024 11
    ```
 
 ### Running the Legacy Dashboard
@@ -54,4 +54,4 @@ The core Ruby export tool remains available for direct CLI usage:
 - `make six`: 6-day all-entry report.
 - `make test`: Run the comprehensive test suite for date/filtering logic.
 
-See the `export.rb` script for full date range options (`@`, `w`, `6`, `^`, `^^`, etc.).
+See the [export.rb](legacy/export.rb) script for full date range options (`@`, `w`, `6`, `^`, `^^`, etc.).
