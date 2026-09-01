@@ -52,7 +52,10 @@ pub fn compute_history_summary(input: HistoryInput) -> HistoryOutput {
 
     // If view month is not found, insert a temporary one
     let (target_diff, idx_for_comp) = match view_idx {
-        Some(idx) => (all_months[idx].hours_diff, idx),
+        Some(idx) => {
+            all_months[idx].hours_diff = input.current_month_diff;
+            (input.current_month_diff, idx)
+        },
         None => {
             let temp_month = HistoryMonth {
                 year: input.view_year,

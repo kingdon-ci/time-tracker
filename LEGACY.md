@@ -45,6 +45,22 @@ This will:
 4. Build the React frontend.
 5. Start the Spin runtime at `http://localhost:3000`.
 
+### Monthly Month-Close Archival Workflow
+
+At the end of each month (or beginning of the next month, e.g., on September 1):
+
+1. Ensure `.env.local` contains valid `EARLY_API_KEY` and `EARLY_API_SECRET`.
+2. Run:
+   ```bash
+   make summary-json
+   ```
+3. This command will:
+   - Identify newly completed months up to the previous month.
+   - Fetch finalized time entries from Early API and write `history/YYYY_MM_history.csv`.
+   - Calculate monthly target hours, surplus/deficit ($\Delta$), and 4-month moving averages.
+   - Write updated `history_summary.json` to both `web/public/` and `android/app/src/main/assets/`.
+4. Commit the new CSV in `history/` and updated `history_summary.json` files to Git.
+
 ### Legacy CLI Usage
 
 The core Ruby export tool remains available for direct CLI usage:

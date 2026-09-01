@@ -1,5 +1,21 @@
 # Changelog
 
+## v0.6.1 - Rolling Comp Precision & History Asset Synchronization (2026-08-31)
+
+### Bug Fixes & Improvements
+
+**Rolling Comp Balance & Live Calculation:**
+- Updated WASM brain (`moving_average.rs`) to always prioritize live `input.current_month_diff` for the view month, preventing stale balance calculations when months exist in the static history summary.
+- Added comprehensive unit test (`test_history_summary_rolling_comp`) validating the 5-month historical lookback window plus current active month pacing.
+
+**Historical Ledger Synchronization:**
+- Synchronized `android/app/src/main/assets/history_summary.json` with July 2026 (`2026-07`) data to match `web/public/history_summary.json`.
+- Updated `generate_summary.rb` to automatically output generated summaries to both Web public assets and Android assets.
+- Fixed unused imports in `brain/src/raw_entry.rs`.
+
+**Documentation & Workflow:**
+- Documented the monthly month-close archival workflow (`make summary-json`) in `README.md` and `LEGACY.md` to clarify the cadence for auto-backfilling finalized months and synchronizing history across Web and Android assets.
+
 ## v0.6.0 - Daily Precision & Mixture Mastery (2026-05-19)
 
 ### New Features

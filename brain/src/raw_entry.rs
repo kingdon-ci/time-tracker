@@ -1,5 +1,5 @@
 use serde::Deserialize;
-use chrono::{NaiveDate, Datelike, Weekday};
+use chrono::{NaiveDate, Datelike};
 
 #[derive(Deserialize, Debug, Clone)]
 pub struct RawTimeEntry {
