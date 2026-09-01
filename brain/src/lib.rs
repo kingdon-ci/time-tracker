@@ -196,4 +196,96 @@ mod tests {
         assert!(output.entries.iter().any(|d| d.date == "2026-07-03"));
         assert!(!output.entries.iter().any(|d| d.date == "2026-07-02"));
     }
+
+    #[test]
+    fn test_history_summary_rolling_comp() {
+        let history = vec![
+            moving_average::HistoryMonth {
+                year: 2026,
+                month: 1,
+                total_hours: 172.22,
+                expected_hours: 176.0,
+                hours_diff: -3.78,
+                percentage: 97.9,
+                weekdays: 22,
+                moving_avg_4m: None,
+            },
+            moving_average::HistoryMonth {
+                year: 2026,
+                month: 2,
+                total_hours: 161.83,
+                expected_hours: 160.0,
+                hours_diff: 1.83,
+                percentage: 101.1,
+                weekdays: 20,
+                moving_avg_4m: None,
+            },
+            moving_average::HistoryMonth {
+                year: 2026,
+                month: 3,
+                total_hours: 168.04,
+                expected_hours: 168.0,
+                hours_diff: 0.04,
+                percentage: 100.0,
+                weekdays: 21,
+                moving_avg_4m: None,
+            },
+            moving_average::HistoryMonth {
+                year: 2026,
+                month: 4,
+                total_hours: 175.05,
+                expected_hours: 176.0,
+                hours_diff: -0.95,
+                percentage: 99.5,
+                weekdays: 22,
+                moving_avg_4m: None,
+            },
+            moving_average::HistoryMonth {
+                year: 2026,
+                month: 5,
+                total_hours: 168.84,
+                expected_hours: 168.0,
+                hours_diff: 0.84,
+                percentage: 100.5,
+                weekdays: 21,
+                moving_avg_4m: None,
+            },
+            moving_average::HistoryMonth {
+                year: 2026,
+                month: 6,
+                total_hours: 178.05,
+                expected_hours: 176.0,
+                hours_diff: 2.05,
+                percentage: 101.2,
+                weekdays: 22,
+                moving_avg_4m: None,
+            },
+            moving_average::HistoryMonth {
+                year: 2026,
+                month: 7,
+                total_hours: 182.19,
+                expected_hours: 184.0,
+                hours_diff: -1.81,
+                percentage: 99.0,
+                weekdays: 23,
+                moving_avg_4m: None,
+            },
+        ];
+
+        // Active month is August 2026 (month 8), with live diff of -4.0
+        let input = HistoryInput {
+            view_year: 2026,
+            view_month: 8,
+            current_month_diff: -4.0,
+            history,
+        };
+
+        let output = run_history_summary(input);
+        // Lookback covers preceding 5 months (months 3, 4, 5, 6, 7):
+        // 0.04 + (-0.95) + 0.84 + 2.05 + (-1.81) = 0.17
+        assert_eq!(output.historical_diff, 0.17);
+        // Comp time balance = historical_diff + current_month_diff = 0.17 + (-4.0) = -3.83
+        assert_eq!(output.comp_time_balance, -3.83);
+        assert_eq!(output.lookback_count, 6);
+    }
 }

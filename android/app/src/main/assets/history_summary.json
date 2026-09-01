@@ -199,7 +199,17 @@
       "percentage": 101.2,
       "weekdays": 22,
       "moving_avg_4m": 0.49499999999999994
+    },
+    {
+      "year": 2026,
+      "month": 7,
+      "total_hours": 182.19,
+      "expected_hours": 184.0,
+      "hours_diff": -1.81,
+      "percentage": 99.0,
+      "weekdays": 23,
+      "moving_avg_4m": 0.032499999999999946
     }
   ],
-  "generated_at": "2026-07-08T21:01:31-04:00"
+  "generated_at": "2026-08-24T20:30:18-04:00"
 }

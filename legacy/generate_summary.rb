@@ -42,6 +42,12 @@ class SummaryGenerator
 
     File.write(output_file, JSON.pretty_generate(result))
     puts "Wrote summary to #{output_file}"
+
+    android_asset_path = 'android/app/src/main/assets/history_summary.json'
+    if Dir.exist?('android/app/src/main/assets')
+      File.write(android_asset_path, JSON.pretty_generate(result))
+      puts "Wrote summary to #{android_asset_path}"
+    end
   end
 
   private
