@@ -111,12 +111,12 @@ The legacy Spin-based web dashboard and Ruby CLI tools have been relocated to th
 - **`make spin-up`**: Build and launch the production Spin service.
 - **`make spin-build`**: Build the React frontend (`web/dist`) and compile the Python API Wasm component.
 
-### Ruby CLI Tools
+### Ruby CLI & Monthly Archival Workflow
 
+- **`make summary-json`**: **Monthly Month-Close Archival**. Automatically detects and backfills completed past months from the Early API into `history/YYYY_MM_history.csv`, recalculates the 4-month moving averages, and synchronizes `history_summary.json` across both `web/public/` and `android/app/src/main/assets/`. Run this at the start of each new month (e.g., September 1 for August).
 - **`make this`**: Quick progress report for the current month (`this_month.csv`).
 - **`make today`**: Generates a report of today's activities (`today.csv`).
 - **`make weekly`**: Generates a 7-day nonbillable report (`weekly.csv`).
 - **`make six`**: Generates a 6-day all-entry mixture report (`six.csv`).
-- **`make summary-json`**: Manually rebuilds the historical JSON summary with automatic backfilling.
 
 For detailed documentation, prerequisites, and environment setup of these legacy features, refer to **[LEGACY.md](LEGACY.md)**.
