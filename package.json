@@ -1,6 +1,6 @@
 {
   "name": "time-tracker",
-  "version": "1.0.0",
+  "version": "0.6.1",
   "description": "Time tracker with carburetor visualization",
   "main": "legacy/export.rb",
   "scripts": {
