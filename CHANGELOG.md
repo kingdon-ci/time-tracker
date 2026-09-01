@@ -13,6 +13,9 @@
 - Updated `generate_summary.rb` to automatically output generated summaries to both Web public assets and Android assets.
 - Fixed unused imports in `brain/src/raw_entry.rs`.
 
+**Documentation & Workflow:**
+- Documented the monthly month-close archival workflow (`make summary-json`) in `README.md` and `LEGACY.md` to clarify the cadence for auto-backfilling finalized months and synchronizing history across Web and Android assets.
+
 ## v0.6.0 - Daily Precision & Mixture Mastery (2026-05-19)
 
 ### New Features
