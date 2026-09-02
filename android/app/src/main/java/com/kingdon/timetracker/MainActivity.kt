@@ -727,7 +727,10 @@ fun DashboardScreen(state: UiState.Dashboard, viewModel: TimeTrackerViewModel) {
                             .padding(16.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Box(modifier = Modifier.size(100.dp)) {
+                        Box(
+                            modifier = Modifier.size(120.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
                             CarburetorGauge(
                                 value = state.compTimeBalance,
                                 min = -80f,
@@ -945,7 +948,7 @@ fun CarburetorGauge(
     val color = if (clampedValue >= 0) Color(0xFF4CAF50) else Color(0xFFE91E63)
 
     Column(
-        modifier = modifier.fillMaxWidth().height(120.dp),
+        modifier = modifier.fillMaxWidth().wrapContentHeight(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
@@ -1006,9 +1009,9 @@ fun CarburetorGauge(
                 )
             }
 
-            // Numeric Display inside Arc - anchored from top for predictable, non-overlapping placement
+            // Numeric Display inside Arc
             Column(
-                modifier = Modifier.align(Alignment.TopCenter).padding(top = 80.dp),
+                modifier = Modifier.offset(y = 16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 val valueText = (if (clampedValue >= 0) "+" else "") + String.format("%.1f", clampedValue)
@@ -1016,7 +1019,7 @@ fun CarburetorGauge(
                     text = valueText + unit,
                     color = Color.White,
                     fontWeight = FontWeight.Bold,
-                    fontSize = 20.sp,
+                    fontSize = 18.sp,
                     fontFamily = FontFamily.Monospace
                 )
                 if (showLabel && label.isNotBlank()) {
