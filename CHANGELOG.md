@@ -1,5 +1,16 @@
 # Changelog
 
+## v0.6.2 - Gauge Layout Precision & August 2026 Ledger Sync (2026-09-01)
+
+### Bug Fixes & Improvements
+
+**Gauge UI & Layout:**
+- Fixed numeric text clipping in `CarburetorGauge` by wrapping content height dynamically and positioning the numeric readout below the center needle pivot (`offset(y = 16.dp)`).
+- Expanded Rolling Comp card dial container from `100.dp` to `120.dp` with center alignment to prevent boundary truncation.
+
+**Historical Data Synchronization:**
+- Synchronized Android assets (`history_summary.json`) with finalized August 2026 (`2026-08`) accounting data (`-2.26h`), bringing the 5-month historical lookback window into exact parity with the Web application (`-2.13h`).
+
 ## v0.6.1 - Rolling Comp Precision & History Asset Synchronization (2026-08-31)
 
 ### Bug Fixes & Improvements
